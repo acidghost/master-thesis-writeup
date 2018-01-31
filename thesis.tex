@@ -56,6 +56,7 @@
 % GO!GO!GO! MOVE IT!
 %*******************************************************
 \begin{document}
+\setstretch{1.4}
 \frenchspacing
 \raggedbottom
 \selectlanguage{american} % american ngerman
@@ -66,9 +67,12 @@
 %********************************************************************
 % Frontmatter
 %*******************************************************
-\include{front-back-matter/dirty-titlepage}
-\include{front-back-matter/titlepage}
-\include{front-back-matter/titleback}
+{%
+    \setstretch{1}
+    \include{front-back-matter/dirty-titlepage}
+    \include{front-back-matter/titlepage}
+    \include{front-back-matter/titleback}
+}
 \cleardoublepage\include{front-back-matter/dedication}
 %\cleardoublepage\include{front-back-matter/foreword}
 \cleardoublepage\include{front-back-matter/abstract}
@@ -82,12 +86,11 @@
 \pagestyle{scrheadings}
 \pagenumbering{arabic}
 %\setcounter{page}{90}
-% use \cleardoublepage here to avoid problems with pdfbookmark
 \cleardoublepage
 \include{chapters/intro}
 \cleardoublepage
 \include{chapters/related}
-%\addtocontents{toc}{\protect\clearpage} % <--- just debug stuff, ignore
+\cleardoublepage
 \include{chapters/system}
 %\include{multiToC} % <--- just debug stuff, ignore for your documents
 % ********************************************************************

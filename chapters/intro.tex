@@ -1,3 +1,85 @@
 \chapter{Introduction}
-\lipsum
+\label{chap:intro}
+
+% introduce software testing
+\ac{ST} is a broad discipline that aims at assessing the quality of a
+software product. Engineers are always interested in gauging the robustness,
+reliability and security of their products and \ac{ST} provides them with tools
+and techniques to achieve that. Its ultimate goal is to discover as much defects,
+failures and vulnerabilities as possible, usually within a limited budget (of
+time or computing resources).
+
+% black vs. white box approach
+Generally \ac{ST} consists in feeding some input to the \ac{SUT} and monitoring
+its behaviour to detect any failure. \ac{ST} can be categorized by the knowledge
+required by the tester about the \ac{SUT}. In the white-box approach, the inner
+workings of the \ac{SUT} are tested, using knowledge about internal data
+structures and control-flow, possibly with the help of source code. In the
+black-box approach only the front-facing functionalities are tested as no
+internal knowledge of the \ac{SUT} is required. It is easy to see how a
+white-box approach has the potential to be more efficient as knowledge about the
+\ac{SUT} can better direct the input generation process. Unfortunately this
+comes at the cost of analyzing the source code, which isn't always available, or
+machine code, which is an hard and computationally intensive task. A black-box
+approach on the other end can be carried on for example by simply throwing
+random inputs at the \ac{SUT}; \emph{fuzzing} is an automated (or
+semi-automated) testing technique consisting in feeding some input to the
+\ac{SUT}, monitoring for exceptions (\ie~crashes, hangs), create a new input and
+reiterate.
+
+% origin of fuzzing & random testing
+The term fuzzing dates back to 1988 from a course project for an Advanced
+Operating Systems class taught at the University of Wisconsin by Barton Miller
+\cite{takanen2008fuzzing}. After noticing how a thunderstorm was able to
+scramble his input through a remote terminal and crash the program on the other
+end, he decided to propose a project to his students to experiment with random
+testing of UNIX utilities. A group of two students succeeded at the given task
+and two years later published their findings~\cite{miller1990empirical}. Random
+testing was already in use since the 1950s, when programmers would use punched
+cards from the trash or decks of random numbers as input to programs
+\cite{weinberg2008}.
+% maybe include why random testing works & infinite monkey theorem?
+
+% fuzzers today & gray-box fuzzing
+Fuzzers today have much evolved and have been used by major companies such as
+Microsoft~\cite{godefroid2008grammar} and
+Google~\cite{google2016fuzz,google2011fuzz,google2016oss,google2017oss}. Fuzzers
+can be categorized along different axes. The way a fuzzer generates its
+\emph{fuzz} (test cases) makes it a generation-based or mutation-based fuzzer;
+if new fuzz is created from scratch it belongs to the former category, if
+instead it is created by changing existing inputs it belongs to the latter. As
+for \ac{ST}, fuzzers can have a different level of knowledge of the \ac{SUT} and
+then can be classified as white-box or black-box approach.  When it comes to
+binaries, a white-box approach usually implies use of heavy program analysis
+(\eg~symbolic execution, taint analysis) or manual specification of a grammar to
+guide input creation; a black-box approach creates a stream of random inputs to
+feed to the \ac{SUT}. A third class has emerged in recent years: gray-box
+fuzzing uses lightweight binary instrumentation to monitor the performance of
+individual test cases (\eg~through code coverage or other metric) in order to
+better guide fuzz creation.
+
+AFL~\cite{afl} is a well known gray-box fuzzer that uses code coverage to know
+which inputs are more interesting and focus mutation on those; it is file-based
+and uses QEMU\footnote{A processor emulator --- \url{https://www.qemu.org/}} for
+binary instrumentation or a compiler extension where source code is available.
+Because of its simplicity in design, speed and flexibility, AFL has been
+extended in numerous
+ways~\cite{bohme2017coverage,bohme2017directed,lemieux2017fairfuzz} or used as a
+component of a larger system
+\cite{stephens2016driller,nichols2017faster,li2017steelix}. Most coverage-based
+gray-box fuzzers work with similar underlying principles that differ in the
+implementation. FairFuzz~\cite{lemieux2017fairfuzz} and AFLFast
+\cite{bohme2017coverage} use frequencies (one on the branch level, another on
+the path level) to guide mutation toward low-frequency entities.
+Honggfuzz~\cite{honggfuzz} keeps a queue of inputs that increase code coverage,
+randomly picks one and mangles it in a random manner; it also features different
+hardware- and software- based feedback sources and because of its efficiency and
+versatility has been used as a fuzzing engine of bigger projects
+\cite{grieco2016quickfuzz}. VUzzer~\cite{rawat2017vuzzer} differs from the other
+fuzzers as its usage of white-box (static analysis and \emph{sparse} taint
+analysis) mixed with gray-box techniques constitute an hybrid model.
+
+% TODO: briefly present problems in CGF and argue that there's no best fuzzer
+
+% TODO: brief of this work
 

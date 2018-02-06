@@ -2,10 +2,9 @@
 \label{chap:related}
 
 In this chapter we are going to present the mechanics of some kind of fuzzers
-and some specific implementations of coverage-based gray-box fuzzers. Then we
-move on presenting efforts of researchers trying to combine different fuzzing
-engines or testing techniques with the aim of improving performance or
-efficiency.
+and some specific implementations of \acfp{CGF}. Then we move on presenting
+efforts of researchers trying to combine different fuzzing engines or testing
+techniques with the aim of improving performance or efficiency.
 
 \section{Black-box Mutational Fuzzing}
 \label{sec:bbfuzz}
@@ -86,12 +85,67 @@ total of 26 \ac{MAB} algorithms.
 
 \section{Coverage-based Gray-box Fuzzing}
 \label{sec:cgf}
-% TODO: how does a CGF work?
 
-% TODO: how specific fuzzers work? each a paragraph:
+A \ac{CGF} uses lightweight instrumentation and monitoring of the \ac{SUT} to
+gain coverage information. This information is then exploited to provide a
+solution to the \ac{FCS}
+problem~\cite{afltech,lemieux2017fairfuzz,bohme2017directed,bohme2017coverage}.
+The general approach is described in Algorithm~\ref{algo:cgf}.
+
+\begin{algorithm}
+    \DontPrintSemicolon%
+    \SetKwFunction{SelectNext}{SelectNext}
+    \SetKwFunction{AssignEnergy}{AssignEnergy}
+    \SetKwFunction{MutateInput}{MutateInput}
+    \SetKwFunction{IsInteresting}{IsInteresting}
+    \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+    \Input{Set of seed inputs $S$}
+    \Output{Set of crashing inputs $C$}
+    \BlankLine%
+    $C \leftarrow \emptyset$\;
+    $Q \leftarrow S$\;
+    \If{$Q = \emptyset$}{$Q \leftarrow \{\text{empty file}\}$}
+    \Repeat{timeout reached or abort signal received}{%
+        $t \leftarrow \SelectNext{Q}$\;\label{algo:cgf:sn}
+        $p \leftarrow \AssignEnergy{t}$\;\label{algo:cgf:ae}
+        \For{$i\in\left[0 \dots p\right]$}{%
+            $t^\prime \leftarrow \MutateInput{t}$\;\label{algo:cgf:mi}
+            \uIf{$t^\prime$ crashes}{%
+                $C \leftarrow C \bigcup \left\{t^\prime\right\}$\;
+            }
+            \ElseIf{\IsInteresting{$t^\prime$}\label{algo:cgf:ii}}{%
+                $Q \leftarrow Q \bigcup \left\{t^\prime\right\}$\;
+            }
+        }
+    }
+    \caption{Coverage-based Gray-box Fuzzing}
+\label{algo:cgf}
+\end{algorithm}
+
+The first difference from black-box mutational fuzzing is that a \ac{CGF} does
+not need a corpus of seed files to work properly (although it would be more
+efficient). \citeauthor{afl}, the author of AFL, was able to generate valid JPEG
+images starting from an empty file~\cite{afljpeg}. The functions
+\texttt{SelectNext} and \texttt{MutateInput} (at lines~\ref{algo:cgf:sn}
+and~\ref{algo:cgf:mi} respectively) are analogues of \texttt{SelectSeed} and
+\texttt{MutateSeed} of Algorithm~\ref{algo:bbfuzzing}. The function
+\texttt{AssignEnergy} at line~\ref{algo:cgf:ae} decides how much effort should
+be put in fuzzing the selected test-case (\eg~how many mutated inputs should be
+created from it). Another difference from black-box mutational fuzzers is the
+\texttt{IsInteresting} function at line~\ref{algo:cgf:ii}, responsible to
+determine whether the mutated input is deemed \emph{interesting} and worth
+fuzzing; this allows for \acp{CGF} to build a corpus of test-cases that could
+even be reused with other tools or to fuzz another software that accepts the
+same file format. For \acp{CGF}, interesting, loosely means that increases code
+coverage and by keeping a queue of test-cases with ever-increasing coverage
+helps fuzzers of this kind reaching deeper portions of the \ac{SUT} compared to
+black-box mutational fuzzers.
+
 \paragraph{American Fuzzy Lop}
 % - AFL-likes: AFL, AFLFast, FairFuzz
+
 \paragraph{Honggfuzz}
+
 \paragraph{VUzzer}
 
 \section{Cooperative Fuzzing}

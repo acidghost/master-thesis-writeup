@@ -62,13 +62,13 @@ better guide fuzz creation.
 to know which inputs are more interesting and focus mutation on those; it is
 file-based and uses QEMU\footnote{A processor emulator ---
 \url{https://www.qemu.org/}} for binary instrumentation or a compiler extension
-where source code is available.  Because of its simplicity in design, speed and
+where source code is available. Because of its simplicity in design, speed and
 flexibility, AFL has been extended in numerous
 ways~\cite{bohme2017coverage,bohme2017directed,lemieux2017fairfuzz} or used as a
 component of a larger system
-\cite{stephens2016driller,nichols2017faster,li2017steelix}. Most coverage-based
-gray-box fuzzers work with similar underlying principles that differ in the
-implementation. \textbf{FairFuzz}~\cite{lemieux2017fairfuzz} and \textbf{AFLFast}
+\cite{stephens2016driller,nichols2017faster,li2017steelix}. Most \acp{CGF} work
+with similar underlying principles that differ in the implementation.
+\textbf{FairFuzz}~\cite{lemieux2017fairfuzz} and \textbf{AFLFast}
 \cite{bohme2017coverage} use frequencies (one on the branch level, another on
 the path level) to guide mutation toward low-frequency entities.
 \textbf{Honggfuzz}~\cite{honggfuzz} keeps a queue of inputs that increase code

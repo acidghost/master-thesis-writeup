@@ -289,3 +289,15 @@
 % https://bitbucket.org/amiede/classicthesis/issues/45/problema-testatine-su-classicthesis-style
 % ********************************************************************
 % ****************************************************************************************************
+
+% adjust colour of acronyms
+\makeatletter
+\AtBeginDocument{%
+    \renewcommand*{\AC@hyperlink}[2]{%
+        \begingroup
+        \hypersetup{hidelinks}%
+        \hyperlink{#1}{#2}%
+        \endgroup
+    }%
+}
+\makeatother

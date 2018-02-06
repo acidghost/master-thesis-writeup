@@ -58,26 +58,26 @@ fuzzing uses lightweight binary instrumentation to monitor the performance of
 individual test cases (\eg~through code coverage or other metric) in order to
 better guide fuzz creation.
 
-AFL~\cite{afl} is a well known gray-box fuzzer that uses code coverage to know
-which inputs are more interesting and focus mutation on those; it is file-based
-and uses QEMU\footnote{A processor emulator --- \url{https://www.qemu.org/}} for
-binary instrumentation or a compiler extension where source code is available.
-Because of its simplicity in design, speed and flexibility, AFL has been
-extended in numerous
+\textbf{AFL}~\cite{afl} is a well known gray-box fuzzer that uses code coverage
+to know which inputs are more interesting and focus mutation on those; it is
+file-based and uses QEMU\footnote{A processor emulator ---
+\url{https://www.qemu.org/}} for binary instrumentation or a compiler extension
+where source code is available.  Because of its simplicity in design, speed and
+flexibility, AFL has been extended in numerous
 ways~\cite{bohme2017coverage,bohme2017directed,lemieux2017fairfuzz} or used as a
 component of a larger system
 \cite{stephens2016driller,nichols2017faster,li2017steelix}. Most coverage-based
 gray-box fuzzers work with similar underlying principles that differ in the
-implementation. FairFuzz~\cite{lemieux2017fairfuzz} and AFLFast
+implementation. \textbf{FairFuzz}~\cite{lemieux2017fairfuzz} and \textbf{AFLFast}
 \cite{bohme2017coverage} use frequencies (one on the branch level, another on
 the path level) to guide mutation toward low-frequency entities.
-Honggfuzz~\cite{honggfuzz} keeps a queue of inputs that increase code coverage,
-randomly picks one and mangles it in a random manner; it also features different
-hardware- and software- based feedback sources and because of its efficiency and
-versatility has been used as a fuzzing engine of bigger projects
-\cite{grieco2016quickfuzz}. VUzzer~\cite{rawat2017vuzzer} differs from the other
-fuzzers as its usage of white-box (static analysis and \emph{sparse} taint
-analysis) mixed with gray-box techniques constitute an hybrid model.
+\textbf{Honggfuzz}~\cite{honggfuzz} keeps a queue of inputs that increase code
+coverage, randomly picks one and mangles it in a random manner; it also features
+different hardware- and software- based feedback sources and because of its
+efficiency and versatility has been used as a fuzzing engine of bigger projects
+\cite{grieco2016quickfuzz}. \textbf{VUzzer}~\cite{rawat2017vuzzer} differs from
+the other fuzzers as its usage of white-box (static analysis and \emph{sparse}
+taint analysis) mixed with gray-box techniques constitute an hybrid model.
 
 % TODO: briefly present problems in CGF and argue that there's no best fuzzer
 

@@ -60,10 +60,9 @@ better guide fuzz creation.
 
 \textbf{AFL}~\cite{afl} is a well known gray-box fuzzer that uses code coverage
 to know which inputs are more interesting and focus mutation on those; it is
-file-based and uses QEMU\footnote{A processor emulator ---
-\url{https://www.qemu.org/}} for binary instrumentation or a compiler extension
-where source code is available. Because of its simplicity in design, speed and
-flexibility, AFL has been extended in numerous
+file-based and uses QEMU~\cite{bellard2005qemu} for binary instrumentation or a
+compiler extension where source code is available. Because of its simplicity in
+design, speed and flexibility, AFL has been extended in numerous
 ways~\cite{bohme2017coverage,bohme2017directed,lemieux2017fairfuzz} or used as a
 component of a larger system
 \cite{stephens2016driller,nichols2017faster,li2017steelix}. Most \acp{CGF} work

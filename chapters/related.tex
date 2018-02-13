@@ -244,6 +244,20 @@ is then used to steer mutation in the havoc stage so that rare branches are
 still covered by the mutated input.
 
 \subsection{Honggfuzz}
+Honggfuzz~\cite{honggfuzz} is another general-purpose \ac{CGF} which simplifies
+the semantics of Algorithm~\ref{algo:cgf} but offers state-of-the-art
+implementation that grants huge throughput (generates lots of fuzz, especially
+in persistent mode). The most peculiar feature of Honggfuzz is allowing the user
+to gather feedback from the \ac{SUT} via software or hardware sources; it
+supports CPU branch and instruction counting by means of Intel \ac{BTS} or Intel
+\ac{PT} on supported CPUs. Honggfuzz selects uniformly at random one input to
+mutate from the queue and assigns constant energy of $1$ to it. The
+\texttt{MutateInput} function picks uniformly at random one of the implemented
+mangling functions and applies it to the selected input. Honggfuzz considers a
+new input interesting if the used coverage metric increases; if using Intel
+\ac{BTS} for example, Honggfuzz maintains a bitmap containing branch coverage
+information (similar to the one used by AFL) and any fuzz exercising a
+previously unseen branch is considered interesting and added to the queue.
 
 \subsection{VUzzer}
 

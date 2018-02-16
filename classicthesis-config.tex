@@ -100,6 +100,8 @@
 % ********************************************************************
 % General useful packages
 % ********************************************************************
+\PassOptionsToPackage{inline}{enumitem}
+  \usepackage{enumitem}
 \PassOptionsToPackage{linesnumbered,commentsnumbered,ruled}{algorithm2e}
   \usepackage{algorithm2e}
 \usepackage{setspace}
@@ -303,3 +305,8 @@
     }%
 }
 \makeatother
+
+% inline enumeration lists
+\newlist{enumeratein}{enumerate*}{1}
+\setlist[enumeratein]{label=(\roman*)}
+

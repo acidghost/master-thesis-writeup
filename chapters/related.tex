@@ -260,6 +260,80 @@ information (similar to the one used by AFL) and any fuzz exercising a
 previously unseen branch is considered interesting and added to the queue.
 
 \subsection{VUzzer}
+VUzzer~\cite{rawat2017vuzzer} is an \emph{evolutionary} gray-box fuzzer that
+uses lightweight static and dynamic analysis to gain knowledge about control-
+and data-flow features of the \ac{SUT}, which is then exploited to deploy an
+\emph{application-aware} mutation strategy. VUzzer follows the same
+population-based model of \acfp{EA} for which a generic representation is given
+in Algorithm~\ref{algo:ea}.
+
+\begin{algorithm}
+    \DontPrintSemicolon%
+    \SetKwFunction{Initialize}{Initialize}
+    \SetKwFunction{Evaluate}{Evaluate}
+    \SetKwFunction{ParSelect}{SelectParents}
+    \SetKwFunction{Recombine}{Recombine}
+    \SetKwFunction{Mutate}{Mutate}
+    \SetKwFunction{SurSelect}{SelectSurvivors}
+    \SetKwData{Pop}{Population}
+    \SetKwData{Parents}{Parents}
+    \SetKwFunction{Off}{Offspring}
+
+    $\Pop \leftarrow \Initialize$\;
+    $E \leftarrow \Evaluate{\Pop}$\;
+    \Repeat{Stop criteria are met}{%
+        $\Parents \leftarrow \ParSelect{\Pop, E}$\;
+        $\Off \leftarrow \Recombine{\Parents}$\;
+        $M \leftarrow \Mutate{\Off}$\;
+        $E \leftarrow \Evaluate{M}$\;
+        $\Pop \leftarrow \SurSelect{M, E}$\;
+    }
+    \caption{General scheme for an \ac{EA}}
+\label{algo:ea}
+\end{algorithm}
+
+After the population is initialized it is evaluated using a \emph{fitness
+function}. The population then undergoes the iterative evolutionary process
+composed of three phases:
+
+\begin{itemize}
+    \item \textbf{parent selection}: a set of parents is selected from the
+        population pool using the chosen strategy and the fitness scores
+        (typically the strategy is probabilistic prioritizing individuals with
+        better fitness score);
+    \item \textbf{variation operators}: there are two kinds of variation
+        operators typically used in \acp{EA}: recombination operators take two
+        or more parents and combines them to produce an offspring; mutation
+        operators instead are unary;
+    \item \textbf{survivor selection}: the offspring is evaluated and selection
+        techniques similar to the ones used in parent selection are applied to
+        select the best individuals from the offspring to generate the
+        population pool for the next iteration.
+\end{itemize}
+
+VUzzer uses static and dynamic analysis on the \ac{SUT}'s binary to deploy
+enhanced application aware mutation operators and derive a fitness function that
+uses control-flow features of the binary alongside code coverage. Before
+starting the main fuzzing loop, VUzzer uses an intraprocedural static analyzer
+which objective is two-fold
+\begin{enumeratein}
+    \item enumerate all immediate values from \texttt{cmp} instructions
+    \item for each function, compute the \ac{CFG} and model it as a Markov Chain
+        such that to each basic block is assigned a \emph{weight} that is the
+        inverse of the probability of reaching it.
+\end{enumeratein}
+The set of immediate values is what the application might expect as input at
+certain offsets and VUzzer uses these values to mutate the offspring in the main
+fuzzing loop. The set of weights is instead used alongside a set of
+\emph{error-handling basic blocks} to compute the fitness score. In contrast to
+other \acp{CGF} like AFL or Honggfuzz, VUzzer requires a minimal set of valid
+inputs to initialize the set of error-handling basic blocks, which is then
+incrementally developed during fuzzing. After collecting the set of basic blocks
+exercised by these initial inputs, VUzzer proceeds at throwing totally random
+inputs at the \ac{SUT} and marks basic blocks that where not executed by any of
+the valid inputs as error-handling basic blocks. This knowledge is then used to
+penalize individuals that execute such basic blocks, which is done by properly
+setting the weight for the corresponding basic block.
 
 \section{Cooperative Fuzzing}
 \label{sec:coop}

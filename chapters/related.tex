@@ -333,7 +333,33 @@ exercised by these initial inputs, VUzzer proceeds at throwing totally random
 inputs at the \ac{SUT} and marks basic blocks that where not executed by any of
 the valid inputs as error-handling basic blocks. This knowledge is then used to
 penalize individuals that execute such basic blocks, which is done by properly
-setting the weight for the corresponding basic block.
+setting the weight for the corresponding basic block. VUzzer uses Intel's Pin
+\cite{luk2005pin} to dynamically instrument the binary and gather the trace of
+basic blocks exercised by the \ac{SUT} under a certain input.
+
+Dynamic binary instrumentation is not the only dynamic technique used by VUzzer.
+\ac{DTA} allows to monitor a \emph{tainted} input within the \ac{SUT} and gather
+information about code that operates on it. VUzzer uses \ac{DTA} to monitor
+\texttt{cmp} and \texttt{lea} instructions that are tainted by the input: from
+the former it extracts the set of offsets in the input that taint the operands
+(with byte-level granularity); for the latter it tracks the index register and
+extracts all offsets that taint those indexes. As \ac{DTA} is not a lightweight
+technique, VUzzer uses it only at initialization on the seeds corpus and on
+inputs that exercise previously unseen basic blocks during the main fuzzing
+loop. \ac{DTA} is at the core of VUzzer's \emph{magic byte detection} algorithm:
+at initialization it exploits the available valid inputs to extract bytes within
+the input placed at a certain (unique) offset in all valid inputs and later
+builds on this knowledge.
+
+Ultimately, the knowledge acquired through static and dynamic analysis is
+exploited by recombination and mutation operators. VUzzer always applies a
+\emph{single-point crossover} operator that, given two inputs, breaks them at a
+randomly picked cut point and then recombines parts of different parents to
+produce two children. Mutation operators follows with a fixed probability,
+producing a new child from a single parent. Those operators are application
+aware, making use of results from static (\eg~immediate values of \texttt{cmp}
+instructions) and dynamic (\eg~magic bytes, offsets that taint the index operand
+of \texttt{lea} instructions) analyses.
 
 \section{Cooperative Fuzzing}
 \label{sec:coop}

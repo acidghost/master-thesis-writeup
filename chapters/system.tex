@@ -131,6 +131,11 @@ communicates directly only with the central decisional unit by means of the
 common interface described in Section~\ref{sec:system-design-api}, without
 having any knowledge about other running fuzzers.
 
+\subsection{Cooperative Fuzzing Strategies}
+% describe strategies for cooperation and metrics
+With the architectural design in place, we can proceed to describe a more
+detailed view on the cooperative fuzzing framework operation.
+
 \begin{algorithm}
     \DontPrintSemicolon
     \SetKwFunction{Score}{Score}
@@ -172,18 +177,33 @@ having any knowledge about other running fuzzers.
 \label{algo:system-strategy}
 \end{algorithm}
 
-Algorithm~\ref{algo:system-strategy} gives the generic template of a strategy.
-There are three user-defined functions that describe which test-cases should be
-forwarded to which fuzzer.  When a fuzzer stores a new interesting test-case,
-the extract primitive gets executed and the cooperative framework will pick it
-up. Then, for each other running fuzzer, the \texttt{Score} function will assign
-a numeric value representative of some measurement on the test-case in relation
-to the fuzzer's state. These numeric values are then used in two \emph{winner
+Algorithm~\ref{algo:system-strategy} gives the generic template of a cooperative
+fuzzing strategy. There are three user-defined functions that describe which
+test-cases should be forwarded to which fuzzer (in other words they define the
+strategy). When a fuzzer stores a new interesting test-case, the extract
+primitive gets executed and the cooperative framework will pick it up. Then, for
+each other running fuzzer, the \texttt{Score} function will assign a numeric
+value representative of some measurement on the test-case in relation to the
+fuzzer's state. These numeric values are then used in two \emph{winner
 selection} procedures: \texttt{Winning} selects a set of fuzzers that are not
 under congestion control into which the newly extracted test-case is going to be
 injected; \texttt{WinningCongestion} instead, for each fuzzer under congestion
 control which is ready to receive new inputs, selects a set of test-cases within
 the window set $W_f$ of inputs collected since the previous round.
+
+% describe requirements for a valid metric
+The \texttt{Score} function of Algorithm~\ref{algo:system-strategy} is a core
+component around which the design process of a cooperative strategy rotates.
+When devising a new strategy, one would start by defining a scoring function as
+the winner selection procedures will use its values to make the final decision.
+The scoring function is fundamental from another point of view: it has been
+designed to be analogous to the fitness function found in \acp{EA}, where in our
+case \emph{fitness} represents how much would a fuzzer benefit from receiving a
+given test-case.
+
+% TODO: example of metrics
+
+% TODO: describe possible winning conditions
 
 \section{System Implementation}
 % TODO: describe uberfuzz implementation

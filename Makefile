@@ -1,15 +1,19 @@
-MAIN := thesis
-VIEWER := mupdf
+main := thesis
+viewer := mupdf
 
-.PHONY: FORCE_MAKE
-all: $(MAIN).pdf
+.PHONY: FORCE_MAKE figures
+all: $(main).pdf
 
-%.pdf: %.tex FORCE_MAKE
+figures:
+	$(MAKE) -C figures
+
+%.pdf: %.tex figures FORCE_MAKE
 	latexmk -pdf $<
 
-view: $(MAIN).pdf
-	@$(VIEWER) $(MAIN).pdf &
+view: $(main).pdf
+	@$(viewer) $(main).pdf &
 
 clean:
+	@$(MAKE) -C figures clean
 	@latexmk -C -silent
-	@rm -rf $(MAIN).bbl $(MAIN)-blx.bib $(MAIN).lol $(MAIN).run.xml
+	@rm -rf $(main).bbl $(main)-blx.bib $(main).lol $(main).loa $(main).run.xml

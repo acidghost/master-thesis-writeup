@@ -1,3 +1,190 @@
-\chapter{Description of Uberfuzz}
-\lipsum
+\chapter{Cooperative Fuzzing Framework}
+In this chapter we describe the design of our cooperative fuzzing framework and
+details about its implementation. We are going to show how instances of
+different fuzzers can communicate with each other in order to share knowledge
+and cooperate to improve the overall fuzzing efficacy (in terms of coverage and
+number of unique bugs found).
+
+\section{System Design}
+% describe design goals and how it works
+The Cooperative Fuzzing Framework is designed to run fuzzers of different
+natures in parallel, harvest knowledge from each instance and intelligently
+broadcast it to selected other instances. This framework allows construction of
+algorithms that orchestrate the information flow among the fuzzing instances. We
+design two primitives that allow a fuzzer to share knowledge with other fuzzers
+and devise a distributed architecture that employs these primitives to manage
+the information flow among fuzzer instances in a smart manner. The architecture
+is modular so that inner components can be replaced as needed, moreover it can
+be deployed across multiple machines.
+
+\subsection{Common Fuzzer Interface}
+\label{sec:system-design-api}
+% need for API / common layer for fuzzers
+We require fuzzers to implement two primitives that allow our framework to
+interface with them. Having a common interface enables the framework to operate
+with different fuzzers, as long as they adhere to the \ac{API}.
+
+All fuzzers work with test-cases and \acp{CGF} keep a queue of test-cases adding
+elements to it if they (loosely speaking) increase coverage. Whenever a fuzzer
+finds a test-case that expresses some interesting property, stores it into the
+internal queue. This property is deemed interesting in a subjective manner,
+based on how the fuzzer operates and the knowledge it has already acquired about
+the \ac{SUT}. It follows that we can track the progress of a fuzzer by
+intercepting and analysing interesting test-cases; in other words we can
+\textbf{extract} knowledge from the fuzzer. The first primitive that we require
+a fuzzer to expose to the \ac{API} enables exactly this: we require a fuzzer to
+store interesting test-cases to the file system. This choice was made since most
+\acp{CGF} already fulfill this requirement; this is because the resulting corpus
+can be reused for future fuzzing campaigns against the same software or another
+that accepts the same input format without starting from scratch.
+
+The second primitive we require a fuzzer to implement, allows our cooperative
+framework to \textbf{inject} test-cases into it. This mechanic is inspired by
+that of pollination, where pollen carrying the genetic material of one plant is
+transferred to another plant to be later fertilized. The injection primitive in
+our framework allows one test-case, carrying some knowledge about the fuzzer
+instance it comes from, to be merged with the knowledge of the receiving fuzzer
+instance. As with the extraction primitive, injection operates through the file
+system: the fuzzer needs to periodically check a predetermined folder and import
+new test-cases into memory.
+
+Different fuzzers may work at different paces: traditional \acp{CGF} \emph{tick}
+after each new test-case is generated; fuzzers that follow the evolutionary
+approach advance a time-step when a new generation gets synthesized (\eg~after
+several test-cases are generated). In between successive time-steps, a fuzzer is
+not able to accept and process external test-cases. Thus there is a need for a
+fuzzer to communicate through the cooperative framework when it is able to
+accept new input (\eg~when the inject primitive can be called on this fuzzer
+instance). We assume that a fuzzer is always able to accept new test-cases,
+otherwise it needs to implement a third interface endpoint: when the fuzzer can
+accept new input, it will broadcast this information to all other connected
+fuzzers. This information allows for a form of \textbf{congestion control}
+within our cooperative framework and is entirely delegated to the fuzzer in
+order to abstract over its implementation details.
+
+With these two primitives in place (not counting the latest introduced, which is
+optional), our cooperative framework is capable of interacting with the running
+fuzzer instances by directly accessing an uniform communication layer that uses
+test-cases as an atomic piece of information.
+Table~\ref{tab:system-primitives} summarizes the cooperative fuzzing framework
+interface with fuzzer instances.
+
+\begin{table}[h]
+    \centering
+    \begin{tabularx}{\textwidth}{X >{\raggedright}p{.3\textwidth} X p{.15\textwidth}}
+        \textbf{Primitive} & \textbf{Description} & \textbf{Initiated by} & \textbf{Required} \\
+        \bottomrule
+        Extract & Extracts interesting test-cases from fuzzer & Fuzzer & Yes \\
+        Inject & Injects test-cases into fuzzer & Framework & Yes \\
+        Congestion Control & Signals to the framework when the fuzzer is able to
+            consume injected test-cases & Fuzzer & No
+    \end{tabularx}
+\caption{Cooperative Fuzzing Framework interface with fuzzers}
+\label{tab:system-primitives}
+\end{table}
+
+\subsection{Central Decisional Unit}
+% need for a central decisional unit (mention strategies)
+With a common interface with fuzzers in place, the next component we need to
+devise is a decisional unit responsible of controlling the information flow
+among fuzzer instances. This component acts as an intermediary or a filter for
+the interface between two fuzzers, applying a pre-determined strategy that
+decides which test-cases extracted from a fuzzer should be injected into which
+fuzzer (if any). As some fuzzers need some form of congestion control, the
+decisional unit is also responsible of deferring the call to the injection
+primitive. As an example, when an evolutionary \ac{CGF} is in the set of fuzzer
+instances, one strategy might choose to keep track of the best (according to
+some metric) test-case extracted from the other running fuzzers, to inject it
+only when the evolutionary fuzzer is able to consume injected test-cases;
+another strategy might choose to do the same only for a subset of running
+fuzzers and so on. We note that for strategies such as those briefly described
+above, we need the decisional unit to be centralized: communication does not
+happen between fuzzer instances directly, but everything is coordinated by a
+\textbf{central decisional unit} that models communication in accordance to an
+user-defined strategy.
+
+\begin{figure}
+    \centering
+    \subfloat[]
+        [Physical view of the framework communication model. Running fuzzers
+        communicate only with the central decisional unit which selectively
+        broadcasts messages to other fuzzers]{%
+            \label{fig:system-comm-phy}
+            \includegraphics[width=.6\textwidth]{figures/dia/system_design_physical.png}}%
+    \qquad
+    \subfloat[]
+        [Logical view of the framework communication model. Information can flow
+        across all running fuzzers]{%
+            \label{fig:system-comm-log}
+            \includegraphics[width=.6\textwidth]{figures/dia/system_design_logical.png}}
+\caption{Cooperative Fuzzing Framework communication model}
+\label{fig:system-comm}
+\end{figure}
+
+Figure~\ref{fig:system-comm} gives a graphical representation of the
+communication model in the cooperative fuzzing framework. More specifically,
+Figure~\ref{fig:system-comm-phy} depicts the \emph{physical} links between
+components of the framework; Figure~\ref{fig:system-comm-log} instead shows how,
+on the \emph{logical} level, each running fuzzer can directly exchange
+test-cases with other running fuzzers. In this configuration each running fuzzer
+communicates directly only with the central decisional unit by means of the
+common interface described in Section~\ref{sec:system-design-api}, without
+having any knowledge about other running fuzzers.
+
+\begin{algorithm}
+    \DontPrintSemicolon
+    \SetKwFunction{Score}{Score}
+    \SetKwFunction{Winning}{Winning}
+    \SetKwFunction{Inject}{Inject}
+    \SetKwFunction{WinningC}{WinningCongestion}
+    \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+    \Input{Set of running fuzzers $F$. Set of fuzzers that need congestion control $F_c$}
+    \BlankLine
+    \ForEach{$f \in F_c$}{%
+        $W_f \leftarrow \emptyset$\;
+    }
+    \While{all fuzzers are running}{%
+        \If{new test-case $t$ from a fuzzer $f_t$}{%
+            $S \leftarrow \emptyset$\;
+            \ForEach{$f \in F \setminus \{f_t\}$}{%
+                $s \leftarrow \Score{f, t}$\;
+                \uIf{$f \in F_c$}{%
+                    $W_f \leftarrow W_f \cup \{(t, s)\}$\;
+                }
+                \Else{%
+                    $S \leftarrow S \cup \{(f, s)\}$\;
+                }
+            }
+            \ForEach{$f \in \Winning{S}$}{%
+                \Inject{f, t}\;
+            }
+        }
+        \ForEach{$f \in F_c$}{%
+            \If{$f$ is ready to receive inputs}{%
+                \ForEach{$t \in \WinningC{$W_f$}$}{%
+                    \Inject{f, t}\;
+                }
+                $W_f \leftarrow \emptyset$\;
+            }
+        }
+    }
+\caption{Generic strategy for the Cooperative Fuzzing Framework}
+\label{algo:system-strategy}
+\end{algorithm}
+
+Algorithm~\ref{algo:system-strategy} gives the generic template of a strategy.
+There are three user-defined functions that describe which test-cases should be
+forwarded to which fuzzer.  When a fuzzer stores a new interesting test-case,
+the extract primitive gets executed and the cooperative framework will pick it
+up. Then, for each other running fuzzer, the \texttt{Score} function will assign
+a numeric value representative of some measurement on the test-case in relation
+to the fuzzer's state. These numeric values are then used in two \emph{winner
+selection} procedures: \texttt{Winning} selects a set of fuzzers that are not
+under congestion control into which the newly extracted test-case is going to be
+injected; \texttt{WinningCongestion} instead, for each fuzzer under congestion
+control which is ready to receive new inputs, selects a set of test-cases within
+the window set $W_f$ of inputs collected since the previous round.
+
+\section{System Implementation}
+% TODO: describe uberfuzz implementation
 

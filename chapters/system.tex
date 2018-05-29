@@ -1,13 +1,13 @@
 \chapter{Cooperative Fuzzing Framework}
-In this chapter we describe the design of our cooperative fuzzing framework and
-details about its implementation. We are going to show how instances of
-different fuzzers can communicate with each other in order to share knowledge
-and cooperate to improve the overall fuzzing efficacy (in terms of coverage and
-number of unique bugs found).
+In this chapter we describe the design of our \acf{CFF} and details about its
+implementation. We are going to show how instances of different fuzzers can
+communicate with each other in order to share knowledge and cooperate to improve
+the overall fuzzing efficacy (in terms of coverage and number of unique bugs
+found).
 
 \section{System Design}
 % describe design goals and how it works
-The Cooperative Fuzzing Framework is designed to run fuzzers of different
+The \ac{CFF} is designed to run fuzzers of different
 natures in parallel, harvest knowledge from each instance and intelligently
 broadcast it to selected other instances. This framework allows construction of
 algorithms that orchestrate the information flow among the fuzzing instances. We
@@ -65,9 +65,8 @@ order to abstract over its implementation details.
 With these two primitives in place (not counting the latest introduced, which is
 optional), our cooperative framework is capable of interacting with the running
 fuzzer instances by directly accessing an uniform communication layer that uses
-test-cases as an atomic piece of information.
-Table~\ref{tab:system-primitives} summarizes the cooperative fuzzing framework
-interface with fuzzer instances.
+test-cases as an atomic piece of information. Table~\ref{tab:system-primitives}
+summarizes the \ac{CFF} interface with fuzzer instances.
 
 \begin{table}[h]
     \centering
@@ -79,7 +78,7 @@ interface with fuzzer instances.
         Congestion Control & Signals to the framework when the fuzzer is able to
             consume injected test-cases & Fuzzer & No
     \end{tabularx}
-\caption{Cooperative Fuzzing Framework interface with fuzzers}
+\caption{\acl{CFF} interface with fuzzers}
 \label{tab:system-primitives}
 \end{table}
 
@@ -117,12 +116,12 @@ user-defined strategy.
         across all running fuzzers]{%
             \label{fig:system-comm-log}
             \includegraphics[width=.6\textwidth]{figures/dia/system_design_logical.png}}
-\caption{Cooperative Fuzzing Framework communication model}
+\caption{\acl{CFF} communication model}
 \label{fig:system-comm}
 \end{figure}
 
 Figure~\ref{fig:system-comm} gives a graphical representation of the
-communication model in the cooperative fuzzing framework. More specifically,
+communication model in the \ac{CFF}. More specifically,
 Figure~\ref{fig:system-comm-phy} depicts the \emph{physical} links between
 components of the framework; Figure~\ref{fig:system-comm-log} instead shows how,
 on the \emph{logical} level, each running fuzzer can directly exchange
@@ -134,7 +133,7 @@ having any knowledge about other running fuzzers.
 \subsection{Cooperative Fuzzing Strategies}
 % describe strategies for cooperation and metrics
 With the architectural design in place, we can proceed to describe a more
-detailed view on the cooperative fuzzing framework operation.
+detailed view on the \ac{CFF} operation.
 
 \begin{algorithm}
     \DontPrintSemicolon
@@ -173,7 +172,7 @@ detailed view on the cooperative fuzzing framework operation.
             }
         }
     }
-\caption{Generic strategy for the Cooperative Fuzzing Framework}
+\caption{Generic strategy for the \acl{CFF}}
 \label{algo:system-strategy}
 \end{algorithm}
 
@@ -201,7 +200,19 @@ designed to be analogous to the fitness function found in \acp{EA}, where in our
 case \emph{fitness} represents how much would a fuzzer benefit from receiving a
 given test-case.
 
-% TODO: example of metrics
+% examples of metric
+As for \acp{CGF}, the \ac{CFF} uses code coverage as a basis for the scoring
+function. A strategy might choose to keep track of all basic blocks discovered
+by each running fuzzer (this is possible because \emph{interesting} test-cases
+often execute previously unseen basic blocks); the scoring function can than
+return a numeric value representing a specific property of the newly extracted
+test-case in relation to the fuzzer's current knowledge (the set of discovered
+basic blocks). Behind the intuition that seeding a fuzzer with a test-case that
+exhibits new basic blocks might help the fuzzer discovering even more new basic
+blocks, we might construct a strategy to broadcast test-cases to those fuzzers
+for which there is at least one undiscovered basic block. In this context, we
+can set the scoring function to return the number of basic blocks new to the
+fuzzer and select as winners fuzzers with a positive score. % TODO Jaccard
 
 % TODO: describe possible winning conditions
 

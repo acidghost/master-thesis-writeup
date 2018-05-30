@@ -1,7 +1,11 @@
 set spell
-setlocal spelllang=en
-setlocal spellfile=~/.vim/spell/en.utf-8.add
-setlocal spellfile+=./jargon.utf-8.add
+au BufEnter *.tex call SetForTex()
+
+function SetForTex()
+  setlocal spelllang=en
+  setlocal spellfile=~/.vim/spell/en.utf-8.add
+  setlocal spellfile+=./jargon.utf-8.add
+endfunction
 
 colorscheme carvedwood
 " hi Normal cterm=none ctermbg=15 ctermfg=0

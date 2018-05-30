@@ -5,6 +5,9 @@ function SetForTex()
   setlocal spelllang=en
   setlocal spellfile=~/.vim/spell/en.utf-8.add
   setlocal spellfile+=./jargon.utf-8.add
+
+  syn region texRefZone   matchgroup=texStatement start="\\nllabel{"    end="}\|%stopzone\>"  contains=@texRefGroup
+  syn match  texRefZone   '\\citeauthor' nextgroup=texRefOption,texCite
 endfunction
 
 colorscheme carvedwood

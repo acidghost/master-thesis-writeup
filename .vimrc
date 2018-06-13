@@ -8,6 +8,7 @@ function SetForTex()
 
   syn region texRefZone   matchgroup=texStatement start="\\nllabel{"    end="}\|%stopzone\>"  contains=@texRefGroup
   syn match  texRefZone   '\\citeauthor' nextgroup=texRefOption,texCite
+  syn region texZone   start="\\begin{lstlisting}"   end="\\end{lstlisting}\|%stopzone\>"  contains=@NoSpell
 endfunction
 
 colorscheme carvedwood

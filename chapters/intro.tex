@@ -1,6 +1,190 @@
 \chapter{Introduction}
 \label{chap:intro}
 
+% introduce software quality
+Software products are becoming essential in our daily lives, from managing the
+most simple household appliances to sensitive applications such as military,
+medical and transportation. Producing high-quality software becomes more and
+more of a necessity and software developers need to aim at it.
+\citeauthor{crosby1979art}~\cite{crosby1979art} defines quality as
+\emph{conformance to requirements}. Requirements have to be clearly stated to
+avoid misunderstandings and the development process is constantly monitored to
+check conformance of the product to those requirements. As an example, one
+requirement for a web server may be that it must be able to serve at least a
+thousand concurrent requests within a set amount of time. If the web server
+fails to do so, the product does not meet its requirements and should be
+rejected because of poor quality. Notice that requirements may belong to
+different \emph{quality parameters} such as functionality, usability,
+reliability, performance, security and so on.
+
+\section{Quality Assurance and Control}
+% define quality assurance and control
+Quality assurance aims at improving the quality of the product by establishing
+practices within the organization and training the team; it comprises procedures
+and activities assuring that the requirements will be fulfilled. Quality control
+on the other end, refers to activities that enable verification of a product,
+gathering of statistics and metrics, discovery of defects and ensures that those
+are fixed before release or passing the intermediate product to the following
+stage in the development process.
+
+% define fault, failure and error
+A \emph{failure} manifests itself whenever the system does not behave
+accordingly to its specification and is caused by a \emph{fault} which in turn
+is caused by an \emph{error} made by the software engineer. When a failure
+causes the system to abort its execution unexpectedly, it is called a crash. A
+fault (also known as a bug) is a specific condition in the system that causes it
+to behave in unexpected ways. A failure can be caused by a programming error (an
+error in the source code), a design flow or even by an external component such
+as a library, the \ac{OS} or even the compiler.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{figures/dia/waterfall.png}
+    \caption{Waterfall model of software development lifecycle}
+    \label{fig:waterfall}
+\end{figure}
+
+% introduce software development lifecycle and SDL
+Quality assurance prescribes that the whole software development lifecycle is
+checked for quality as well as the intermediate and final products.
+Figure~\ref{fig:waterfall} presents a simplified representation of the classical
+waterfall model for software development lifecycle. Each stage produces an
+intermediate artifact that serves as input for the next stage. Quality control
+provides tools and methodologies to check the quality of artifacts and in case a
+defect is found, the artifact is rejected (development does not transition to
+the following phase). In other words, quality control allows a software engineer
+to gauge quality of a product at each development stage, preventing the
+propagation of errors from one stage to the next.
+
+In an effort to minimize the amount of security bugs in their applications,
+Microsoft engineers have devised a methodology called
+\ac{SDL}~\cite{lipner2004trustworthy}. \ac{SDL} presents a development model
+similar to the waterfall model, where a series of phases is applied in
+succession with intermediate artifacts and quality checks, but enriches it with
+established security practices and methods. For each stage of development,
+\ac{SDL} provides clear principles, tools and practices to assess quality from a
+security perspective, allowing for a progressive discovery of problems,
+throughout the entire development lifecycle.
+
+\section{Developing High-Quality Software}
+% introduce tools to develop high-quality software
+There is a good number of tools and practices at disposal of the software
+engineer that enable production of high-quality software. Some are suited suited
+for assessing the quality of artifacts from a static or dynamic perspective;
+other try to prevent entirely certain classes of errors.
+
+% writing clean, maintainable code
+The best way to obtain a quality product is to put it there in the first place.
+Careful craftsmanship following a set of good practices results in products with
+less errors. Writing clean code that is readable and refactored, results in code
+that is more maintainable and easier to inspect and
+review~\cite{martin2009clean,fowler1999refactoring}. Training the development
+team and following a set of good practices (for example secure coding) becomes
+crucial, as also highlighted by the first step in \ac{SDL}.
+
+% defensive programming: input validation and secure coding
+Well trained programmers know the importance of defensive programming, a set of
+practices including input validation and secure coding. Input validation ensures
+that data that is processed by the system, coming from an external source, is
+checked for correctness and security. An high-quality program should never
+expect data to be valid, even when it comes from a trusted source as reliable
+software should be resilient to the unexpected. Input validation becomes even
+more important for applications processing data from untrusted sources such as
+the Internet~\cite{scholte2012have}.
+
+\begin{lstlisting}[caption={Defensive programming: unsafe example},
+                   label=lst:defensive-unsafe]
+    char* capitalize(char* input)
+    {
+        char* str = (char*) malloc(100 * sizeof(char));
+        strcpy(str, input);
+        str[0] = toupper(str[0]);
+        return str;
+    }
+\end{lstlisting}
+\begin{lstlisting}[caption={Defensive programming: safe example},
+                   label=lst:defensive-safe]
+    char* safe_capitalize(char* input)
+    {
+        if (input == NULL)
+            return NULL;
+        char* str = (char*) malloc(100 * sizeof(char));
+        if (str == NULL)
+            return NULL;
+        strncpy(str, input, sizeof(str));
+        str[sizeof(str) - 1] = 0;
+        str[0] = toupper(str[0]);
+        return str;
+    }
+\end{lstlisting}
+
+Listing~\ref{lst:defensive-unsafe} and Listing~\ref{lst:defensive-safe} present
+two versions of a function to capitalize strings. The former can behave
+unexpectedly in a number of situations: the \texttt{input} string can be a
+null-pointer causing the program to crash inside the \texttt{strcpy} function;
+the \texttt{malloc} function may be unable to allocate memory, returning a
+null-pointer resulting in a similar crash inside \texttt{strcpy}; the input
+string can be longer than the allocated buffer, causing the program to crash
+again inside \texttt{strcpy}; ultimately, the resulting string may not be
+null-terminated, possibly causing a memory leak in other parts of the program.
+There are four possible failures waiting to happen in only four lines of code.
+Defensive programming practices aim at preventing those kind of errors, as shown
+in Listing~\ref{lst:defensive-safe}.
+
+% reviews and inspections
+As software developers can fail to follow defensive programming practices (for
+example due to high pressure to finish a software module), some errors might
+still slip into the code. Code review can help find errors in the source code
+early on. In the typical scenario, one or more developers, not including the
+author, visually inspect the source code (of a module, function or entire
+program) with the explicit purpose of finding programming errors or ways to
+improve (the quality of) the code. Code review assumes a central role in
+companies such as Microsoft~\cite{bacchelli2013expectations},
+Facebook~\cite{feitelson2013development} and Google~\cite{kennedy2006google} and
+is often facilitated by Web-based collaboration tools. Code reviews are taken to
+the extreme---as in \ac{XP}~\cite{Beck2004EPE}---by a practice called pair
+programming. In this practice, two developers produce source code in close
+collaboration: the ``driver'' has control of the keyboard and writes code, while
+the other (also called ``observer'' or ``navigator'') watches over the driver's
+work as it is typed, trying to spot errors, proposing alternatives and
+considering strategic implications on future work. The two roles are switched
+periodically to maintain equally shared ownership of the product.
+
+% high-level programming languages
+Most performance critical software applications are developed in languages like
+C~\cite{Kernighan1988CPL} or C++~\cite{Stroustrup2013CPL} as their constructs
+allow developers to heavily optimize their code for specific platforms. These
+languages, while providing an higher level of abstraction over machine code or
+assembly languages, maintain a set of low-level features (such as direct memory
+access and pointer arithmetics) that can be easily misused, ultimately inducing
+programming errors. Careless use of pointer arithmetic is the major cause of a
+class of bugs (known as memory corruption bugs) such as buffer overflows,
+null-pointer dereferences, use-after-frees and double frees. Programming
+languages like Java~\cite{Gosling2014JLS} and C\#~\cite{Hejlsberg2003CLS},
+instead, provide automatic memory management: allocation on the heap is hidden
+by object creation and deallocation is done periodically by the garbage
+collector. Moreover, programs written in such languages, are not compiled
+directly to machine code, instead are compiled to an intermediate artifact which
+in turn is interpreted by a virtual machine; Java runs on the \ac{JVM} while C\#
+runs on the \ac{CLI}. This improves security and reliability, as programs run in
+a controlled environment, but may drastically degrade performance; besides
+virtual machines are generally written in highly optimizable languages such as C
+or C++. Recent advancements in programming languages try to guarantee memory
+safety while still producing high-performance binaries.
+Rust~\cite{Matsakis2014RL} uses the concept of ownership of data to enable the
+compiler to make memory safety guarantees without the need of a garbage
+collector.
+
+% formal methods
+% static analysis and compiler warnings
+% software testing
+
+
+
+
+
+\section{OLD}
+
 % introduce software testing
 \ac{ST} is a broad discipline that aims at assessing the quality of a
 software product. Engineers are always interested in gauging the robustness,
@@ -79,6 +263,10 @@ the other fuzzers as its usage of white-box (static analysis and \emph{sparse}
 taint analysis) mixed with gray-box techniques constitute an hybrid model.
 
 % TODO: briefly present problems in CGF and argue that there's no best fuzzer
+% for all applications (maybe mention no free lunch theorem?)
+% - problems with general-purpose fuzzers (magic bytes, etc.)
+% - fuzzing as search problem
+% - NFL
 
 % TODO: brief of this work
 

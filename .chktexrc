@@ -547,7 +547,7 @@ TextCmd
 VerbEnvir
 {
     verbatim comment listing verbatimtab rawhtml errexam picture texdraw
-    filecontents pgfpicture tikzpicture
+    filecontents pgfpicture tikzpicture lstlisting
 }
 
 #####################################################################

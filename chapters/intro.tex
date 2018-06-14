@@ -150,7 +150,7 @@ work as it is typed, trying to spot errors, proposing alternatives and
 considering strategic implications on future work. The two roles are switched
 periodically to maintain equally shared ownership of the product.
 
-% high-level programming languages
+% high-level programming languages: C and C++
 Most performance critical software applications are developed in languages like
 C~\cite{Kernighan1988CPL} or C++~\cite{Stroustrup2013CPL} as their constructs
 allow developers to heavily optimize their code for specific platforms. These
@@ -159,21 +159,44 @@ assembly languages, maintain a set of low-level features (such as direct memory
 access and pointer arithmetics) that can be easily misused, ultimately inducing
 programming errors. Careless use of pointer arithmetic is the major cause of a
 class of bugs (known as memory corruption bugs) such as buffer overflows,
-null-pointer dereferences, use-after-frees and double frees. Programming
-languages like Java~\cite{Gosling2014JLS} and C\#~\cite{Hejlsberg2003CLS},
-instead, provide automatic memory management: allocation on the heap is hidden
-by object creation and deallocation is done periodically by the garbage
-collector. Moreover, programs written in such languages, are not compiled
-directly to machine code, instead are compiled to an intermediate artifact which
-in turn is interpreted by a virtual machine; Java runs on the \ac{JVM} while C\#
-runs on the \ac{CLR}. This improves security and reliability, as programs run in
-a controlled environment, but may drastically degrade performance; besides
-virtual machines are generally written in highly optimizable languages such as C
-or C++. Recent advancements in programming languages try to guarantee memory
-safety while still producing high-performance binaries.
-Rust~\cite{Matsakis2014RL} uses the concept of ownership of data to enable the
-compiler to make memory safety guarantees without the need of a garbage
-collector.
+null-pointer dereferences, use-after-frees and double frees.
+
+% managed languages: Java and C#
+Programming languages like Java~\cite{Gosling2014JLS} and
+C\#~\cite{Hejlsberg2003CLS}, instead, provide automatic memory management:
+allocation on the heap is hidden by object creation and deallocation is done
+periodically by the garbage collector. Moreover, programs written in such
+languages, are not compiled directly to machine code, instead are compiled to an
+intermediate artifact which in turn is interpreted by a virtual machine; Java
+runs on the \ac{JVM} while C\# runs on the \ac{CLR}. This improves security and
+reliability, as programs run in a controlled environment, but may drastically
+degrade performance; besides virtual machines are generally written in highly
+optimizable languages such as C or C++ and can still be susceptible to memory
+corruption bugs.
+
+% recent advancements in languages: Rust and type systems
+Recent advancements in programming languages try to guarantee memory safety
+while still producing high-performance binaries. Rust~\cite{Matsakis2014RL}
+uses the concept of ownership of data to enable the compiler to make memory
+safety guarantees without the need of a garbage collector. A type system can be
+useful to rule out a series of programming errors as there is a guarantee that
+inappropriate arguments will not be applied to an
+operation~\cite{cardelli2004type}. This check can be done statically by the
+compiler, in a process called typechecking, or dynamically at run-time. Typeful
+programming~\cite{cardelli1991typeful} is a style of programming where types
+are pervasive; it is central to the design of languages such as
+Haskell~\cite{jones2003haskell} (\eg~the concepts of kinds and type
+constructors). Dependent types~\cite{aspinall2004dependent} augment the
+expressiveness of a type system by allowing the definition of types with
+logical predicates over values. As an example, a function's return type may
+depend on the value of the argument, not just its type (as with polymorphism
+and generic programming). In other words, a function accepting a positive
+integer may return a list with precisely that number of elements: this
+specification can be encoded with a dependent type and checked by the
+typechecker. Early implementations of programming languages with dependent
+types are Dependent ML~\cite{xi1999dependent,xi2007dependent} and
+Cayenne~\cite{Augustsson1998CLD}; more recently Idris~\cite{Brady11idris} and
+F*~\cite{mumon}.
 
 % formal methods
 % static analysis and compiler warnings
@@ -233,7 +256,7 @@ can be categorized along different axes. The way a fuzzer generates its
 if new fuzz is created from scratch it belongs to the former category, if
 instead it is created by changing existing inputs it belongs to the latter. As
 for \ac{ST}, fuzzers can have a different level of knowledge of the \ac{SUT} and
-then can be classified as white-box or black-box approach.  When it comes to
+then can be classified as white-box or black-box approach. When it comes to
 binaries, a white-box approach usually implies use of heavy program analysis
 (\eg~symbolic execution, taint analysis) or manual specification of a grammar to
 guide input creation; a black-box approach creates a stream of random inputs to

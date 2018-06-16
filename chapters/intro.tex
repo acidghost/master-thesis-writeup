@@ -82,6 +82,7 @@ review~\cite{martin2009clean,fowler1999refactoring}. Training the development
 team and following a set of good practices (for example secure coding) becomes
 crucial, as also highlighted by the first step in \ac{SDL}.
 
+\subsection{Defensive Programming}
 % defensive programming: input validation and secure coding
 Well trained programmers know the importance of defensive programming, a set of
 practices including input validation and secure coding. Input validation ensures
@@ -93,7 +94,7 @@ more important for applications processing data from untrusted sources such as
 the Internet~\cite{scholte2012have}.
 
 \begin{lstlisting}[caption={Defensive programming: unsafe example},
-                   label=lst:defensive-unsafe]
+                   label=lst:defensive-unsafe,float,floatplacement=h]
     char* capitalize(char* input)
     {
         char* str = (char*) malloc(100 * sizeof(char));
@@ -103,7 +104,7 @@ the Internet~\cite{scholte2012have}.
     }
 \end{lstlisting}
 \begin{lstlisting}[caption={Defensive programming: safe example},
-                   label=lst:defensive-safe]
+                   label=lst:defensive-safe,float,floatplacement=h]
     char* safe_capitalize(char* input)
     {
         if (input == NULL)
@@ -131,6 +132,7 @@ There are four possible failures waiting to happen in only four lines of code.
 Defensive programming practices aim at preventing those kind of errors, as shown
 in Listing~\ref{lst:defensive-safe}.
 
+\subsection{Code Reviews}
 % reviews and inspections
 As software developers can fail to follow defensive programming practices (for
 example due to high pressure to finish a software module), some errors might
@@ -150,6 +152,7 @@ work as it is typed, trying to spot errors, proposing alternatives and
 considering strategic implications on future work. The two roles are switched
 periodically to maintain equally shared ownership of the product.
 
+\subsection{Advancements in Programming Languages}
 % high-level programming languages: C and C++
 Most performance critical software applications are developed in languages like
 C~\cite{Kernighan1988CPL} or C++~\cite{Stroustrup2013CPL} as their constructs
@@ -198,7 +201,8 @@ types are Dependent ML~\cite{xi1999dependent,xi2007dependent} and
 Cayenne~\cite{Augustsson1998CLD}; more recently Idris~\cite{Brady11idris} and
 F*~\cite{mumon}.
 
-% formal methods
+\subsection{Formal Methods}
+% introduce formal methods
 Formal methods are a set of mathematical techniques that enable verification of
 software (and hardware) engineering artifacts. In a strict sense, they can be
 used to prove with absolute certainty that an artifact conforms to its
@@ -220,15 +224,7 @@ development of more complex software, tackling the scaling problem. An example
 is an \ac{OS} kernel formally verified from its specification to its
 implementation~\cite{Klein2009SFV}.
 
-% static analysis and compiler warnings
-% software testing
-
-
-
-
-
-\section{OLD}
-
+\section{Software Testing}
 % introduce software testing
 \ac{ST} is a broad discipline that aims at assessing the quality of a
 software product. Engineers are always interested in gauging the robustness,

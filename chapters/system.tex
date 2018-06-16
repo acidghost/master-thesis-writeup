@@ -200,7 +200,7 @@ designed to be analogous to the fitness function found in \acp{EA}, where in our
 case \emph{fitness} represents how much would a fuzzer benefit from receiving a
 given test-case.
 
-% examples of metric
+% examples of metric / strategy
 As for \acp{CGF}, the \ac{CFF} uses code coverage as a basis for the scoring
 function. A strategy might choose to keep track of all basic blocks discovered
 by each running fuzzer (this is possible because \emph{interesting} test-cases
@@ -214,7 +214,17 @@ for which there is at least one undiscovered basic block. In this context, we
 can set the scoring function to return the number of basic blocks new to the
 fuzzer and select as winners fuzzers with a positive score. % TODO Jaccard
 
-% TODO: describe possible winning conditions
+% describe possible winning conditions
+The \texttt{Winning} function of Algorithm~\ref{algo:system-strategy} is
+responsible for working out a set of running fuzzers, given the results of the
+scoring function. Fuzzers from this set, which can be empty, are to be injected
+with the test-case. This function resembles the selection stage of \acp{EA}:
+selects fuzzers (in contrast to selecting individuals of a population) which are
+going to receive a new test-case, so that the fuzzer itself can apply its own
+mutation algorithms to try to generate new interesting test-cases. The
+\texttt{WinningCongestion} function on the other end, instead of working with a
+set of scores for different fuzzers over a single test-case, selects a set of
+scored test-cases to be injected into a single fuzzer.
 
 \section{System Implementation}
 % TODO: describe uberfuzz implementation

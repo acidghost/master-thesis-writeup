@@ -199,6 +199,27 @@ Cayenne~\cite{Augustsson1998CLD}; more recently Idris~\cite{Brady11idris} and
 F*~\cite{mumon}.
 
 % formal methods
+Formal methods are a set of mathematical techniques that enable verification of
+software (and hardware) engineering artifacts. In a strict sense, they can be
+used to prove with absolute certainty that an artifact conforms to its
+specification~\cite{Hall1990SMF}. For example they can be used at the design
+level (\eg~requirement specification, algorithm design), where properties of a
+formal specification are proved through model-checking or theorem-proving
+techniques. Formal methods can also be used at the source code level to prove
+that a program (or function or module) complies with its specification; more
+concretely, given a set of preconditions, program execution is proven to adhere
+to certain postconditions. For this to be possible, programming languages have
+to allow encoding the precise semantics of a program.
+
+% formal methods: drawbacks and applications
+As formal methods require significantly more effort, are not applicable to all
+programs and do not scale well, they are often used only for critical
+applications such as aerospace, financial systems and
+defence~\cite{Woodcock2009FMP}. Recent advancements have allowed for the
+development of more complex software, tackling the scaling problem. An example
+is an \ac{OS} kernel formally verified from its specification to its
+implementation~\cite{Klein2009SFV}.
+
 % static analysis and compiler warnings
 % software testing
 

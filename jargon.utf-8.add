@@ -46,3 +46,5 @@ typechecking
 typeful
 typechecker
 Idris
+hoc
+concolic

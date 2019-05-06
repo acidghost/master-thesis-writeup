@@ -67,6 +67,7 @@ security perspective, allowing for a progressive discovery of problems,
 throughout the entire development lifecycle.
 
 \section{Developing High-Quality Software}
+\label{sec:dev-hq-sw}
 % introduce tools to develop high-quality software
 There is a good number of tools and practices at disposal of the software
 engineer that enable production of high-quality software. Some are suited suited
@@ -225,82 +226,337 @@ is an \ac{OS} kernel formally verified from its specification to its
 implementation~\cite{Klein2009SFV}.
 
 \section{Software Testing}
+Section~\ref{sec:dev-hq-sw} presented techniques for developing high-quality
+software that fall under the category of \emph{verification and validation}
+(V\&V). The IEEE process standard~\cite{8055462} defines verification and
+validation as the processes used to establish that the product and any
+intermediate artifact conforms to its requirements and fits its intended use.
+As \citeauthor{boehm1984verifying} put it~\cite{boehm1984verifying}:
+verification answers the question of ``Am I building the product right?'';
+validation instead answers the question of ``Am I building the right product?''.
+Verification and validation are built into the software development lifecycle
+and help the software engineer gauging the quality of its product. Given this
+definition, it is easy to see how verification and validation is a further
+categorization of software quality control.
+
+Software verification can be applied by means of two approaches: static or
+dynamic~\cite{ghezzi2002fundamentals}. Static verification inspects the product
+without executing it; code reviews, compiler warnings, programming language
+style checkers and formal methods are all examples of static verification. With
+dynamic verification (commonly referred to as software testing) instead, the
+software is executed and its behaviour is inspected. Because dynamic
+verification can be applied with varying granularity, it can be employed at any
+moment during the development lifecycle and not only at its end, when the
+product is finished.
+
+Software testing is defined in a concise way in~\cite{IEEE2014GSEBK}, with
+emphasis on key aspects:
+
+\begin{quote}
+    Software testing consists of the \emph{dynamic} verification that a program
+    provides \emph{expected} behaviours on a \emph{finite} set of test cases,
+    suitably \emph{selected} from the usually infinite execution domain.
+\end{quote}
+
+Software testing is an inherently dynamic practice as the \ac{SUT} needs to be
+inspected in an environment that most closely resembles the production
+deployment environment (in which users directly interact with the product).
+Software testing complements static verification as it allows to verify the
+interaction of the \ac{SUT} with its environment (\eg~hardware, networking,
+\ac{OS})~\cite{ammann2016introduction}. The state of the \ac{SUT} itself, as
+well as that of its environment (where it can affect the \ac{SUT}'s output), are
+considered part of the input.  This makes the domain of all possible inputs
+spike in size, even for trivial programs; because of this the number of test
+cases has to be finite and the software tester should not aim to test for all
+possible inputs. Because even a trivial program can have a virtually infinite
+input domain, software testing cannot verify a program
+completely~\cite{kaner2000testing}. Follows that testing can reveal the presence
+of bugs, not their absence~\cite{buxton1970software,dijkstra1970notes}.
+
+As the software tester is required to work with a finite set of test cases,
+selecting the subset of inputs from the domain of all possible inputs to the
+\ac{SUT} is a key aspect in software testing. Many testing techniques differ
+especially in how test cases are selected~\cite{naik2011software} and based on
+the specific nature of the \ac{SUT} (\eg~its domain, design or implementation
+details) different selection techniques may yield greatly different results in
+terms of testing effectiveness.
+
+A test case is of any value to the testing process if, for the selected input to
+the \ac{SUT}, there is an associated outcome that the software tester expects to
+observe in response. Examples of outcomes are: output values produced by the
+program, state changes within the program or on external entities and a
+composition of a set of smaller outcomes~\cite{naik2011software}. Test oracle is
+a term frequently used in software testing to refer to an entity capable of
+telling the expected outcome of a specific test
+case~\cite{howden1978theoretical}. In its most general form a test oracle can be
+thought of as a predicate that tells us whether the observed outcome is
+acceptable or not~\cite{barr2015oracle}. A test case is indeed defined by the
+input to the \ac{SUT} and an associated test oracle.
+
+\subsection{Testing Techniques}
+% introduce section, white and black box testing
+As already stated, software testing techniques differ from each other the most
+when compared along the axis of how they perform test case generation. The major
+distinction is given by the kind of source of information the software tester
+has access to during test design. Testing approaches are commonly classified
+into \emph{white box} or \emph{black box}: in the former (also called structural
+testing) sources revealing the inner structure of the \ac{SUT} are used
+(\eg~source code), with a focus on data and control flow features; in the latter
+(also called functional testing) no internal detail about the \ac{SUT} is known
+and only the front-facing functionalities are tested, as the sole source of
+information available is the product specification.
+
+% control and data flow
+Control and data flow features are used to reason about implementation details
+of the \ac{SUT}. Control flow refers to the way instructions in a program are
+executed. The processor passes control from one instruction to another in
+different ways, in the most common case one instruction follows another, but
+control can be passed also by means of function calls, interrupts, message
+passing or conditional statements. Data flow refers instead to the way values
+are propagated within the program and represents declaration and usage of
+variables in the source code.
+
+% gray box testing
+As white and black box testing look at the \ac{SUT} from the point of view of
+the developer and the end user respectively, they complement each other to
+achieve a complete testing effort. While white box testing provides tools to
+uncover errors pertaining control or data flow, it does not provide a way to
+expose high-level functional flaws or gauge quality in regards of usability or
+another front-facing factor. The opposite is true for black box testing. The
+middle ground of both practices is an approach called intuitively gray box
+testing.
+
+Gray box testing uses little, partial or inferred information about the
+structure of the \ac{SUT} to enhance or focus black box testing. Knowledge about
+the algorithms being used, architectures, the operating environment in which the
+\ac{SUT} is going to interact or high-level descriptions of its behaviour, may
+be taken into consideration when designing test cases. Moreover, gray box
+testing approaches interact with the \ac{SUT} only via its front-facing
+functionalities (those exposed to the end user), similarly to black box testing.
+Gray box testing is particularly suited, for example, for Web application
+testing~\cite{nguyen2001testing,di2006testing} as Web applications are made up
+of an high number of components and having knowledge of how they interact with
+each other is vital to the effectiveness of testing.
+
+% based on engineer / expert knowledge or intuition
+The most basic source of information for test case generation comes from the
+software engineer's expertise, own intuition and experience with similar
+applications. This kind of \emph{ad hoc} testing is useful to produce highly
+specialized test cases, where other (more formal) testing approaches may fail to
+do so. Ad hoc testing is not structured; \emph{exploratory
+testing}~\cite{kaner2008tutorial,p29119-1} enhances it with a methodological
+approach: test-related learning, design, execution and interpretation of test
+results are activities that must be run in parallel with each other. Each of
+these activities is mutually supportive and it is the software tester's
+responsibility to manage her own resources by choosing a combination of
+activities that best optimize the value of her work. In exploratory testing, the
+testing process itself, through inspection of the program behaviour, is used as
+a source of information to make decisions about further testing. Exploratory
+testing is an inherently iterative process.
+
+% based on input domain
+The \ac{SUT}'s input and output domains are another fundamental source of
+information that a software engineer can draw from to design test cases. In this
+context, the term \emph{test vector} represents the set of values that form the
+input of a test case; values are drawn from the input domain of the considered
+input variable. Generating test cases from the input domains consists in
+computing an expected output for selected input values; this often results in a
+large number of test cases as every combination of special values of the input
+variables needs to be represented by a test vector. The advantage is that
+generating the expected output for a given test vector is generally trivial
+because the \ac{SUT}'s specification can be directly used. In contrast,
+generating test cases from the analysis of the output domains can produce less
+test cases (as there is no need to consider different combinations of special
+values of the output domains) at the cost of an increased difficulty in
+generating the test vector capable of producing the desired output.
+
+% pairwise testing
+A solution to reduce the number of test cases when using an approach based on
+the analysis of the input domains is to use \emph{pairwise
+testing}~\cite{mandl1985orthogonal,tatsumi1987test,czerwonka2006pairwise}. In
+contrast to exhaustive testing, where all combinations of all input variables'
+special values have to be represented by a test vector, pairwise testing
+considers such combinations only for pairs of variables. Pairwise testing can be
+generalized to a $t$ number of variables, instead of pairs, also referred to as
+\emph{t-wise} testing. The resulting set of test cases is a subset of the one
+produced by exhaustive testing; nonetheless pairwise testing has been proven
+effective when properly applied~\cite{bach2004pairwise,kuhn2004software}. As
+generating the minimum amount of test cases for pairwise testing is an
+NP-complete problem~\cite{lei1998parameter}, a considerable number of strategies
+have been proposed~\cite{grindal2005combination} such as orthogonal arrays and
+in parameter order.
+
+% equivalence class partitioning, boundary-value analysis
+Another popular approach based on the analysis on the input domain is
+\emph{equivalence class partitioning}~\cite{richardson1981partition}. As the
+name suggests it involves partitioning the input domain into subsets (or
+equivalence classes) based on a specified criterion and then use each of these
+subsets as a source for at least one test case. The subsets are defined such
+that test inputs drawn from the same equivalence class exercise a similar
+behaviour on the \ac{SUT}. Equivalence class partitioning is often applied as a
+black box technique, by using the \ac{SUT}'s functional specification to derive
+the partitioning criterion and operating on its interface; however it can also
+be used as a gray box technique to take into account for control and data flow
+features.
+
+\emph{Boundary-value analysis} consists in selecting test values near or on the
+boundary of a data domain so that test both from inside and outside of an
+equivalence class are considered. The rationale behind this technique is that
+boundary conditions are often overlooked or poorly implemented by designers and
+developers, so including test cases that test these boundary conditions is
+considered good practice.
+
+% random testing
+\emph{Random testing} constitutes an apt choice to evaluate the reliability of
+software systems. Initially applied to the evaluation of hardware
+systems~\cite{breuer1971random}, random testing consists in independently
+sampling inputs from the input domain, executing the \ac{SUT} on the selected
+input and compare the computed result with the expected result (using for
+example a test oracle)~\cite{beizer1995BTT}. Knowledge about the input domain,
+the \ac{SUT} internals or its functional specification can be exploited to guide
+the sampling algorithm (\eg~\cite{Chen2004AdaptiveRT}); because of this, random
+testing provides a relatively simple basis for more complex gray box automated
+testing techniques, as the next chapter shows.
+
+% code-based techniques
+Access to the source code, knowledge of the internal structure or other inferred
+control-flow information is at the core of \emph{code-based testing} techniques.
+The first step in most techniques entails the construction of a
+\ac{CFG}~\cite{Allen1970CFA,allen1972graph}. Each node in a \ac{CFG} represents
+a basic block which is a sequence of instructions without jump targets or jumps
+between them.  A jump target would mean the start of a basic block while a jump
+signals the end of a basic block. Directed edges connecting nodes of the graph
+represent transfer of control within the program. The aim of code-based testing
+is producing a corpus of test cases able to cover as many basic blocks, branches
+or execution paths as possible. As even for trivial programs, due to loops, the
+number of executable paths can be intractable, the software tester is often
+required to select a subset of paths from the \ac{CFG} to test for. Common path
+selection criteria are statement and branch coverage which aim at executing all
+basic blocks or edges of the \ac{CFG} at least once.
+
+% symbolic execution
+After the execution paths have been selected, the objective is to find inputs to
+the \ac{SUT} capable of forcing execution of such paths. This is often done via
+\emph{symbolic substitution}, a process in which constraints exercised by the
+basic blocks along a selected path are expressed uniquely in terms of the input
+vector. These constraints are then solved in order to obtain concrete values for
+the input vector. The process of collecting path constraints can be automated
+through \emph{symbolic execution} of the
+program~\cite{Clarke1976AST,Boyer1975SELECTaFS,King1976SymbolicEA}. An
+interpreter reads and simulates execution of the program, assuming symbolic
+values for the inputs instead of reading concrete ones (\eg~reading from a file,
+getting arguments to a unit of code). The interpreter stores the state of the
+execution and collects path constraints whenever a branching point is reached in
+the code. There, execution is forked and the path constraint at that point is
+logically negated so that the forked state can continue exploration of the other
+branch. Symbolic execution can be used to find inputs that exercise a selected
+path or to explore all paths of a program. In the second scenario, follows from
+the description of its abstract mechanics, that symbolic execution suffers from
+a \emph{path explosion} problem when tackling large programs or unbounded loops.
+The latter cause can be alleviated by putting a bound to unbounded loops,
+resulting in an under-approximation of the \ac{SUT}. In general, the path
+explosion problem can be mitigated by merging similar
+paths~\cite{Kuznetsov12efficientstate}, optimize the searching algorithm with
+heuristics~\cite{Burnim2008HeuristicsFS,Ma2011DSE} or parallelize execution of
+independent paths~\cite{Staats2010PSE}.
+
+% concolic execution
+Another bottleneck for the effectiveness of symbolic execution techniques is
+constituted by the constraint solver used. Most of the computational resources
+are used to resolve constraints. Even a small improvement in performance of the
+constrain solver, results in noticeable gains for the symbolic execution process
+as a whole. Moreover the constraint solver may have technical limitations on its
+own (\eg~being able to work only on linear constraints). To alleviate this and
+other problems (related to interpretation, such as tracking of array indices or
+dealing with external code segments), \emph{concolic execution} was proposed. It
+uses information from the concrete execution of the \ac{SUT} to simplify
+symbolic execution where necessary. The \ac{SUT} runs normally with some
+concrete input and symbolic execution runs in parallel, providing concrete
+values to allow concrete execution to explore different branches. When the
+constraint solver finds a path constraint that it cannot solve, concrete values
+from the concrete execution state are plugged in to simplify the constraint.
+
+\subsection{Fuzz Testing}
+% introduce fuzz testing
+
+
+% \section{OLD Software Testing}
 % introduce software testing
-\ac{ST} is a broad discipline that aims at assessing the quality of a
-software product. Engineers are always interested in gauging the robustness,
-reliability and security of their products and \ac{ST} provides them with tools
-and techniques to achieve that. Its ultimate goal is to discover as much defects,
-failures and vulnerabilities as possible, usually within a limited budget (of
-time or computing resources).
+% \ac{ST} is a broad discipline that aims at assessing the quality of a
+% software product. Engineers are always interested in gauging the robustness,
+% reliability and security of their products and \ac{ST} provides them with tools
+% and techniques to achieve that. Its ultimate goal is to discover as much defects,
+% failures and vulnerabilities as possible, usually within a limited budget (of
+% time or computing resources).
 
 % black vs. white box approach
-Generally \ac{ST} consists in feeding some input to the \ac{SUT} and monitoring
-its behaviour to detect any failure. \ac{ST} can be categorized by the knowledge
-required by the tester about the \ac{SUT}. In the white-box approach, the inner
-workings of the \ac{SUT} are tested, using knowledge about internal data
-structures and control-flow, possibly with the help of source code. In the
-black-box approach only the front-facing functionalities are tested as no
-internal knowledge of the \ac{SUT} is required. It is easy to see how a
-white-box approach has the potential to be more efficient as knowledge about the
-\ac{SUT} can better direct the input generation process. Unfortunately this
-comes at the cost of analyzing the source code, which isn't always available, or
-machine code, which is an hard and computationally intensive task. A black-box
-approach on the other end can be carried on for example by simply throwing
-random inputs at the \ac{SUT}; \emph{fuzzing} is an automated (or
-semi-automated) testing technique consisting in feeding some input to the
-\ac{SUT}, monitoring for exceptions (\ie~crashes, hangs), create a new input and
-reiterate.
+% Generally \ac{ST} consists in feeding some input to the \ac{SUT} and monitoring
+% its behaviour to detect any failure. \ac{ST} can be categorized by the knowledge
+% required by the tester about the \ac{SUT}. In the white-box approach, the inner
+% workings of the \ac{SUT} are tested, using knowledge about internal data
+% structures and control-flow, possibly with the help of source code. In the
+% black-box approach only the front-facing functionalities are tested as no
+% internal knowledge of the \ac{SUT} is required. It is easy to see how a
+% white-box approach has the potential to be more efficient as knowledge about the
+% \ac{SUT} can better direct the input generation process. Unfortunately this
+% comes at the cost of analyzing the source code, which isn't always available, or
+% machine code, which is an hard and computationally intensive task. A black-box
+% approach on the other end can be carried on for example by simply throwing
+% random inputs at the \ac{SUT}; \emph{fuzzing} is an automated (or
+% semi-automated) testing technique consisting in feeding some input to the
+% \ac{SUT}, monitoring for exceptions (\ie~crashes, hangs), create a new input and
+% reiterate.
 
 % origin of fuzzing & random testing
-The term fuzzing dates back to 1988 from a course project for an Advanced
-Operating Systems class taught at the University of Wisconsin by Barton Miller
-\cite{takanen2008fuzzing}. After noticing how a thunderstorm was able to
-scramble his input through a remote terminal and crash the program on the other
-end, he decided to propose a project to his students to experiment with random
-testing of UNIX utilities. A group of two students succeeded at the given task
-and two years later published their findings~\cite{miller1990empirical}. Random
-testing was already in use since the 1950s, when programmers would use punched
-cards from the trash or decks of random numbers as input to programs
-\cite{weinberg2008}.
+% The term fuzzing dates back to 1988 from a course project for an Advanced
+% Operating Systems class taught at the University of Wisconsin by Barton Miller
+% \cite{takanen2008fuzzing}. After noticing how a thunderstorm was able to
+% scramble his input through a remote terminal and crash the program on the other
+% end, he decided to propose a project to his students to experiment with random
+% testing of UNIX utilities. A group of two students succeeded at the given task
+% and two years later published their findings~\cite{miller1990empirical}. Random
+% testing was already in use since the 1950s, when programmers would use punched
+% cards from the trash or decks of random numbers as input to programs
+% \cite{weinberg2008}.
 % maybe include why random testing works & infinite monkey theorem?
 
 % fuzzers today & gray-box fuzzing
-Fuzzers today have much evolved and have been used by major companies such as
-Microsoft~\cite{godefroid2008grammar} and
-Google~\cite{google2016fuzz,google2011fuzz,google2016oss,google2017oss}. Fuzzers
-can be categorized along different axes. The way a fuzzer generates its
-\emph{fuzz} (test cases) makes it a generation-based or mutation-based fuzzer;
-if new fuzz is created from scratch it belongs to the former category, if
-instead it is created by changing existing inputs it belongs to the latter. As
-for \ac{ST}, fuzzers can have a different level of knowledge of the \ac{SUT} and
-then can be classified as white-box or black-box approach. When it comes to
-binaries, a white-box approach usually implies use of heavy program analysis
-(\eg~symbolic execution, taint analysis) or manual specification of a grammar to
-guide input creation; a black-box approach creates a stream of random inputs to
-feed to the \ac{SUT}. A third class has emerged in recent years: gray-box
-fuzzing uses lightweight binary instrumentation to monitor the performance of
-individual test cases (\eg~through code coverage or other metric) in order to
-better guide fuzz creation.
+% Fuzzers today have much evolved and have been used by major companies such as
+% Microsoft~\cite{godefroid2008grammar} and
+% Google~\cite{google2016fuzz,google2011fuzz,google2016oss,google2017oss}. Fuzzers
+% can be categorized along different axes. The way a fuzzer generates its
+% \emph{fuzz} (test cases) makes it a generation-based or mutation-based fuzzer;
+% if new fuzz is created from scratch it belongs to the former category, if
+% instead it is created by changing existing inputs it belongs to the latter. As
+% for \ac{ST}, fuzzers can have a different level of knowledge of the \ac{SUT} and
+% then can be classified as white-box or black-box approach. When it comes to
+% binaries, a white-box approach usually implies use of heavy program analysis
+% (\eg~symbolic execution, taint analysis) or manual specification of a grammar to
+% guide input creation; a black-box approach creates a stream of random inputs to
+% feed to the \ac{SUT}. A third class has emerged in recent years: gray-box
+% fuzzing uses lightweight binary instrumentation to monitor the performance of
+% individual test cases (\eg~through code coverage or other metric) in order to
+% better guide fuzz creation.
 
-\textbf{AFL}~\cite{afl} is a well known gray-box fuzzer that uses code coverage
-to know which inputs are more interesting and focus mutation on those; it is
-file-based and uses QEMU~\cite{bellard2005qemu} for binary instrumentation or a
-compiler extension where source code is available. Because of its simplicity in
-design, speed and flexibility, AFL has been extended in numerous
-ways~\cite{bohme2017coverage,bohme2017directed,lemieux2017fairfuzz} or used as a
-component of a larger system
-\cite{stephens2016driller,nichols2017faster,li2017steelix}. Most \acp{CGF} work
-with similar underlying principles that differ in the implementation.
-\textbf{FairFuzz}~\cite{lemieux2017fairfuzz} and \textbf{AFLFast}
-\cite{bohme2017coverage} use frequencies (one on the branch level, another on
-the path level) to guide mutation toward low-frequency entities.
-\textbf{Honggfuzz}~\cite{honggfuzz} keeps a queue of inputs that increase code
-coverage, randomly picks one and mangles it in a random manner; it also features
-different hardware- and software- based feedback sources and because of its
-efficiency and versatility has been used as a fuzzing engine of bigger projects
-\cite{grieco2016quickfuzz}. \textbf{VUzzer}~\cite{rawat2017vuzzer} differs from
-the other fuzzers as its usage of white-box (static analysis and \emph{sparse}
-taint analysis) mixed with gray-box techniques constitute an hybrid model.
+% \textbf{AFL}~\cite{afl} is a well known gray-box fuzzer that uses code coverage
+% to know which inputs are more interesting and focus mutation on those; it is
+% file-based and uses QEMU~\cite{bellard2005qemu} for binary instrumentation or a
+% compiler extension where source code is available. Because of its simplicity in
+% design, speed and flexibility, AFL has been extended in numerous
+% ways~\cite{bohme2017coverage,bohme2017directed,lemieux2017fairfuzz} or used as a
+% component of a larger system
+% \cite{stephens2016driller,nichols2017faster,li2017steelix}. Most \acp{CGF} work
+% with similar underlying principles that differ in the implementation.
+% \textbf{FairFuzz}~\cite{lemieux2017fairfuzz} and \textbf{AFLFast}
+% \cite{bohme2017coverage} use frequencies (one on the branch level, another on
+% the path level) to guide mutation toward low-frequency entities.
+% \textbf{Honggfuzz}~\cite{honggfuzz} keeps a queue of inputs that increase code
+% coverage, randomly picks one and mangles it in a random manner; it also features
+% different hardware- and software- based feedback sources and because of its
+% efficiency and versatility has been used as a fuzzing engine of bigger projects
+% \cite{grieco2016quickfuzz}. \textbf{VUzzer}~\cite{rawat2017vuzzer} differs from
+% the other fuzzers as its usage of white-box (static analysis and \emph{sparse}
+% taint analysis) mixed with gray-box techniques constitute an hybrid model.
 
 % TODO: briefly present problems in CGF and argue that there's no best fuzzer
 % for all applications (maybe mention no free lunch theorem?)

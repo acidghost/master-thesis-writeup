@@ -48,3 +48,4 @@ typechecker
 Idris
 hoc
 concolic
+prover

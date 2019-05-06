@@ -334,7 +334,7 @@ be taken into consideration when designing test cases. Moreover, gray box
 testing approaches interact with the \ac{SUT} only via its front-facing
 functionalities (those exposed to the end user), similarly to black box testing.
 Gray box testing is particularly suited, for example, for Web application
-testing~\cite{nguyen2001testing,di2006testing} as Web applications are made up
+testing~\cite{nguyen2001testing, di2006testing} as Web applications are made up
 of an high number of components and having knowledge of how they interact with
 each other is vital to the effectiveness of testing.
 
@@ -344,7 +344,7 @@ software engineer's expertise, own intuition and experience with similar
 applications. This kind of \emph{ad hoc} testing is useful to produce highly
 specialized test cases, where other (more formal) testing approaches may fail to
 do so. Ad hoc testing is not structured; \emph{exploratory
-testing}~\cite{kaner2008tutorial,p29119-1} enhances it with a methodological
+testing}~\cite{kaner2008tutorial, p29119-1} enhances it with a methodological
 approach: test-related learning, design, execution and interpretation of test
 results are activities that must be run in parallel with each other. Each of
 these activities is mutually supportive and it is the software tester's
@@ -373,14 +373,14 @@ generating the test vector capable of producing the desired output.
 % pairwise testing
 A solution to reduce the number of test cases when using an approach based on
 the analysis of the input domains is to use \emph{pairwise
-testing}~\cite{mandl1985orthogonal,tatsumi1987test,czerwonka2006pairwise}. In
+testing}~\cite{mandl1985orthogonal, tatsumi1987test, czerwonka2006pairwise}. In
 contrast to exhaustive testing, where all combinations of all input variables'
 special values have to be represented by a test vector, pairwise testing
 considers such combinations only for pairs of variables. Pairwise testing can be
 generalized to a $t$ number of variables, instead of pairs, also referred to as
 \emph{t-wise} testing. The resulting set of test cases is a subset of the one
 produced by exhaustive testing; nonetheless pairwise testing has been proven
-effective when properly applied~\cite{bach2004pairwise,kuhn2004software}. As
+effective when properly applied~\cite{bach2004pairwise, kuhn2004software}. As
 generating the minimum amount of test cases for pairwise testing is an
 NP-complete problem~\cite{lei1998parameter}, a considerable number of strategies
 have been proposed~\cite{grindal2005combination} such as orthogonal arrays and
@@ -422,7 +422,7 @@ testing techniques, as the next chapter shows.
 Access to the source code, knowledge of the internal structure or other inferred
 control-flow information is at the core of \emph{code-based testing} techniques.
 The first step in most techniques entails the construction of a
-\ac{CFG}~\cite{Allen1970CFA,allen1972graph}. Each node in a \ac{CFG} represents
+\ac{CFG}~\cite{Allen1970CFA, allen1972graph}. Each node in a \ac{CFG} represents
 a basic block which is a sequence of instructions without jump targets or jumps
 between them.  A jump target would mean the start of a basic block while a jump
 signals the end of a basic block. Directed edges connecting nodes of the graph
@@ -441,24 +441,23 @@ the \ac{SUT} capable of forcing execution of such paths. This is often done via
 basic blocks along a selected path are expressed uniquely in terms of the input
 vector. These constraints are then solved in order to obtain concrete values for
 the input vector. The process of collecting path constraints can be automated
-through \emph{symbolic execution} of the
-program~\cite{Clarke1976AST,Boyer1975SELECTaFS,King1976SymbolicEA}. An
-interpreter reads and simulates execution of the program, assuming symbolic
-values for the inputs instead of reading concrete ones (\eg~reading from a file,
-getting arguments to a unit of code). The interpreter stores the state of the
-execution and collects path constraints whenever a branching point is reached in
-the code. There, execution is forked and the path constraint at that point is
-logically negated so that the forked state can continue exploration of the other
-branch. Symbolic execution can be used to find inputs that exercise a selected
-path or to explore all paths of a program. In the second scenario, follows from
-the description of its abstract mechanics, that symbolic execution suffers from
-a \emph{path explosion} problem when tackling large programs or unbounded loops.
-The latter cause can be alleviated by putting a bound to unbounded loops,
-resulting in an under-approximation of the \ac{SUT}. In general, the path
-explosion problem can be mitigated by merging similar
-paths~\cite{Kuznetsov12efficientstate}, optimize the searching algorithm with
-heuristics~\cite{Burnim2008HeuristicsFS,Ma2011DSE} or parallelize execution of
-independent paths~\cite{Staats2010PSE}.
+through \emph{symbolic execution} of the program~\cite{Clarke1976AST,
+Boyer1975SELECTaFS, King1976SymbolicEA}. An interpreter reads and simulates
+execution of the program, assuming symbolic values for the inputs instead of
+reading concrete ones (\eg~reading from a file, getting arguments to a unit of
+code). The interpreter stores the state of the execution and collects path
+constraints whenever a branching point is reached in the code. There, execution
+is forked and the path constraint at that point is logically negated so that the
+forked state can continue exploration of the other branch. Symbolic execution
+can be used to find inputs that exercise a selected path or to explore all paths
+of a program. In the second scenario, follows from the description of its
+abstract mechanics, that symbolic execution suffers from a \emph{path explosion}
+problem when tackling large programs or unbounded loops.  The latter cause can
+be alleviated by putting a bound to unbounded loops, resulting in an
+under-approximation of the \ac{SUT}. In general, the path explosion problem can
+be mitigated by merging similar paths~\cite{Kuznetsov12efficientstate}, optimize
+the searching algorithm with heuristics~\cite{Burnim2008HeuristicsFS, Ma2011DSE}
+or parallelize execution of independent paths~\cite{Staats2010PSE}.
 
 % concolic execution
 Another bottleneck for the effectiveness of symbolic execution techniques is
@@ -467,17 +466,110 @@ are used to resolve constraints. Even a small improvement in performance of the
 constrain solver, results in noticeable gains for the symbolic execution process
 as a whole. Moreover the constraint solver may have technical limitations on its
 own (\eg~being able to work only on linear constraints). To alleviate this and
-other problems (related to interpretation, such as tracking of array indices or
-dealing with external code segments), \emph{concolic execution} was proposed. It
-uses information from the concrete execution of the \ac{SUT} to simplify
-symbolic execution where necessary. The \ac{SUT} runs normally with some
-concrete input and symbolic execution runs in parallel, providing concrete
-values to allow concrete execution to explore different branches. When the
-constraint solver finds a path constraint that it cannot solve, concrete values
-from the concrete execution state are plugged in to simplify the constraint.
+other problems (related to interpretation, such as tracking of array indices and
+pointers or dealing with external code segments and the environment),
+\emph{concolic execution} was proposed. It uses information from the concrete
+execution of the \ac{SUT} to simplify symbolic execution where necessary. The
+\ac{SUT} runs normally with some concrete input and symbolic execution runs in
+parallel, providing concrete values to allow concrete execution to explore
+different branches. When the constraint solver finds a path constraint that it
+cannot solve, concrete values from the concrete execution state are plugged in
+the constraint so that the theorem prover can work with a simplified version.
+\citeauthor{Korel1990AutomatedST} first proposed the use of concrete execution
+to aid symbolic execution to generate test vectors that exercise a particular
+path~\cite{Korel1990AutomatedST}. More recently concolic execution was proved
+effective in exploring large and complex C programs~\cite{Godefroid2005DARTDA,
+Sen2005CUTEAC}, multithreaded Java applications~\cite{Sen2006CUTEAJ} and to
+extend fuzz testing to uncover security vulnerabilities in x86
+binaries~\cite{godefroid2008automated, godefroid2007random}.
 
 \subsection{Fuzz Testing}
 % introduce fuzz testing
+Fuzz testing (or fuzzing) is a software testing technique that builds upon random
+testing. It was originally conceived for reliability testing, but has recently
+found application in security testing. The term fuzzing dates back to 1988 from
+a course project for an Advanced Operating Systems class taught at the
+University of Wisconsin by Barton Miller~\cite{takanen2008fuzzing}. After
+noticing how a thunderstorm was able to scramble his input through a remote
+terminal and crash the program on the other end, he decided to propose a project
+to his students to experiment with random testing of UNIX utilities. A group of
+two students succeeded at the given task and two years later published their
+findings~\cite{miller1990empirical}. Random testing was already in use since the
+1950s, when programmers would use punched cards from the trash or decks of
+random numbers as input to programs~\cite{weinberg2008}.
+
+% general operation of fuzzers
+In general, the operation of a fuzzer is similar to random testing: a fuzzer
+generates some input (often based on some program-specific knowledge) and feeds
+it to the \ac{SUT}. The program's execution is then monitored for unexpected
+behaviours, specifically crashes or timeouts. The process is then reiterated
+until a stopping criteria is met (\eg~time budget is exhausted, code coverage
+is reached, defects are observed). Fuzzers can be categorized along three
+different properties:
+
+\begin{itemize}
+    \item if new samples are generated by changing existing samples (\eg~from
+        a seeding corpus or from previous iterations) or from scratch;
+    \item if it is aware or not of the input structure and relations among its
+        parts (\eg~checksums, protocol-specific values);
+    \item how much it is aware and makes used of the inner structure of the
+        \ac{SUT} to drive test generation.
+\end{itemize}
+
+% mutation-based vs generation-based
+Mutation-based fuzzers need a tests corpus in order to seed the first iteration
+of fuzzing. From this corpus, selected inputs are systematically mutated to
+produce new inputs that are added to a data store the fuzzer handles. The
+updated set of inputs is then used in successive fuzzing iterations. In order to
+improve fuzzing efficiency, \citeauthor{rebert2014optimizing} propose a number
+of algorithms that optimize seed selection for mutation-based
+fuzzers~\cite{rebert2014optimizing}. Generation-based fuzzers on the other hand,
+generate inputs from scratch, often with the aid of some kind of model of the
+\ac{SUT}'s input space (\eg~a grammar to describe the input
+model~\cite{godefroid2008grammar}).
+
+% dumb vs smart fuzzers
+A fuzzer's awareness of the \ac{SUT}'s input structure can be exploited to
+generate, with much higher probability, valid or semi-valid inputs. This is
+important as invalid inputs tend to stress only the parsing components of a
+program and leave the core business components unexplored. Having an input model
+(\eg~a formal grammar, a formalized protocol specification) can be extremely
+beneficial for fuzzing implementations of complex (stateful) protocols or file
+formats~\cite{banks2006snooze, pham2016model}. Unfortunately an input model is
+not easily (or at all in case of proprietary file formats or protocols)
+available. In these cases, if enough samples from the input space are available,
+one could try to infer the underlying input
+model~\cite{bastani2017synthesizing}. Other efforts have been made to detect
+and repair checksums in randomly generated inputs~\cite{wang2010taintscope}.
+
+% black box vs white box vs gray box
+As with any other software testing technique, fuzzers can be classified as black
+box~\cite{hocevar2011zzuf, helin2015radamsa, householder2012probability,
+woo2013scheduling}, white box~\cite{godefroid2012sage, stephens2016driller} or
+gray box~\cite{bohme2017coverage, bohme2017directed, afl}, depending on the
+amount of knowledge of the internal structure of the \ac{SUT} they leverage.
+While a white box fuzzer may explore deeper program compartments, the resources
+necessary for program analysis may become prohibitive. Black box approaches on
+the contrary, are able to generate new inputs very quickly. When aiming for
+efficiency instead of effectiveness (\eg~when trying to find the maximal number
+of defects in limited time or to show in minimal time the correctness of the
+\ac{SUT} for a percentage of the input space), has been proven that there exists
+a bound on the time that systematic white box testing can take for each test
+execution after which black box testing becomes more
+efficient~\cite{bohme2016probabilistic}.  Gray box fuzzers implement light
+program analysis through instrumentation of the \ac{SUT} (\eg~by injecting
+snippets of monitoring code directly into the source code, compiled binary or
+interpreter), making input generation faster than traditional white box
+approaches while obtaining feedback from the concrete executions (\eg~through
+code coverage information).
+
+% TODO: briefly present problems in CGF and argue that there's no best fuzzer
+% for all applications (maybe mention no free lunch theorem?)
+% - problems with general-purpose fuzzers (magic bytes, etc.)
+% - fuzzing as search problem
+% - NFL
+
+% TODO: brief of this work
 
 
 % \section{OLD Software Testing}
@@ -557,12 +649,4 @@ from the concrete execution state are plugged in to simplify the constraint.
 % \cite{grieco2016quickfuzz}. \textbf{VUzzer}~\cite{rawat2017vuzzer} differs from
 % the other fuzzers as its usage of white-box (static analysis and \emph{sparse}
 % taint analysis) mixed with gray-box techniques constitute an hybrid model.
-
-% TODO: briefly present problems in CGF and argue that there's no best fuzzer
-% for all applications (maybe mention no free lunch theorem?)
-% - problems with general-purpose fuzzers (magic bytes, etc.)
-% - fuzzing as search problem
-% - NFL
-
-% TODO: brief of this work
 

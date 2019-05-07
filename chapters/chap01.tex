@@ -538,9 +538,9 @@ beneficial for fuzzing implementations of complex (stateful) protocols or file
 formats~\cite{banks2006snooze, pham2016model}. Unfortunately an input model is
 not easily (or at all in case of proprietary file formats or protocols)
 available. In these cases, if enough samples from the input space are available,
-one could try to infer the underlying input
-model~\cite{bastani2017synthesizing}. Other efforts have been made to detect
-and repair checksums in randomly generated inputs~\cite{wang2010taintscope}.
+one could try to infer the underlying input model~\cite{bastani2017synthesizing,
+godefroid2017learn}. Other efforts have been made to detect and repair checksums
+in randomly generated inputs~\cite{wang2010taintscope}.
 
 % black box vs white box vs gray box
 As with any other software testing technique, fuzzers can be classified as black

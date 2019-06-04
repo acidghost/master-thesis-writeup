@@ -392,8 +392,143 @@ instructions) and dynamic (\eg~magic bytes, offsets that taint the index operand
 of \texttt{lea} instructions) analyses.
 
 \section{Symbolic-Assisted Fuzzing}
-% TODO: Driller & SymFuzz
+% TODO: introduction to fuzzing with white box approach
+Automated test generation has been done since the 1970s with the aid of symbolic
+execution. Initial work focused on finding inputs to exercise a specific
+execution path within the \ac{SUT}. More recently, symbolic execution has seen a
+resurgence in the context of security testing, given that it has been proven
+effective in exploring all feasible execution paths within real-word programs.
 
+% Symbolic execution is a tool often blended with black box fuzzing with the aim
+% of improving code coverage and reach deeper portions of the \ac{SUT} by
+% systematically explore the space of feasible paths.
+
+\begin{algorithm}
+    \DontPrintSemicolon%
+    \SetKwFunction{RunAndCheck}{RunAndCheck}
+    \SetKwFunction{SelectNext}{SelectNext}
+    \SetKwFunction{ExpandExecution}{ExpandExecution}
+    \SetKwFunction{Score}{Score}
+    \KwIn{Initial seed $I_s$}
+    \KwOut{Set of crashing inputs $C$}
+    \BlankLine%
+    $C \leftarrow \emptyset$\;
+    $Q \leftarrow \{I_s\}$\;\label{algo:symfuzz:initq}
+    \If{\RunAndCheck{$I_s$}\label{algo:symfuzz:checkseed}}{%
+        $C \leftarrow C \bigcup \{I_s\}$
+    }
+    \While{$Q$ is not empty}{%
+        $I \leftarrow \SelectNext{Q}$\;\label{algo:symfuzz:sel}
+        $G \leftarrow \ExpandExecution{I}$\;\label{algo:symfuzz:exp}
+        \ForEach{$I_G \in G$}{%
+            \If{\RunAndCheck{$I_G$}}{%
+                \label{algo:symfuzz:gen1}
+                $C \leftarrow C \bigcup \{I_G\}$
+            }
+            \Score{$I_G$}\;\label{algo:symfuzz:score}
+            $Q \leftarrow Q \bigcup \{I_G\}$\;\label{algo:symfuzz:gen2}
+        }
+    }
+    \caption{Symbolic-Assisted Fuzzing}
+\label{algo:symfuzz}
+\end{algorithm}
+
+An abstract view of a generic symbolic-assisted fuzzing engine is given in
+Algorithm~\ref{algo:symfuzz}. It maintains a set of inputs, initialized with the
+initial seed input (line~\ref{algo:symfuzz:initq}), from which new inputs are
+generated. On line~\ref{algo:symfuzz:checkseed} the function
+\texttt{RunAndCheck} runs the \ac{SUT} with the given input and returns a true
+value if the program ended with unexpected results. If this is the case, the
+input that caused the failure is added to a set which is returned at the end of
+the procedure. Next, a loop operates until the set of working inputs is empty.
+First it selects an element from the set (through \texttt{SelectNext} on
+line~\ref{algo:symfuzz:sel}) and then generating a set of inputs from the
+selected input on line~\ref{algo:symfuzz:exp}. \texttt{ExpandExecution}
+symbolically executes the \ac{SUT} with the supplied input and collects the path
+constraint. The constraint that identifies the $i$th branch in the execution is
+negated so that when the updated path constraint is solved for the symbolic
+variables, the new input is going to exercise the same path as its parent up to
+the $(i-1)$th branch and take the alternative branch on the $i$th one. Later,
+each generated input is run and checked for exceptions, before being scored and
+added to the set of working inputs (line~\ref{algo:symfuzz:gen1}
+to~\ref{algo:symfuzz:gen2}). \texttt{Score} evaluates the given input and assign
+a score that can be used in successive calls to \texttt{SelectNext}.
+
+The specifics of each component of Algorithm~\ref{algo:symfuzz} is different
+from one implementation to another. The most peculiar ones, that differentiate
+the most symbolic-assisted fuzzers among each other, are \texttt{SelectNext}
+(line~\ref{algo:symfuzz:sel}), \texttt{ExpandExecution}
+(line~\ref{algo:symfuzz:exp}) and \texttt{Score}
+(line~\ref{algo:symfuzz:score}). DART~\cite{Godefroid2005DARTDA} provides a
+reference implementation for white box fuzzing. The set of working inputs
+consists at most of a single element (the seed input is randomly generated),
+\texttt{SelectNext} always returns the only element present and
+\texttt{ExpandExecution} returns a singleton set which input is the result of
+running the constraint solver on a modified version of the path constraint
+exercised by its given input; \citeauthor{Godefroid2005DARTDA}, for exposition
+purposes, present a depth-first search on the execution tree of the \ac{SUT}
+(\ie~the last constraint on the path constraint is negated before being fed to
+the solver), although other search strategies can be used (\eg~breadth-first,
+random or heuristics-based). When the program is symbolically executed with a
+generated input, DART checks that there are no divergences (\ie~the expected
+path is effectively taken) and if so generates a new input; otherwise it flips
+some flags tracking search incompleteness and restarts the procedure with a new
+randomly generated input.
+
+SAGE~\cite{godefroid2008automated, godefroid2012sage} expands upon the work on
+DART in a threefold manner:
+\begin{enumeratein}
+    \item by leveraging concolic execution on x86 binaries (in contrast to C
+        source code);
+    \item implementing a generational search in order to optimize the time spent
+        doing symbolic execution;
+    \item testing the \ac{SUT} in its entirety instead of units of code.
+\end{enumeratein}
+The set of working inputs is initialized with a well-formed, valid input
+(instead of randomly generated). \texttt{SelectNext} selects the input with the
+highest score. SAGE scores each input with the number of newly discovered basic
+blocks (\eg~input $i$ is assigned a score of $n$ if it exercise $n$ previously
+unexercised basic blocks). \texttt{ExpandExecution} implements the generational
+search: for each constraint on the path constraint it generates a new input by
+negating it; to prevent redundancy in the sub-searches, a \texttt{bound}
+parameter for each sub-search is used to limit backtracking above the branch
+where the sub-search forked. The rationale behind this search strategy is to
+maximize the number of generated inputs from each symbolic execution (which are
+expensive for large programs with large amounts of symbolic variables); the
+authors report a mean time to complete a single symbolic execution run for one
+of the analyzed \ac{SUT} of 25 minutes and 30 seconds while testing the same
+program takes seconds. Using a generational search strategy, SAGE is able to
+spend only 25\% of the search time doing symbolic execution.
+
+The symbolic execution engine of SAGE is trace-based: the \ac{SUT} is executed
+concretely and a trace of the execution is stored into a file; later this trace
+is interpreted symbolically and reasoned about. Other symbolic-assisted fuzzers
+(\eg~EXE and KLEE) take a different approach: the \ac{SUT} is (usually)
+translated to an intermediate language and interpreted; at branching statements
+the state of the \ac{SUT} is stored and execution is forked. These approaches
+are named respectively offline and online symbolic execution in literature. A
+disadvantage of the former is the redundancy in re-executing instructions, while
+the latter puts a strain on memory because of the continuous forking of state.
+
+EXE uses a coverage-based strategy to implement \texttt{SelectNext}: it selects
+the input that exercises a path that is blocked (\ie~waiting to be scheduled for
+execution) on an instruction that has been executed the fewest number of times;
+then the selected input and its children are expanded
+(\ie~\texttt{ExpandExecution}) in a depth-first manner. KLEE uses two different
+search strategies in a round robin fashion. Random path selection uses a random
+walk from the root of a binary tree representing all visited execution states
+and stops when it reaches a leaf (\ie~leaves are active states while internal
+nodes are places where execution forked). This strategy favors states high up in
+the tree, which have the favorable property of having less constraints on their
+symbolic inputs; moreover it makes it hard for the search to become stuck on
+states generated by a tight loop containing symbolic variables.
+Coverage-optimized search uses heuristics to assign weights to states and uses
+them to perform random selection.
+
+
+% TODO: SAGE and SymFuzz
+
+% TODO: Driller
 
 \section{Cooperative Fuzzing}
 % TODO: Levy flights & Chemotactic

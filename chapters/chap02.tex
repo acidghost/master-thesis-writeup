@@ -392,16 +392,12 @@ instructions) and dynamic (\eg~magic bytes, offsets that taint the index operand
 of \texttt{lea} instructions) analyses.
 
 \section{Symbolic-Assisted Fuzzing}
-% TODO: introduction to fuzzing with white box approach
+% introduction to fuzzing with white box approach
 Automated test generation has been done since the 1970s with the aid of symbolic
 execution. Initial work focused on finding inputs to exercise a specific
 execution path within the \ac{SUT}. More recently, symbolic execution has seen a
 resurgence in the context of security testing, given that it has been proven
 effective in exploring all feasible execution paths within real-word programs.
-
-% Symbolic execution is a tool often blended with black box fuzzing with the aim
-% of improving code coverage and reach deeper portions of the \ac{SUT} by
-% systematically explore the space of feasible paths.
 
 \begin{algorithm}
     \DontPrintSemicolon%
@@ -454,11 +450,12 @@ added to the set of working inputs (line~\ref{algo:symfuzz:gen1}
 to~\ref{algo:symfuzz:gen2}). \texttt{Score} evaluates the given input and assign
 a score that can be used in successive calls to \texttt{SelectNext}.
 
+% DART
 The specifics of each component of Algorithm~\ref{algo:symfuzz} is different
 from one implementation to another. The most peculiar ones, that differentiate
-the most symbolic-assisted fuzzers among each other, are \texttt{SelectNext}
-(line~\ref{algo:symfuzz:sel}), \texttt{ExpandExecution}
-(line~\ref{algo:symfuzz:exp}) and \texttt{Score}
+the most symbolic-assisted fuzzers among each other,
+are\linebreak\texttt{SelectNext} (line~\ref{algo:symfuzz:sel}),
+\texttt{ExpandExecution} (line~\ref{algo:symfuzz:exp}) and \texttt{Score}
 (line~\ref{algo:symfuzz:score}). DART~\cite{Godefroid2005DARTDA} provides a
 reference implementation for white box fuzzing. The set of working inputs
 consists at most of a single element (the seed input is randomly generated),
@@ -475,6 +472,7 @@ path is effectively taken) and if so generates a new input; otherwise it flips
 some flags tracking search incompleteness and restarts the procedure with a new
 randomly generated input.
 
+% SAGE
 SAGE~\cite{godefroid2008automated, godefroid2012sage} expands upon the work on
 DART in a threefold manner:
 \begin{enumeratein}
@@ -498,18 +496,35 @@ expensive for large programs with large amounts of symbolic variables); the
 authors report a mean time to complete a single symbolic execution run for one
 of the analyzed \ac{SUT} of 25 minutes and 30 seconds while testing the same
 program takes seconds. Using a generational search strategy, SAGE is able to
-spend only 25\% of the search time doing symbolic execution.
+spend only 25\% of the search time doing symbolic execution. Because of the
+nature of this search strategy, it is critical to the effectiveness of SAGE that
+the seed input exercises a path as deep as possible so that the first symbolic
+execution generates as much new inputs as possible.
 
+% online vs offline symbolic execution
 The symbolic execution engine of SAGE is trace-based: the \ac{SUT} is executed
 concretely and a trace of the execution is stored into a file; later this trace
 is interpreted symbolically and reasoned about. Other symbolic-assisted fuzzers
-(\eg~EXE and KLEE) take a different approach: the \ac{SUT} is (usually)
-translated to an intermediate language and interpreted; at branching statements
-the state of the \ac{SUT} is stored and execution is forked. These approaches
-are named respectively offline and online symbolic execution in literature. A
-disadvantage of the former is the redundancy in re-executing instructions, while
-the latter puts a strain on memory because of the continuous forking of state.
+(\eg~EXE~\cite{cadar2008exe} and KLEE~\cite{cadar2008klee}) take a different
+approach: the \ac{SUT} is (usually) translated to an intermediate language and
+interpreted; at branching statements the state of the \ac{SUT} is stored and
+execution is forked. These approaches are named respectively offline and online
+symbolic execution in literature. A disadvantage of the former is the redundancy
+in re-executing instructions symbolically, while the latter puts a strain on
+memory because of the continuous forking of state.
+MAYHEM~\cite{cha2012unleashing} takes instead an hybrid approach: the system
+starts with an online exploration phase in which normal online symbolic
+execution is performed; then, whenever memory utilization reaches a threshold, a
+checkpoint manager selects an active execution and stores a checkpoint
+containing only the symbolic execution state, freeing memory. When there are no
+more active executions, a checkpoint restoration phase selects a checkpoint and
+restores it in memory by re-executing the \ac{SUT} only concretely, as the
+symbolic state was stored in the checkpoint. After this, the system restarts
+online exploration. This hybrid approach allows MAYHEM to be resilient to memory
+requirements while avoiding redundant and expensive symbolic executions, taking
+the best of online and offline symbolic execution.
 
+% EXE and KLEE
 EXE uses a coverage-based strategy to implement \texttt{SelectNext}: it selects
 the input that exercises a path that is blocked (\ie~waiting to be scheduled for
 execution) on an instruction that has been executed the fewest number of times;
@@ -521,14 +536,25 @@ and stops when it reaches a leaf (\ie~leaves are active states while internal
 nodes are places where execution forked). This strategy favors states high up in
 the tree, which have the favorable property of having less constraints on their
 symbolic inputs; moreover it makes it hard for the search to become stuck on
-states generated by a tight loop containing symbolic variables.
-Coverage-optimized search uses heuristics to assign weights to states and uses
-them to perform random selection.
+states generated by a tight loop containing symbolic variables (what the authors
+call ``fork bombing''). Coverage-optimized search uses heuristics to assign
+weights to states and uses them to perform random selection.
 
+\section{Hybrid Techniques}
+% Hybrid Fuzz Testing
+Hybrid techniques merge symbolic-assisted fuzzing with black box mutational
+fuzzing (\ie~random testing). Hybrid Fuzz Testing~\cite{pak2012hybrid} uses an
+initial round of symbolic execution to find its way to a fixed, configurable,
+number of ``frontier nodes''; for each node a path constraint is collected
+(\ie~a frontier node is the basic block at the end of one of those paths). Then
+new inputs are randomly generated that still respect the path predicates on each
+frontier node; these inputs are then executed concretely to check for
+exceptions. While this approach can help exploring the execution tree in its
+breadth early on (something random testing struggles to achieve), random testing
+can get stuck on deeper checks that have not been explored by an initial
+symbolic execution run.
 
-% TODO: SAGE and SymFuzz
-
-% TODO: Driller
+% Hybrid Concolic Testing & Driller
 
 \section{Cooperative Fuzzing}
 % TODO: Levy flights & Chemotactic

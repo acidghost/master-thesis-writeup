@@ -405,24 +405,24 @@ effective in exploring all feasible execution paths within real-word programs.
     \SetKwFunction{SelectNext}{SelectNext}
     \SetKwFunction{ExpandExecution}{ExpandExecution}
     \SetKwFunction{Score}{Score}
-    \KwIn{Initial seed $I_s$}
+    \KwIn{Initial seed $t_s$}
     \KwOut{Set of crashing inputs $C$}
     \BlankLine%
     $C \leftarrow \emptyset$\;
-    $Q \leftarrow \{I_s\}$\;\label{algo:symfuzz:initq}
-    \If{\RunAndCheck{$I_s$}\label{algo:symfuzz:checkseed}}{%
-        $C \leftarrow C \bigcup \{I_s\}$
+    $Q \leftarrow \{t_s\}$\;\label{algo:symfuzz:initq}
+    \If{\RunAndCheck{$t_s$}\label{algo:symfuzz:checkseed}}{%
+        $C \leftarrow C \bigcup \{t_s\}$
     }
     \While{$Q$ is not empty}{%
-        $I \leftarrow \SelectNext{Q}$\;\label{algo:symfuzz:sel}
-        $G \leftarrow \ExpandExecution{I}$\;\label{algo:symfuzz:exp}
-        \ForEach{$I_G \in G$}{%
-            \If{\RunAndCheck{$I_G$}}{%
+        $t \leftarrow \SelectNext{Q}$\;\label{algo:symfuzz:sel}
+        $G \leftarrow \ExpandExecution{t}$\;\label{algo:symfuzz:exp}
+        \ForEach{$t_G \in G$}{%
+            \If{\RunAndCheck{$t_G$}}{%
                 \label{algo:symfuzz:gen1}
-                $C \leftarrow C \bigcup \{I_G\}$
+                $C \leftarrow C \bigcup \{t_G\}$
             }
-            \Score{$I_G$}\;\label{algo:symfuzz:score}
-            $Q \leftarrow Q \bigcup \{I_G\}$\;\label{algo:symfuzz:gen2}
+            \Score{$t_G$}\;\label{algo:symfuzz:score}
+            $Q \leftarrow Q \bigcup \{t_G\}$\;\label{algo:symfuzz:gen2}
         }
     }
     \caption{Symbolic-Assisted Fuzzing}

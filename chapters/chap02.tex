@@ -554,7 +554,50 @@ breadth early on (something random testing struggles to achieve), random testing
 can get stuck on deeper checks that have not been explored by an initial
 symbolic execution run.
 
-% Hybrid Concolic Testing & Driller
+% Hybrid Concolic Testing
+The system described in \citetitle{majumdar2007hybrid}~\cite{majumdar2007hybrid}
+alternates random testing with symbolic execution. It starts with random testing
+and whenever no new coverage is produced in a predefined number of steps, it
+switches to symbolic execution from the current program state. Both random
+testing and symbolic execution are implemented in an online manner; random
+concrete values, as well as symbolic values, are fed as input to the \ac{SUT}
+without re-executing instructions to build the symbolic state before switching.
+Hybrid concolic testing implementation is based on the online concolic executor
+CUTE~\cite{Sen2005CUTEAC}.
+
+% Driller
+More recently, \citeauthor{stephens2016driller} presented
+Driller~\cite{stephens2016driller}, which composes a \ac{CGF} with a symbolic
+executor by using state-of-the-art implementations and optimizations to expand
+over the intuition of \citeauthor{majumdar2007hybrid} in
+\citetitle{majumdar2007hybrid}. Driller uses AFL as \ac{CGF} and
+angr~\cite{shoshitaishvili2016sok} as symbolic executor. As with hybrid concolic
+testing, Driller starts off with AFL; whenever AFL communicates that it has no
+pending favorites inputs waiting in the queue (\ie~when the property
+\texttt{pending\_favs} in AFL statistics file reaches zero), Driller invokes the
+symbolic executor. This in turn traces the execution of the unique inputs found
+by AFL and tries to explore its neighborhood in the execution tree before
+returning newly generated inputs to AFL\@. To motivate their approach, the
+authors define a ``compartment'' within a program as a portion of code locked
+behind strict checks (\eg~an if statement checking for a magic byte). Fuzzing is
+powerful at effectively exploring portions of code \emph{within} a compartment
+but struggles to pass those checks that would allow it to explore deeper
+compartments. Symbolic execution on the other hand complements fuzzing as checks
+that separate compartments are easily solved in a single symbolic pass but
+exploring inside a compartment takes as much resources. Driller uses fuzzing to
+cost-effectively explore portions of code within compartments and selective
+symbolic execution to switch compartments.
+
+Another key optimization of Driller over hybrid concolic testing is given by the
+symbolic exploration phase. Instead of switching back to fuzzing as soon as
+symbolic execution finds a new input, Driller lets symbolic execution run until
+a configurable number of new basic blocks has been discovered. The authors
+observed that in some cases Driller was able to generate inputs that get only
+partially through checks that are code in succession, causing the fuzzer to
+rapidly get stuck again on a new check; because symbolic execution is expensive,
+this frequent switching caused Driller to perform poorly. The symbolic
+exploration phase alleviates this by allowing symbolic execution to work through
+multi-checks in one go.
 
 \section{Cooperative Fuzzing}
 % TODO: Levy flights & Chemotactic

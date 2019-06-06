@@ -600,7 +600,40 @@ exploration phase alleviates this by allowing symbolic execution to work through
 multi-checks in one go.
 
 \section{Cooperative Fuzzing}
+With the term \emph{cooperative fuzzing} we refer to a system that runs in
+parallel a number of possibly different fuzzer instances able to share
+information with each other in order to achieve a common goal (\ie~increase code
+coverage). The intuition behind this is threefold:
+\begin{enumeratein}
+    \item due to the non-deterministic nature of fuzzing, results across
+        different runs of the same fuzzer may vary greatly;
+    \item different fuzzers may yield different results for different programs
+        (\ie~there is no fuzzer that works best for all possible programs);
+    \item providing a mean to share information may enable a single fuzzer to
+        obtain critical knowledge that otherwise would not have obtained or
+        would have obtained much later.
+\end{enumeratein}
+By parallelizing fuzzers execution and enabling an overlay of communication
+features, cooperative fuzzing tries to exploit non-determinism and
+implementation differences among fuzzers with the objective of creating an
+higher-level fuzzer.
+
 % TODO: Levy flights & Chemotactic
+An example in literature of such system is presented
+in~\cite{bottinger2016fuzzing}. By making an analogy between foraging behaviours
+and bug hunting, the authors propose a system that models fuzzing as L\'evy
+flights over the input space of the \ac{SUT}; a L\'evy flight is a widely used
+mathematical model which, under some hypotheses, minimizes search times when
+applied to resources foraging. A L\'evy flight is formally defined as a
+Markovian process having independent and stationary increments; intuitively it
+describes the movement of a particle that at each step randomly chooses
+direction and length of the next step to make. Assuming a bit-string of length
+$N$ as input to the \ac{SUT}, split into $n$ equal length segments, each fuzzing
+instance simulates two L\'evy flights: one over the domain of the segment
+offsets $\{1, \dots, n\}$ and one over the domain of segment values
+$\{1, \dots, 2^{\frac{N}{n}}\}$.
+For each of these the distribution of flight lengths is given by:
+$$p_j(l) \sim |l|^{-1-\alpha_j}, j = 1, 2$$
 
 % TODO: brief of how we tackle the problem of using different fuzzers and island
 % model for co-evolution

@@ -602,8 +602,8 @@ multi-checks in one go.
 \section{Cooperative Fuzzing}
 With the term \emph{cooperative fuzzing} we refer to a system that runs in
 parallel a number of possibly different fuzzer instances able to share
-information with each other in order to achieve a common goal (\ie~increase code
-coverage). The intuition behind this is threefold:
+information with each other in order to achieve a common goal (\ie~increase
+global code coverage). The intuition behind this is threefold:
 \begin{enumeratein}
     \item due to the non-deterministic nature of fuzzing, results across
         different runs of the same fuzzer may vary greatly;
@@ -618,22 +618,59 @@ features, cooperative fuzzing tries to exploit non-determinism and
 implementation differences among fuzzers with the objective of creating an
 higher-level fuzzer.
 
-% TODO: Levy flights & Chemotactic
+% Levy flights
 An example in literature of such system is presented
 in~\cite{bottinger2016fuzzing}. By making an analogy between foraging behaviours
-and bug hunting, the authors propose a system that models fuzzing as L\'evy
-flights over the input space of the \ac{SUT}; a L\'evy flight is a widely used
-mathematical model which, under some hypotheses, minimizes search times when
-applied to resources foraging. A L\'evy flight is formally defined as a
-Markovian process having independent and stationary increments; intuitively it
-describes the movement of a particle that at each step randomly chooses
-direction and length of the next step to make. Assuming a bit-string of length
-$N$ as input to the \ac{SUT}, split into $n$ equal length segments, each fuzzing
+in biology and bug hunting in software, the authors propose a system that models
+fuzzing as L\'evy flights over the input space of the \ac{SUT}; a L\'evy flight
+is a widely used mathematical model which, under some hypotheses, minimizes
+search times when applied to resources foraging. A L\'evy flight is formally
+defined as a Markovian process having independent and stationary increments;
+intuitively it describes the movement of a particle that at each step randomly
+chooses direction and length of the next step to make. Assuming a bit-string of
+length $N$, split into $n$ segments of length $\frac{N}{n}$, each fuzzing
 instance simulates two L\'evy flights: one over the domain of the segment
-offsets $\{1, \dots, n\}$ and one over the domain of segment values
-$\{1, \dots, 2^{\frac{N}{n}}\}$.
-For each of these the distribution of flight lengths is given by:
-$$p_j(l) \sim |l|^{-1-\alpha_j}, j = 1, 2$$
+offsets $\{1,\dots,n\}$ and one over the domain of segment values
+$\{1,\dots,2^{\frac{N}{n}}\}$. For each of these, the distribution of flight
+lengths is given by the power law:
+$$p_i(l) \sim |l|^{-1 - \alpha_i} \qquad i = 1,2$$
+where $0 < \alpha_i < 2$ is a parameter that controls the diffusivity of the
+stochastic process. For lower values of $\alpha_i$ the process exhibits bigger
+steps in the search space, while for higher values the distribution of step
+lengths moves its probability mass toward zero. During fuzzing, these parameters
+are self-adapted so that if the fuzzer is exploring an high-quality region of
+space, it should make smaller steps in order to thoroughly explore the current
+region (\ie~sub-diffusion); on the other hand, if the fuzzer is exploring a
+low-quality region, it should make bigger steps to try to explore different
+regions in the hope of finding an higher-quality one (\ie~super-diffusion). The
+quality metric used is the number of basic block exercised by the given input,
+that were not exercised by any previously tested input.
+
+At each iteration, a fuzzer instance generates $k_\text{gen}$ new inputs by
+simulating a step in offset space and one in segment space and replacing the
+segment at the given offset with the given segment value in a given input. The
+input that is modified is seeded on the first iteration and the latest generated
+input successively. These new inputs are then evaluated against a queue of
+inputs the fuzzer maintains using the basic block metric. Diffusivity parameters
+are then updated using the following:
+$$\alpha_i = \frac{2}{1 + e^{b_i - E(X_\text{gen}, X_\text{all})}}
+\qquad i = 1,2$$
+where $b_i \in \mathbb{R}^+$ is a fixed parameter that relates the quality
+measure to diffusion behaviours (\ie~at which quality value the search switches
+from sub- to super-diffusion or vice versa) and $E(X_\text{gen}, X_\text{all})$
+is the newly generated inputs quality, measured against a queue of
+$k_\text{max}$ older inputs. Then the queue $X_\text{all}$ is updated with
+inputs from $X_\text{gen}$ in a first-in-first-out manner, keeping a total of
+$k_\text{max}$ items.
+
+A swarm of fuzzers so described runs in parallel; after all fuzzers complete one
+iteration, a k-means clustering algorithm finds $k$ clusters of fuzzers by using
+the latest generated input of each. For each cluster, all fuzzers are relocated
+to the same position of the fuzzer with the best quality evaluation in the
+cluster (\ie~resets the starting position of L\'evy flights with the latest
+steps of the best neighbour).
+
+% TODO: Chemotactic
 
 % TODO: brief of how we tackle the problem of using different fuzzers and island
 % model for co-evolution

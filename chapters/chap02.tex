@@ -620,19 +620,19 @@ higher-level fuzzer.
 
 % Levy flights
 An example in literature of such system is presented
-in~\cite{bottinger2016fuzzing}. By making an analogy between foraging behaviours
-in biology and bug hunting in software, the authors propose a system that models
-fuzzing as L\'evy flights over the input space of the \ac{SUT}; a L\'evy flight
-is a widely used mathematical model which, under some hypotheses, minimizes
-search times when applied to resources foraging. A L\'evy flight is formally
-defined as a Markovian process having independent and stationary increments;
-intuitively it describes the movement of a particle that at each step randomly
-chooses direction and length of the next step to make. Assuming a bit-string of
-length $N$, split into $n$ segments of length $\frac{N}{n}$, each fuzzing
-instance simulates two L\'evy flights: one over the domain of the segment
-offsets $\{1,\dots,n\}$ and one over the domain of segment values
-$\{1,\dots,2^{\frac{N}{n}}\}$. For each of these, the distribution of flight
-lengths is given by the power law:
+in~\cite{bottinger2016fuzzing, bottinger2016hunting}. By making an analogy
+between foraging behaviours in biology and bug hunting in software, the authors
+propose a system that models fuzzing as L\'evy flights over the input space of
+the \ac{SUT}; a L\'evy flight is a widely used mathematical model which, under
+some hypotheses, minimizes search times when applied to resources foraging. A
+L\'evy flight is formally defined as a Markovian process having independent and
+stationary increments; intuitively it describes the movement of a particle that
+at each step randomly chooses direction and length of the next step to make.
+Assuming a bit-string of length $N$, split into $n$ segments of length
+$\frac{N}{n}$, each fuzzing instance simulates two L\'evy flights: one over the
+domain of the segment offsets $\{1,\dots,n\}$ and one over the domain of segment
+values $\{1,\dots,2^{\frac{N}{n}}\}$. For each of these, the distribution of
+flight lengths is given by the power law:
 $$p_i(l) \sim |l|^{-1 - \alpha_i} \qquad i = 1,2$$
 where $0 < \alpha_i < 2$ is a parameter that controls the diffusivity of the
 stochastic process. For lower values of $\alpha_i$ the process exhibits bigger
@@ -670,7 +670,20 @@ to the same position of the fuzzer with the best quality evaluation in the
 cluster (\ie~resets the starting position of L\'evy flights with the latest
 steps of the best neighbour).
 
-% TODO: Chemotactic
+% Chemotactic
+Another cooperative fuzzing system by the same author,
+\citeauthor{bottinger2016fuzzing}, is presented in~\cite{bottinger2017guiding,
+bottinger2017chemotactic}. Once again the system is inspired by biology:
+chemotaxis is the movement of organisms of a colony attracted by a chemical
+trace; two kinds of fuzzers are deployed in a cluster (\ie~they run in
+parallel): explorers (\ie~\acp{CGF}) use coverage feedback to produce a trace
+which is followed by workers (\ie~black box mutational fuzzers). The
+feedback-enabled explorers, having more information at their disposal, are more
+easily able to explore new portions of code. Information of their findings is
+encoded in a trace which workers are attracted to, effectively guiding the
+faster black box fuzzing instances toward new regions. The intuition behind this
+approach is reminiscent of Driller's, where fuzzers of different natures are
+used to cope with each other's limitations.
 
 % TODO: brief of how we tackle the problem of using different fuzzers and island
 % model for co-evolution

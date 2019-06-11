@@ -10,6 +10,7 @@ function SetForTex()
   syn match  texRefZone   '\\citeauthor' nextgroup=texRefOption,texCite
   syn match  texRefZone   '\\citetitle' nextgroup=texRefOption,texCite
   syn region texZone   start="\\begin{lstlisting}"   end="\\end{lstlisting}\|%stopzone\>"  contains=@NoSpell
+  syn match texUrl "\\url{[^}]\{-}}" containedin=texStatement contains=@NoSpell
 endfunction
 
 colorscheme carvedwood

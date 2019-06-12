@@ -301,7 +301,7 @@ appropriate folder. On the other hand, to inject new inputs into the fuzzer's
 queue, a driver simply needs to add a file with the input to the right folder.
 The Linux \texttt{inotify} subsystem is used to avoid doing inefficient long
 polling to capture fuzzer events (\eg~when a new interesting input is added).
-For fuzzers that need congestion control, we require them to write (\ie~fuzzers
+For fuzzers that need congestion control, we require them to write (\ie~drivers
 listen for \texttt{inotify} \texttt{IN\_MODIFY} events) to a predetermined file
 whenever there is availability to receive new inputs.
 

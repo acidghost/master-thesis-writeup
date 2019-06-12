@@ -17,6 +17,7 @@ nnoremap <Leader>m :w<bar>!make<CR>
 nnoremap <Leader>mv :w<bar>!make view<CR>
 nnoremap @ :nohlsearch<CR>
 map <Leader>. :Sexplore<CR>
+nnoremap <Leader>gq }v{gq<Esc>
 
 colorscheme carvedwood
 " hi Normal cterm=none ctermbg=15 ctermfg=0

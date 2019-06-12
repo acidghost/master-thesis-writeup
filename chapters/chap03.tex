@@ -308,6 +308,45 @@ whenever there is availability to receive new inputs.
 \subsection{Driver Implementation}
 \label{sec:driver-impl}
 
+Drivers are responsible to launch and interact with a fuzzer instance running on
+the same machine. The driver program is written in $1,496$ lines of C code; Rust
+was the initial choice but unfortunately interfacing with Intel \ac{BTS} via
+\ac{FFI} proved to be harder than needed: execution traces were empty and
+debugging such low-level kernel features is notoriously hard. As the only hard
+requirements were performance and a reliable interface to \ac{BTS}, we decided
+to code the driver in C, which is notoriously fast and can directly interface
+with \ac{BTS} via the \texttt{perf\_event\_open} Linux system call. The choice
+of using \ac{BTS} over the more modern Intel \ac{PT} is merely due to the
+unavailability of a more modern processor to conduct experiments with.
+Nonetheless, for our purpose, \ac{BTS} offers the same features as \ac{PT} does.
+
+The driver starts up by initializing communication channels: connects to
+interesting and inject queues, binds to a port to serve metric replies and sets
+up \texttt{inotify} watchers. Next it runs the assigned fuzzer with the given
+configuration and starts the main loop, which runs until the fuzzer terminates
+or an external interrupt or kill signal is received. The main loop first checks
+if there are new \texttt{inotify} events and if so, for each new file, it
+executes the \ac{SUT} with \ac{BTS} enabled; this produces an execution trace in
+the form of a sequence of branches which is stored to a file. This new
+interesting input is then broadcast over the interesting queue, along with its
+coverage information.
+
+Next, the driver checks if there is a new request on the metric channel and, if
+so, sends a reply. This is done by reading the coverage file referenced in the
+request and evaluating it with respect to the accumulated driver knowledge:
+whenever a new interesting input is processed, the driver updates an hash table
+that maps branches to an hit counter; this enables the driver to track already
+discovered branches and how many times each has been hit, across all intercepted
+interesting inputs. In the current implementation, the metric is given by the
+number of newly discovered branches.
+
+The last step in the driver's main loop consists in trying to pull one message
+from the inject queue. If a message is successfully read and is addressed to
+itself (\ie~\texttt{fuzzer\_ids} contains the right identifier), the driver adds
+the attached coverage information to the internal hash map and injects the input
+file into the fuzzer by creating a copy of the file in the fuzzer's working
+directory.
+
 \subsection{Master Implementation}
 \label{sec:master-impl}
 

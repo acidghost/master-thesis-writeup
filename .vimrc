@@ -11,6 +11,9 @@ function SetForTex()
   syn match  texRefZone   '\\citetitle' nextgroup=texRefOption,texCite
   syn region texZone   start="\\begin{lstlisting}"   end="\\end{lstlisting}\|%stopzone\>"  contains=@NoSpell
   syn match texUrl "\\url{[^}]\{-}}" containedin=texStatement contains=@NoSpell
+  syn match texNoSpellComment "%.*$" contained contains=@NoSpell
+  syn region texNoSpell contained matchgroup=texComment start="%\s*nospell\s*{" end="%\s*nospell\s*}" contains=@texFoldGroup,@NoSpell,texNoSpellComment
+  hi link texNoSpellComment texComment
 endfunction
 
 nnoremap <Leader>m :w<bar>!make<CR>

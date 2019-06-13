@@ -360,3 +360,37 @@ external configuration files.
 \subsection{Master Implementation}
 \label{sec:master-impl}
 
+In our implementation of the \ac{CFF}, the master is the main executable;
+responsible of running and interacting with the drivers, consists of $749$ lines
+of Rust source code.
+
+The master starts up by binding to the interesting and inject queues before
+starting the drivers, parameterized for the specific fuzzer by a mixture of
+command line arguments and configuration files. Moreover, it sets up
+\texttt{inotify} watchers for fuzzers that need congestion control. The fact
+that this direct communication channel between master and fuzzer exists may
+hinder the applicability of the current implementation in a truly distributed
+environment; nonetheless, the limitation can be easily circumvented by employing
+some kind of middleware or update the \ac{CFF} implementation by introducing a
+new ZeroMQ communication channel between driver and master.
+
+The main loop executes until an external interrupt is received or one of the
+driver terminates early. At each iteration of the loop a new item is pulled from
+the interesting queue. The pulled input is then evaluated against all other
+fuzzers by sending a metric request to all drivers excepts the one that sent the
+interesting input and synchronously waiting for a reply. When all evaluations
+have been collected a competition to win the input starts. Two generic
+strategies are currently implemented: one that selects the driver that replied
+with the highest or the lowest metric; one selects drivers if their evaluation
+is greater or less than a threshold. The winning strategy, along with threshold
+and ordering parameters, are configurable through command line arguments. Once
+winning drivers are selected, the master sends a new message on the inject queue
+with the \texttt{fuzzer\_ids} field set to the winning drivers'
+\texttt{fuzzer\_id}.
+
+To implement the congestion control mechanism, the master keeps an hash table
+mapping drivers that need this feature to a list of interesting inputs and their
+evaluation by the mapped driver. When the master receives the signal through
+\texttt{inotify}, it starts a competition to select an input from the
+aforementioned list and sends it to the driver before clearing the list.
+

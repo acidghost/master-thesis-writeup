@@ -347,6 +347,16 @@ the attached coverage information to the internal hash map and injects the input
 file into the fuzzer by creating a copy of the file in the fuzzer's working
 directory.
 
+As a final remark, the driver has no knowledge of the kind of fuzzer it is
+interfacing with, instead it exposes a collection of command line parameters
+flexible enough to accommodate a variety of fuzzers. These parameters are filled
+in by the master when it executes a driver. The name ``driver'' is inspired by
+device drivers which abstract away from the \ac{OS} the details of interfacing
+with different hardware; here a driver abstracts away implementation details of
+interfacing with a \emph{generic} fuzzer, minus some configuration parameters.
+Also, these configuration parameters are not encoded in the master either but in
+external configuration files.
+
 \subsection{Master Implementation}
 \label{sec:master-impl}
 

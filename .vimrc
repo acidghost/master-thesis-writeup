@@ -21,7 +21,8 @@ nnoremap <Leader>mv :w<bar>!make view<CR>
 nnoremap @ :nohlsearch<CR>
 inoremap <C-h> <C-o>:nohlsearch<CR>
 map <Leader>. :Sexplore<CR>
-nnoremap <Leader>gq }v{gq<Esc>
+nnoremap <Leader>gq }v{gq<Esc><C-o>
+map <Leader>sr :SyntasticReset<CR>
 
 colorscheme carvedwood
 " hi Normal cterm=none ctermbg=15 ctermfg=0

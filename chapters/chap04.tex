@@ -1,0 +1,126 @@
+\chapter{Evaluation}
+\label{chap:evaluation}
+
+% compare:
+% - mono (no best fuzzer for sample programs)
+% - multi vs single (more communication is better if multi > single)
+% - coop vs union (test coop efficacy)
+
+This chapter presents an evaluation of four different fuzzers and our
+implementation of the \acl{CFF} as described in Section~\ref{sec:system-impl};
+the implementation uses the same four fuzzers in order to draw meaningful
+comparison results.
+
+\paragraph{Choice of Fuzzers}
+
+For the choice of fuzzers we decided to use \aflfast, \fairfuzz, \honggfuzz~and
+\vuzzer. The first two provide two different implementations of the
+state-of-the-art \ac{CGF}, \afl; we argue that two different implementation of
+the same core algorithm may yield different results. \honggfuzz~is chosen as it
+provides different means to extract feedback from the \sut, possibly resulting
+in a different feedback signal (given the same input) compared to other methods
+(\eg~\afl~uses QEMU). Lastly, \vuzzer~provides with an evolutionary fuzzer which
+uses static and lightweight program analysis; because of this, \ac{CFF} uses the
+congestion control mechanism to interact with \vuzzer.
+
+\paragraph{Experimental Infrastructure}
+
+Experiments were run on a 64-bit machine with $8$ cores (running at $3.4$GHz),
+with $16$GB of RAM, running Ubuntu 16.04. Because of a limitation of \vuzzer\@
+implementation, we had to run it inside a virtual machine hosting Ubuntu 14.04.
+To allow communication with its driver running on the host machine, we used a
+shared folder; this allowed us to reuse the \texttt{inotify} infrastructure as
+if the fuzzer was running locally.
+
+\paragraph{Testing Targets}
+
+We chose a set of programs that are widely used both in practice and literature:
+
+\begin{description}
+    \item[\djpeg] uses the popular \texttt{libjpeg-turbo} (version 1.5.1) and
+        has been used for the evaluation of \fairfuzz~and \vuzzer;
+    \item[\objdump] is a component of the suite \texttt{binutils} (version 2.28)
+        which has also been tested by \aflfast~and \fairfuzz; we test it with
+        the command line option \texttt{-d}, which provides a disassembler;
+    \item[\tiffpdf] from the popular \texttt{libtiff} (version 4.0.9), parses a
+        TIFF image and converts it to a PDF\@; we use it without command line
+        arguments;
+    \item[\listswf] from the popular \texttt{libming} (version 0.4.8), parses a
+        file in SWF format; we use it without command line arguments.
+\end{description}
+
+\section{Single Fuzzer Evaluation}
+
+In this section we present an evaluation of the chosen fuzzers, without any
+cooperation. We ran each fuzzer independently for $24$ hours on each of the
+targets, except for \listswf~which ran for $6$ hours. Table~\ref{tab:eval-mono}
+reports the arithmetic mean and the $95\%$ confidence intervals for the number
+of unique basic block transitions as computed by Intel \ac{BTS} over five
+rounds.
+
+\begin{table}[h]
+    \centering%
+    \small%
+    \begin{adjustbox}{tabular=l*{4}c,center}
+        \textbf{\sut} & \textbf{\aflfast} & \textbf{\fairfuzz} &
+            \textbf{\honggfuzz} & \textbf{\vuzzer} \\
+        \bottomrule%
+        \djpeg& $3739.4 \pm 113.831$ & $4043.2 \pm 103.838$ &
+            \hicell$4112.8 \pm 39.5483$ & $2801 \pm 53.5514$ \\
+        \objdump& $4762.6 \pm 23.3693$ & \hicell$5067 \pm 62.6832$ &
+            $4132.4 \pm 104.8$ & $3162.2 \pm 138.462$ \\
+        \tiffpdf& \hicell$8971.2 \pm 152.865$ & $8813.8 \pm 146.756$ &
+            $5260.2 \pm 148.591$ & $3616 \pm 34.6427$ \\
+        \listswf& $6831.6 \pm 2615.24$ & \hicell$8586.8 \pm 87.7467$ &
+            $6345.6 \pm 2358.52$ & $5048.2 \pm 90.3928$
+    \end{adjustbox}
+    \caption{Mean coverage with $95\%$ confidence intervals for single fuzzers.
+    Highlighted is the best for the given program.}
+    \label{tab:eval-mono}
+\end{table}
+
+\begin{figure}[h]
+    \centering%
+    \begin{adjustbox}{center}
+        \subfloat[\djpeg]{%
+            \includegraphics[width=.65\textwidth]{figures/mono-djpeg}
+            \label{fig:eval-mono-djpeg}
+        }
+        \subfloat[\objdump]{%
+            \includegraphics[width=.65\textwidth]{figures/mono-objdump}
+            \label{fig:eval-mono-objdump}
+        }
+    \end{adjustbox}
+    \begin{adjustbox}{center}
+        \subfloat[\tiffpdf]{%
+            \includegraphics[width=.65\textwidth]{figures/mono-tiff2pdf}
+            \label{fig:eval-mono-tiff2pdf}
+        }
+        \subfloat[\listswf]{%
+            \includegraphics[width=.65\textwidth]{figures/mono-ming}
+            \label{fig:eval-mono-ming}
+        }
+    \end{adjustbox}
+    \caption{Mean coverage over time for single fuzzers.}
+    \label{fig:eval-mono}
+\end{figure}
+
+\section{Cooperative Fuzzing Evaluation}
+
+\begin{table}[h]
+    \centering%
+    \begin{tabular}{l c c c}
+        \textbf{\sut} & \textbf{multi} & \textbf{single} & \textbf{union} \\
+        \bottomrule%
+        \djpeg& $4056.4 \pm 76.9499$ & \hicell$4078.4 \pm 85.6738$ & $4028.6 \pm 47.7396$ \\
+        \objdump& $5414.6 \pm 224.121$ & \hicell$5529.6 \pm 338.651$ & $5035.6 \pm 54.5944$ \\
+        \tiffpdf& \hicell$8765.6 \pm 183.682$ & $8577.6 \pm 99.2457$ & $8623.2 \pm 183.399$ \\
+        \listswf& \hicell$9008.4 \pm 122.81$ & $8801.4 \pm 96.4045$ & $8916.6 \pm 83.8381$
+    \end{tabular}
+    \caption{Mean coverage with $95\%$ confidence intervals for winning
+    strategies that select single or multiple winners and without cooperation.}
+    \label{tab:eval-single-multi}
+\end{table}
+
+\section{Crash Analysis}
+

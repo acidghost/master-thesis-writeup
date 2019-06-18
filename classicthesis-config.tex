@@ -144,6 +144,7 @@
 %\captionsetup{font=small,labelformat=smallcaps} % format=hang,
 \captionsetup{font=small} % format=hang,
 \usepackage{subfig}
+\usepackage{adjustbox}
 % ****************************************************************************************************
 
 
@@ -309,4 +310,27 @@
 % inline enumeration lists
 \newlist{enumeratein}{enumerate*}{1}
 \setlist[enumeratein]{label=(\roman*)}
+
+\newcommand\hicell{\cellcolor[gray]{.85}}
+
+\newcommand\djpeg{\texttt{djpeg}}
+\newcommand\objdump{\texttt{objdump}}
+\newcommand\tiffpdf{\texttt{tiff2pdf}}
+\newcommand\listswf{\texttt{listswf}}
+
+\newcounter{lipsumi}
+\newcommand\lipsumseqrestart{\setcounter{lipsumi}{1}}
+\lipsumseqrestart
+\newcommand\lipsumi{\value{lipsumi}}
+\newcommand\lipsumseq[1][1]{%
+    \lipsum[\lipsumi-\the\numexpr\lipsumi+#1-1]
+    \addtocounter{lipsumi}{#1}
+}
+
+\newcommand\sut{\ac{SUT}}
+\newcommand\afl{AFL}
+\newcommand\aflfast{AFLFast}
+\newcommand\fairfuzz{FairFuzz}
+\newcommand\honggfuzz{Honggfuzz}
+\newcommand\vuzzer{VUzzer}
 

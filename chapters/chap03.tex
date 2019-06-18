@@ -1,4 +1,6 @@
 \chapter{Cooperative Fuzzing Framework}
+\label{chap:cff}
+
 In this chapter we describe the design of our \acf{CFF} and details about its
 implementation. We are going to show how instances of different fuzzers can
 communicate with each other in order to share knowledge and cooperate to improve
@@ -229,6 +231,8 @@ set of scores for different fuzzers over a single test-case, selects a set of
 scored test-cases to be injected into a single fuzzer.
 
 \section{System Implementation}
+\label{sec:system-impl}
+
 % describe uberfuzz implementation
 This section describes our implementation of the \ac{CFF}, which is composed of
 two executables: a \emph{driver} and a \emph{master}. A driver is responsible to

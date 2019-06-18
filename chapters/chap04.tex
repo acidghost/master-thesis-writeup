@@ -13,15 +13,17 @@ comparison results.
 
 \paragraph{Choice of Fuzzers}
 
-For the choice of fuzzers we decided to use \aflfast, \fairfuzz, \honggfuzz~and
-\vuzzer. The first two provide two different implementations of the
+For the choice of fuzzers we decided to use \aflfast, \fairfuzz, \honggfuzz\@
+and \vuzzer. The first two provide two different implementations of the
 state-of-the-art \ac{CGF}, \afl; we argue that two different implementation of
-the same core algorithm may yield different results. \honggfuzz~is chosen as it
-provides different means to extract feedback from the \sut, possibly resulting
-in a different feedback signal (given the same input) compared to other methods
-(\eg~\afl~uses QEMU). Lastly, \vuzzer~provides with an evolutionary fuzzer which
-uses static and lightweight program analysis; because of this, \ac{CFF} uses the
-congestion control mechanism to interact with \vuzzer.
+the same core algorithm may yield different results. \honggfuzz\@ is chosen as
+it provides different means to extract feedback from the \sut, possibly
+resulting in a different feedback signal (given the same input) compared to
+other methods (\eg\@ \afl\@ uses QEMU). Lastly, \vuzzer\@ provides with an
+evolutionary fuzzer which uses static and lightweight program analysis; because
+of this, \ac{CFF} uses the congestion control mechanism to interact with
+\vuzzer. All fuzzers were run with the default parameters and configuration,
+with the exception of those required to correctly interface with the \sut.
 
 \paragraph{Experimental Infrastructure}
 
@@ -38,9 +40,9 @@ We chose a set of programs that are widely used both in practice and literature:
 
 \begin{description}
     \item[\djpeg] uses the popular \texttt{libjpeg-turbo} (version 1.5.1) and
-        has been used for the evaluation of \fairfuzz~and \vuzzer;
+        has been used for the evaluation of \fairfuzz\@ and \vuzzer;
     \item[\objdump] is a component of the suite \texttt{binutils} (version 2.28)
-        which has also been tested by \aflfast~and \fairfuzz; we test it with
+        which has also been tested by \aflfast\@ and \fairfuzz; we test it with
         the command line option \texttt{-d}, which provides a disassembler;
     \item[\tiffpdf] from the popular \texttt{libtiff} (version 4.0.9), parses a
         TIFF image and converts it to a PDF\@; we use it without command line
@@ -49,14 +51,39 @@ We chose a set of programs that are widely used both in practice and literature:
         file in SWF format; we use it without command line arguments.
 \end{description}
 
+Moreover, as \vuzzer\@ requires a minimum set of seed inputs to work properly,
+we randomly chose the minimum required by \vuzzer\@ from test samples provided
+with each \sut; these inputs were used to also seed other fuzzers.
+
+As an additional information, we report on the number of basic block and
+functions found by static analysis via Radare\footnote{\url{https://rada.re/}}
+in Table~\ref{tab:eval-bbs}.
+
+\begin{table}[h]
+    \centering%
+    \begin{tabular}{l c c}
+        \textbf{\sut} & \textbf{basic blocks} & \textbf{functions} \\
+        \bottomrule%
+        \djpeg& $6187$ & $366$ \\
+        \objdump& $43211$ & $2220$ \\
+        \tiffpdf& $11129$ & $791$ \\
+        \listswf& $3349$ & $446$
+    \end{tabular}
+    \caption{Number of basic blocks and functions for the chosen targets.}
+    \label{tab:eval-bbs}
+\end{table}
+
+\newpage%
+
 \section{Single Fuzzer Evaluation}
 
 In this section we present an evaluation of the chosen fuzzers, without any
 cooperation. We ran each fuzzer independently for $24$ hours on each of the
-targets, except for \listswf~which ran for $6$ hours. Table~\ref{tab:eval-mono}
-reports the arithmetic mean and the $95\%$ confidence intervals for the number
-of unique basic block transitions as computed by Intel \ac{BTS} over five
-rounds.
+targets, except for \listswf\@ which ran for $6$ hours.
+Table~\ref{tab:eval-mono} reports the arithmetic mean and the $95\%$ confidence
+intervals for the number of unique basic block transitions as computed by Intel
+\ac{BTS} over five rounds. The coverage values are aggregated over time
+intervals of one minute.
 
 \begin{table}[h]
     \centering%
@@ -79,7 +106,14 @@ rounds.
     \label{tab:eval-mono}
 \end{table}
 
-\begin{figure}[h]
+By looking at the table, as well as at Figure~\ref{fig:eval-mono}, which
+presents the evolution of coverage over time, is easy to see how no fuzzer is
+decisively better than the other across all tested programs. This validates,
+although for a small sample of programs and fuzzers, our intuition based on the
+no free lunch theorem, for which there is no fuzzer that performs better than
+all others across all possible test programs.
+
+\begin{figure}[t]
     \centering%
     \begin{adjustbox}{center}
         \subfloat[\djpeg]{%
@@ -105,7 +139,38 @@ rounds.
     \label{fig:eval-mono}
 \end{figure}
 
+To validate this even further we compare, in Table~\ref{tab:eval-mono-union},
+the best single fuzzer with the result of taking the union of coverage traces
+across all four fuzzers for each time step. For this comparison we use a time
+limit of $6$ hours, to align it with the evaluations presented in
+Section~\ref{sec:eval-coop}.
+
+\begin{table}[h]
+    \centering%
+    \begin{tabular}{l c c}
+        \textbf{\sut} & \textbf{best single} & \textbf{union} \\
+        \bottomrule%
+        \djpeg& $3975.4 \pm 67.1442$ & \hicell$4028.6 \pm 47.7396$ \\
+        \objdump& $4840.4 \pm 12.7867$ & \hicell$5035.6 \pm 54.5944$ \\
+        \tiffpdf& $7907 \pm 103.238$ & \hicell$8623.2 \pm 183.399$ \\
+        \listswf& $8586.8 \pm 87.7467$ & \hicell$8916.6 \pm 83.8381$
+    \end{tabular}
+    \caption{Mean coverage with $95\%$ confidence intervals for best single
+    fuzzer and union of coverage traces.}
+    \label{tab:eval-mono-union}
+\end{table}
+
+The table clearly shows that fuzzers uncover unique basic blocks that are not
+exposed by any other fuzzer and this contributes to reaching an higher final
+coverage consistently across all examined programs.
+
 \section{Cooperative Fuzzing Evaluation}
+\label{sec:eval-coop}
+
+In this section we present an evaluation of the efficacy of cooperation.
+Table~\ref{tab:eval-coop} presents the result of running the \ac{CFF} for $6$
+hours against the union of coverage traces, reported for convenience from
+Table~\ref{tab:eval-mono-union}.
 
 \begin{table}[h]
     \centering%
@@ -119,8 +184,34 @@ rounds.
     \end{tabular}
     \caption{Mean coverage with $95\%$ confidence intervals for winning
     strategies that select single or multiple winners and without cooperation.}
-    \label{tab:eval-single-multi}
+    \label{tab:eval-coop}
 \end{table}
+
+\begin{figure}[t]
+    \centering%
+    \begin{adjustbox}{center}
+        \subfloat[\djpeg]{%
+            \includegraphics[width=.65\textwidth]{figures/vs-djpeg}
+            \label{fig:eval-coop-djpeg}
+        }
+        \subfloat[\objdump]{%
+            \includegraphics[width=.65\textwidth]{figures/vs-objdump}
+            \label{fig:eval-coop-objdump}
+        }
+    \end{adjustbox}
+    \begin{adjustbox}{center}
+        \subfloat[\tiffpdf]{%
+            \includegraphics[width=.65\textwidth]{figures/vs-tiff2pdf}
+            \label{fig:eval-coop-tiff2pdf}
+        }
+        \subfloat[\listswf]{%
+            \includegraphics[width=.65\textwidth]{figures/vs-ming}
+            \label{fig:eval-coop-ming}
+        }
+    \end{adjustbox}
+    \caption{Eval coop}
+    \label{fig:eval-coop}
+\end{figure}
 
 \section{Crash Analysis}
 

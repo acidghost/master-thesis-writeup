@@ -24,6 +24,7 @@ map <Leader>. :Sexplore<CR>
 nnoremap <Leader>gq }v{gq<Esc><C-o>
 nmap <Leader>sr :SyntasticReset<CR>
 nmap <Leader>st :SyntasticToggleMode<CR>
+nmap <Leader>sc :SyntasticCheck<CR>
 
 colorscheme carvedwood
 " hi Normal cterm=none ctermbg=15 ctermfg=0

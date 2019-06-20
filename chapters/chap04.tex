@@ -73,13 +73,11 @@ in Table~\ref{tab:eval-bbs}.
     \label{tab:eval-bbs}
 \end{table}
 
-\newpage%
-
 \section{Single Fuzzer Evaluation}
 
 In this section we present an evaluation of the chosen fuzzers, without any
 cooperation. We ran each fuzzer independently for $24$ hours on each of the
-targets, except for \listswf\@ which ran for $6$ hours.
+targets, except for \listswf\ which ran for $6$ hours.
 Table~\ref{tab:eval-mono} reports the arithmetic mean and the $95\%$ confidence
 intervals for the number of unique basic block transitions as computed by Intel
 \ac{BTS} over five rounds. The coverage values are aggregated over time
@@ -107,13 +105,13 @@ intervals of one minute.
 \end{table}
 
 By looking at the table, as well as at Figure~\ref{fig:eval-mono}, which
-presents the evolution of coverage over time, is easy to see how no fuzzer is
-decisively better than the other across all tested programs. This validates,
+presents the evolution of coverage over time, it is easy to see how no fuzzer is
+decisively better than the others across all tested programs. This validates,
 although for a small sample of programs and fuzzers, our intuition based on the
 no free lunch theorem, for which there is no fuzzer that performs better than
 all others across all possible test programs.
 
-\begin{figure}[t]
+\begin{figure}[h]
     \centering%
     \begin{adjustbox}{center}
         \subfloat[\djpeg]{%
@@ -139,21 +137,86 @@ all others across all possible test programs.
     \label{fig:eval-mono}
 \end{figure}
 
+To derive more robust and meaningful insights over these results, we employ the
+Bayesian estimation model proposed in~\cite{kruschke2013bayesian}. This model
+provides, among others, estimates of the posterior distributions of the means
+and their differences of two given sets of observations.
+Figure~\ref{fig:djpeg-means} shows the distribution of the difference of means
+of \honggfuzz\ against \aflfast\ and \fairfuzz\ for \djpeg. The figure also
+shows the $95\%$ \ac{HDI}, which represents the interval of values onto which
+$95\%$ of the probability mass lies. Figure~\ref{fig:djpeg-m-hongg-afl} clearly
+shows that the \ac{HDI} lies completely above zero, meaning that with high
+credibility we can say that \honggfuzz\ performs better than \aflfast\ over
+\djpeg. Unfortunately the same conclusion cannot be made for the comparison of
+\honggfuzz\ against \fairfuzz. Figure~\ref{fig:djpeg-m-hongg-fair} shows that a
+difference of means of zero lies on the \ac{HDI}; moreover an estimated $20.2\%$
+of the probability mass lies below zero (\ie~in favor of \fairfuzz).
+
+\begin{figure}[h]
+    \centering%
+    \subfloat[\honggfuzz\ vs.\ \aflfast]{%
+        \includegraphics[width=.5\textwidth]{figures/cropped/djpeg-m-hongg-afl}
+        \label{fig:djpeg-m-hongg-afl}
+    }
+    \subfloat[\honggfuzz\ vs.\ \fairfuzz]{%
+        \includegraphics[width=.5\textwidth]{figures/cropped/djpeg-m-hongg-fair}
+        \label{fig:djpeg-m-hongg-fair}
+    }
+    \caption{Single fuzzers: distribution of difference of means for \djpeg.}
+    \label{fig:djpeg-means}
+\end{figure}
+
+Figure~\ref{fig:objdump-means} shows the difference of means for \objdump. For
+both the cases of \fairfuzz\ against \aflfast\
+(Figure~\ref{fig:objdump-m-fair-afl}) and \fairfuzz\ against \honggfuzz\
+(Figure~\ref{fig:objdump-m-fair-hongg}) the results strongly support the claim
+of \fairfuzz\ uncovering more basic block transitions for \objdump.
+
+\begin{figure}[h]
+    \centering%
+    \subfloat[\fairfuzz\ vs.\ \aflfast]{%
+        \includegraphics[width=.5\textwidth]{figures/cropped/objdump-m-fair-afl}
+        \label{fig:objdump-m-fair-afl}
+    }
+    \subfloat[\fairfuzz\ vs.\ \honggfuzz]{%
+        \includegraphics[width=.5\textwidth]{figures/cropped/objdump-m-fair-hongg}
+        \label{fig:objdump-m-fair-hongg}
+    }
+    \caption{Single fuzzers: distribution of difference of means for \objdump.}
+    \label{fig:objdump-means}
+\end{figure}
+
+Figure~\ref{fig:tiff2pdf-means} shows the difference of means for \tiffpdf.
+
+\begin{figure}[h]
+    \centering%
+    \subfloat[\aflfast\ vs.\ \fairfuzz]{%
+        \includegraphics[width=.5\textwidth]{figures/cropped/tiff2pdf-m-afl-fair}
+        \label{fig:tiff2pdf-m-afl-fair}
+    }
+    \subfloat[\aflfast\ vs.\ \honggfuzz]{%
+        \includegraphics[width=.5\textwidth]{figures/cropped/tiff2pdf-m-afl-hongg}
+        \label{fig:tiff2pdf-m-afl-hongg}
+    }
+    \caption{Single fuzzers: distribution of difference of means for \tiffpdf.}
+    \label{fig:tiff2pdf-means}
+\end{figure}
+
 To validate this even further we compare, in Table~\ref{tab:eval-mono-union},
 the best single fuzzer with the result of taking the union of coverage traces
 across all four fuzzers for each time step. For this comparison we use a time
-limit of $6$ hours, to align it with the evaluations presented in
+limit of $6$ hours, to align it with the evaluations presented in the following
 Section~\ref{sec:eval-coop}.
 
 \begin{table}[h]
     \centering%
-    \begin{tabular}{l c c}
-        \textbf{\sut} & \textbf{best single} & \textbf{union} \\
+    \begin{tabular}{l c l c}
+        \textbf{\sut} & \multicolumn{2}{c}{\textbf{best single}} & \textbf{union} \\
         \bottomrule%
-        \djpeg& $3975.4 \pm 67.1442$ & \hicell$4028.6 \pm 47.7396$ \\
-        \objdump& $4840.4 \pm 12.7867$ & \hicell$5035.6 \pm 54.5944$ \\
-        \tiffpdf& $7907 \pm 103.238$ & \hicell$8623.2 \pm 183.399$ \\
-        \listswf& $8586.8 \pm 87.7467$ & \hicell$8916.6 \pm 83.8381$
+        \djpeg& $3975.4 \pm 67.1442$ & \honggfuzz& \hicell$4028.6 \pm 47.7396$ \\
+        \objdump& $4840.4 \pm 12.7867$ & \fairfuzz& \hicell$5035.6 \pm 54.5944$ \\
+        \tiffpdf& $8224.6 \pm 254.638$ & \fairfuzz& \hicell$8623.2 \pm 183.399$ \\
+        \listswf& $8586.8 \pm 87.7467$ & \fairfuzz& \hicell$8916.6 \pm 83.8381$
     \end{tabular}
     \caption{Mean coverage with $95\%$ confidence intervals for best single
     fuzzer and union of coverage traces.}

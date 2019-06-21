@@ -74,6 +74,7 @@ in Table~\ref{tab:eval-bbs}.
 \end{table}
 
 \section{Single Fuzzer Evaluation}
+\label{sec:eval-mono}
 
 In this section we present an evaluation of the chosen fuzzers, without any
 cooperation. We ran each fuzzer independently for $24$ hours on each of the
@@ -155,11 +156,11 @@ of the probability mass lies below zero (\ie~in favor of \fairfuzz).
 \begin{figure}[h]
     \centering%
     \subfloat[\honggfuzz\ vs.\ \aflfast]{%
-        \includegraphics[width=.5\textwidth]{figures/cropped/djpeg-m-hongg-afl}
+        \includegraphics[width=.4\textwidth]{figures/cropped/djpeg-m-hongg-afl}
         \label{fig:djpeg-m-hongg-afl}
     }
     \subfloat[\honggfuzz\ vs.\ \fairfuzz]{%
-        \includegraphics[width=.5\textwidth]{figures/cropped/djpeg-m-hongg-fair}
+        \includegraphics[width=.4\textwidth]{figures/cropped/djpeg-m-hongg-fair}
         \label{fig:djpeg-m-hongg-fair}
     }
     \caption{Single fuzzers: distribution of difference of means for \djpeg.}
@@ -175,11 +176,11 @@ of \fairfuzz\ uncovering more basic block transitions for \objdump.
 \begin{figure}[h]
     \centering%
     \subfloat[\fairfuzz\ vs.\ \aflfast]{%
-        \includegraphics[width=.5\textwidth]{figures/cropped/objdump-m-fair-afl}
+        \includegraphics[width=.4\textwidth]{figures/cropped/objdump-m-fair-afl}
         \label{fig:objdump-m-fair-afl}
     }
     \subfloat[\fairfuzz\ vs.\ \honggfuzz]{%
-        \includegraphics[width=.5\textwidth]{figures/cropped/objdump-m-fair-hongg}
+        \includegraphics[width=.4\textwidth]{figures/cropped/objdump-m-fair-hongg}
         \label{fig:objdump-m-fair-hongg}
     }
     \caption{Single fuzzers: distribution of difference of means for \objdump.}
@@ -195,11 +196,11 @@ the given \sut\ (Figure~\ref{fig:tiff2pdf-m-afl-hongg}).
 \begin{figure}[h]
     \centering%
     \subfloat[\aflfast\ vs.\ \fairfuzz]{%
-        \includegraphics[width=.5\textwidth]{figures/cropped/tiff2pdf-m-afl-fair}
+        \includegraphics[width=.4\textwidth]{figures/cropped/tiff2pdf-m-afl-fair}
         \label{fig:tiff2pdf-m-afl-fair}
     }
     \subfloat[\aflfast\ vs.\ \honggfuzz]{%
-        \includegraphics[width=.5\textwidth]{figures/cropped/tiff2pdf-m-afl-hongg}
+        \includegraphics[width=.4\textwidth]{figures/cropped/tiff2pdf-m-afl-hongg}
         \label{fig:tiff2pdf-m-afl-hongg}
     }
     \caption{Single fuzzers: distribution of difference of means for \tiffpdf.}
@@ -237,16 +238,16 @@ which the results are inconclusive.
 \begin{figure}[h]
     \centering%
     \subfloat[\djpeg: Union vs.\ \honggfuzz]{%
-        \includegraphics[width=.5\textwidth]{figures/cropped/djpeg-m-uni-hongg}
+        \includegraphics[width=.4\textwidth]{figures/cropped/djpeg-m-uni-hongg}
     }
     \subfloat[\objdump: Union vs.\ \fairfuzz]{%
-        \includegraphics[width=.5\textwidth]{figures/cropped/objdump-m-uni-fair}
+        \includegraphics[width=.4\textwidth]{figures/cropped/objdump-m-uni-fair}
     }\\
     \subfloat[\tiffpdf: Union vs.\ \aflfast]{%
-        \includegraphics[width=.5\textwidth]{figures/cropped/tiff2pdf-m-uni-afl}
+        \includegraphics[width=.4\textwidth]{figures/cropped/tiff2pdf-m-uni-afl}
     }
     \subfloat[\listswf: Union vs.\ \fairfuzz]{%
-        \includegraphics[width=.5\textwidth]{figures/cropped/ming-m-uni-fair}
+        \includegraphics[width=.4\textwidth]{figures/cropped/ming-m-uni-fair}
     }
     \caption{Distribution of difference of means for union of fuzzers against
     the best single fuzzer.}
@@ -256,10 +257,12 @@ which the results are inconclusive.
 \section{Cooperative Fuzzing Evaluation}
 \label{sec:eval-coop}
 
-In this section we present an evaluation of the efficacy of cooperation.
-Table~\ref{tab:eval-coop} presents the result of running the \ac{CFF} for $6$
-hours against the union of coverage traces, reported for convenience from
-Table~\ref{tab:eval-mono-union}.
+In this section we present an evaluation of the efficacy of cooperation.  For
+this purpose we compare the results of running the \ac{CFF} for $6$ hours with
+the union of coverage from the four fuzzers running without cooperation, as we
+have done in Section~\ref{sec:eval-mono}. To make the comparison fair, for the
+union we take the maximum coverage after $6$ hours. Table~\ref{tab:eval-coop}
+presents the final mean coverage with $95\%$ confidence intervals.
 
 \begin{table}[h]
     \centering%
@@ -276,7 +279,14 @@ Table~\ref{tab:eval-mono-union}.
     \label{tab:eval-coop}
 \end{table}
 
-\begin{figure}[t]
+Looking only at the final mean we can see that one of the two cooperative
+strategies outperforms the union of fuzzers for all programs, but none of the
+two outperforms the other. For \djpeg we see that the differences are too small
+to be sensitive enough. By observing the mean coverage over time, shown in
+Figure~\ref{fig:eval-coop-djpeg}, we see that the union of fuzzers struggles
+against both cooperative strategies for the first two hours, before catching up.
+
+\begin{figure}[h]
     \centering%
     \begin{adjustbox}{center}
         \subfloat[\djpeg]{%
@@ -298,7 +308,8 @@ Table~\ref{tab:eval-mono-union}.
             \label{fig:eval-coop-ming}
         }
     \end{adjustbox}
-    \caption{Eval coop}
+    \caption{Mean coverage over time for two cooperative strategies and union of
+    fuzzers.}
     \label{fig:eval-coop}
 \end{figure}
 

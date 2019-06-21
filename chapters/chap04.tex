@@ -7,7 +7,7 @@
 % - coop vs union (test coop efficacy)
 
 This chapter presents an evaluation of four different fuzzers and our
-implementation of the \acl{CFF} as described in Section~\ref{sec:system-impl};
+implementation of the \acf{CFF} as described in Section~\ref{sec:system-impl};
 the implementation uses the same four fuzzers in order to draw meaningful
 comparison results.
 
@@ -209,27 +209,49 @@ the given \sut\ (Figure~\ref{fig:tiff2pdf-m-afl-hongg}).
 To validate differences among fuzzers even further, we compare, in
 Table~\ref{tab:eval-mono-union}, the best single fuzzer with the result of
 taking the union of coverage traces across all four fuzzers for each time step.
-For this comparison we use a time limit of $6$ hours, to align it with the
-evaluations presented in the following Section~\ref{sec:eval-coop}. The table
-clearly shows that fuzzers uncover unique basic block transitions that are not
-exposed by any other fuzzer (\ie~uncover disjoint sets of transitions) and this
-contributes to reaching an higher final coverage consistently across all
-examined programs.
+The table clearly shows that fuzzers uncover unique basic block transitions that
+are not exposed by any other fuzzer (\ie~uncover disjoint sets of transitions)
+and this contributes to reaching an higher final coverage consistently across
+all examined programs.
 
 \begin{table}[h]
     \centering%
     \begin{tabular}{l c l c}
         \textbf{\sut} & \multicolumn{2}{c}{\textbf{best single}} & \textbf{union} \\
         \bottomrule%
-        \djpeg& $3975.4 \pm 67.1442$ & \honggfuzz& \hicell$4028.6 \pm 47.7396$ \\
-        \objdump& $4840.4 \pm 12.7867$ & \fairfuzz& \hicell$5035.6 \pm 54.5944$ \\
-        \tiffpdf& $8224.6 \pm 254.638$ & \fairfuzz& \hicell$8623.2 \pm 183.399$ \\
-        \listswf& $8586.8 \pm 87.7467$ & \fairfuzz& \hicell$8916.6 \pm 83.8381$
+        \djpeg& $4112.8 \pm 39.5476$ & \honggfuzz& \hicell$4157.2 \pm 40.0495$ \\
+        \objdump& $5067 \pm 62.6821$ & \fairfuzz& \hicell$5404.6 \pm 38.1997$ \\
+        \tiffpdf& $8971.2 \pm 152.8626$ & \aflfast& \hicell$9695 \pm 129.7239$ \\
+        \listswf& $8586.8 \pm 87.7451$ & \fairfuzz& \hicell$8916.6 \pm 83.8365$
     \end{tabular}
     \caption{Mean coverage with $95\%$ confidence intervals for best single
     fuzzer and union of coverage traces.}
     \label{tab:eval-mono-union}
 \end{table}
+
+To delve deeper into these values, we show the result of Bayesian estimation in
+Figure~\ref{fig:means-mono-union}. The $95\%$ \ac{HDI} falls above zero (\ie~in
+favour of the union of fuzzers) for all considered programs except \djpeg, for
+which the results are inconclusive.
+
+\begin{figure}[h]
+    \centering%
+    \subfloat[\djpeg: Union vs.\ \honggfuzz]{%
+        \includegraphics[width=.5\textwidth]{figures/cropped/djpeg-m-uni-hongg}
+    }
+    \subfloat[\objdump: Union vs.\ \fairfuzz]{%
+        \includegraphics[width=.5\textwidth]{figures/cropped/objdump-m-uni-fair}
+    }\\
+    \subfloat[\tiffpdf: Union vs.\ \aflfast]{%
+        \includegraphics[width=.5\textwidth]{figures/cropped/tiff2pdf-m-uni-afl}
+    }
+    \subfloat[\listswf: Union vs.\ \fairfuzz]{%
+        \includegraphics[width=.5\textwidth]{figures/cropped/ming-m-uni-fair}
+    }
+    \caption{Distribution of difference of means for union of fuzzers against
+    the best single fuzzer.}
+    \label{fig:means-mono-union}
+\end{figure}
 
 \section{Cooperative Fuzzing Evaluation}
 \label{sec:eval-coop}

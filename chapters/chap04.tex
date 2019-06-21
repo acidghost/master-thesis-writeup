@@ -187,6 +187,10 @@ of \fairfuzz\ uncovering more basic block transitions for \objdump.
 \end{figure}
 
 Figure~\ref{fig:tiff2pdf-means} shows the difference of means for \tiffpdf.
+Unfortunately, as for \djpeg, we are not able to decisively confirm whether
+\aflfast\ is better than \fairfuzz\ (Figure~\ref{fig:tiff2pdf-m-afl-fair}). We
+can be instead more certain affirming that \aflfast\ outperforms \honggfuzz\ for
+the given \sut\ (Figure~\ref{fig:tiff2pdf-m-afl-hongg}).
 
 \begin{figure}[h]
     \centering%
@@ -202,11 +206,15 @@ Figure~\ref{fig:tiff2pdf-means} shows the difference of means for \tiffpdf.
     \label{fig:tiff2pdf-means}
 \end{figure}
 
-To validate this even further we compare, in Table~\ref{tab:eval-mono-union},
-the best single fuzzer with the result of taking the union of coverage traces
-across all four fuzzers for each time step. For this comparison we use a time
-limit of $6$ hours, to align it with the evaluations presented in the following
-Section~\ref{sec:eval-coop}.
+To validate differences among fuzzers even further, we compare, in
+Table~\ref{tab:eval-mono-union}, the best single fuzzer with the result of
+taking the union of coverage traces across all four fuzzers for each time step.
+For this comparison we use a time limit of $6$ hours, to align it with the
+evaluations presented in the following Section~\ref{sec:eval-coop}. The table
+clearly shows that fuzzers uncover unique basic block transitions that are not
+exposed by any other fuzzer (\ie~uncover disjoint sets of transitions) and this
+contributes to reaching an higher final coverage consistently across all
+examined programs.
 
 \begin{table}[h]
     \centering%
@@ -222,10 +230,6 @@ Section~\ref{sec:eval-coop}.
     fuzzer and union of coverage traces.}
     \label{tab:eval-mono-union}
 \end{table}
-
-The table clearly shows that fuzzers uncover unique basic blocks that are not
-exposed by any other fuzzer and this contributes to reaching an higher final
-coverage consistently across all examined programs.
 
 \section{Cooperative Fuzzing Evaluation}
 \label{sec:eval-coop}

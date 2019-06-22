@@ -9,7 +9,11 @@
 This chapter presents an evaluation of four different fuzzers and our
 implementation of the \acf{CFF} as described in \autoref{sec:system-impl}; the
 implementation uses the same four fuzzers in order to draw meaningful comparison
-results.
+results. In \autoref{sec:eval-mono} we compare the results, in terms of
+coverage, of running fuzzers without cooperation; \autoref{sec:eval-coop}
+presents results of running the same fuzzers with cooperation. Lastly
+\autoref{sec:eval-crashes} presents an evaluation of cooperative fuzzing in
+terms of crashes found.
 
 \paragraph{Choice of Fuzzers}
 
@@ -283,6 +287,18 @@ mean coverage with $95\%$ confidence intervals.
     \label{tab:eval-coop}
 \end{table}
 
+Looking only at the final mean we can see that one of the two cooperative
+strategies outperforms the union of fuzzers for all programs, but none of the
+two outperforms the other. Moreover for \djpeg\ and \objdump\ the union of
+fuzzers seems to perform the worst while for \tiffpdf\ and \listswf\ it is the
+single winner cooperative strategy to be outperformed. For \djpeg\ we see that
+the differences are too small to be sensitive enough as is confirmed by Bayesian
+estimation in \autoref{fig:best-djpeg-single-union} and
+\autoref{fig:best-djpeg-single-multi}. By observing the mean coverage over time,
+shown in \autoref{fig:eval-coop-djpeg}, we see that the union of fuzzers
+struggles against both cooperative strategies for the first two hours, before
+catching up.
+
 \begin{figure}[h]
     \centering%
     \begin{adjustbox}{center}
@@ -309,18 +325,6 @@ mean coverage with $95\%$ confidence intervals.
     fuzzers.}
     \label{fig:eval-coop}
 \end{figure}
-
-Looking only at the final mean we can see that one of the two cooperative
-strategies outperforms the union of fuzzers for all programs, but none of the
-two outperforms the other. Moreover for \djpeg\ and \objdump\ the union of
-fuzzers seems to perform the worst while for \tiffpdf\ and \listswf\ it is the
-single winner cooperative strategy to be outperformed. For \djpeg\ we see that
-the differences are too small to be sensitive enough as is confirmed by Bayesian
-estimation in \autoref{fig:best-djpeg-single-union} and
-\autoref{fig:best-djpeg-single-multi}. By observing the mean coverage over time,
-shown in \autoref{fig:eval-coop-djpeg}, we see that the union of fuzzers
-struggles against both cooperative strategies for the first two hours, before
-catching up.
 
 The mean final coverage for cooperative strategies may seem to be better than
 the union of fuzzers for \objdump\ (\autoref{fig:eval-coop-objdump}) as both
@@ -361,4 +365,5 @@ that the \ac{HDI} includes zero and $94\%$ of the credible values are above
 zero.
 
 \section{Crash Analysis}
+\label{sec:eval-crashes}
 

@@ -6,9 +6,12 @@ function SetForTex()
   setlocal spellfile=~/.vim/spell/en.utf-8.add
   setlocal spellfile+=./jargon.utf-8.add
 
+  let g:syntastic_tex_chktex_args = "-n 8"
+
   syn region texRefZone   matchgroup=texStatement start="\\nllabel{"    end="}\|%stopzone\>"  contains=@texRefGroup
   syn match  texRefZone   '\\citeauthor' nextgroup=texRefOption,texCite
   syn match  texRefZone   '\\citetitle' nextgroup=texRefOption,texCite
+  syn region texRefZone matchgroup=texStatement start="\\autoref{" end="}\|%stopzone\>" contains=@texRefGroup
   syn region texZone   start="\\begin{lstlisting}"   end="\\end{lstlisting}\|%stopzone\>"  contains=@NoSpell
   syn match texUrl "\\url{[^}]\{-}}" containedin=texStatement contains=@NoSpell
   syn match texNoSpellComment "%.*$" contained contains=@NoSpell

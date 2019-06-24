@@ -12,7 +12,7 @@ Black-box \emph{mutational} fuzzing (or \emph{Random Testing}) is a simple
 testing technique that uses mutation operators on a sample input to produce a
 new input; a corpus of \emph{valid} files (the more the better) is required to
 achieve good efficiency by reducing the search space. A simple algorithmic
-representation is given in Algorithm~\ref{algo:bbfuzzing}.
+representation is given in \autoref{algo:bbfuzzing}.
 
 \begin{algorithm}
     \DontPrintSemicolon%
@@ -40,7 +40,7 @@ a certain number of inputs have been tested, to name a few. More rudimentary
 tools such as \textbf{zzuf}~\cite{hocevar2011zzuf} or
 \textbf{Radamsa}~\cite{helin2015radamsa} allow for the tester to apply his or
 her own stop criteria for the fuzzing campaign. The \texttt{SelectSeed} function
-on line~\ref{algo:bbfuzzing:ss} of Algorithm~\ref{algo:bbfuzzing} selects one
+on line~\ref{algo:bbfuzzing:ss} of \autoref{algo:bbfuzzing} selects one
 input from the seeds corpus using the strategy of choice (\eg~stochastically, by
 execution time, crash density). Next, the \texttt{MutateSeed} function applies a
 mutation operator (\eg~bit-flips, insertion or deletion of words) to the
@@ -58,7 +58,7 @@ by the user within an interval or fixed. Radamsa performs instead a number of
 more sophisticated mutation operators such as insert, repeat, drop and swap on
 entities like bytes, ASCII and Unicode texts or arithmetic manipulations. More
 complex black-box mutational fuzzers implement all components of
-Algorithm~\ref{algo:bbfuzzing} and are able to exploit knowledge of the running
+\autoref{algo:bbfuzzing} and are able to exploit knowledge of the running
 campaign to achieve better results.
 The \textbf{\acf{BFF}}~\cite{householder2012probability} uses \emph{crash
 density} as a metric to decide which pair of seed input and mutation ratio to
@@ -90,7 +90,7 @@ A \ac{CGF} uses lightweight instrumentation and monitoring of the \ac{SUT} to
 gain coverage information. This information is then exploited to provide a
 solution to the \ac{FCS}
 problem~\cite{afltech,lemieux2017fairfuzz,bohme2017directed,bohme2017coverage}.
-The general approach is described in Algorithm~\ref{algo:cgf}.
+The general approach is described in \autoref{algo:cgf}.
 
 \begin{algorithm}
     \DontPrintSemicolon%
@@ -128,8 +128,8 @@ efficient). \citeauthor{afl}, the author of AFL, was able to generate valid JPEG
 images starting from an empty file~\cite{afljpeg}. The functions
 \texttt{SelectNext} and \texttt{MutateInput} (at lines~\ref{algo:cgf:sn}
 and~\ref{algo:cgf:mi} respectively) are analogues of \texttt{SelectSeed} and
-\texttt{MutateSeed} of Algorithm~\ref{algo:bbfuzzing}. The framework of
-Algorithm~\ref{algo:cgf} incorporates explicitly the mechanics that \emph{smart}
+\texttt{MutateSeed} of \autoref{algo:bbfuzzing}. The framework of
+\autoref{algo:cgf} incorporates explicitly the mechanics that \emph{smart}
 black-box mutational fuzzers like \ac{BFF} implement. The function
 \texttt{AssignEnergy} at line~\ref{algo:cgf:ae} decides how much effort should
 be put in fuzzing the selected test-case (\eg~how many mutated inputs should be
@@ -157,7 +157,7 @@ QEMU~\cite{bellard2005qemu} to dynamically (during interpretation, at runtime)
 instrument the binary. AFL-dyninst~\cite{afldyn} is an extension to AFL that
 injects the instrumentation snippet directly into the binary. What AFL injects
 into the \ac{SUT} is essentially equivalent to that presented in
-Listing~\ref{lst:aflbininst}.
+\autoref{lst:aflbininst}.
 
 \begin{lstlisting}[caption={AFL's instrumentation},label=lst:aflbininst,float]
     cur_location = <COMPILE_TIME_RANDOM>;
@@ -176,7 +176,7 @@ The shift operation at the last line preserves directionality of the tuples
 identity of loops within the same basic block (\eg~$A \oplus A$ would be equal
 to $B \oplus B$).
 
-With regards to Algorithm~\ref{algo:cgf}, AFL implements the \texttt{SelectNext}
+With regards to \autoref{algo:cgf}, AFL implements the \texttt{SelectNext}
 function by classifying elements of the queue as \emph{favorites}. A test-case
 is deemed favorite if it exhibits faster speed of execution and small size for
 the branch tuples that it covers compared to the other test-cases in the queue.
@@ -210,7 +210,7 @@ more often), the authors draw the intuition that steering fuzzing more toward
 \emph{low frequency paths} could lead to an improvement in performance
 (exploring more paths with the same amount of fuzz). This intuition is
 implemented into AFLFast, an extension of AFL\@. In reference to
-Algorithm~\ref{algo:cgf}, AFLFast replaces the \texttt{SelectNext} and the
+\autoref{algo:cgf}, AFLFast replaces the \texttt{SelectNext} and the
 \texttt{AssignEnergy} functions with new implementations.
 
 The authors discuss and evaluate different power schedules, responsible of
@@ -252,7 +252,7 @@ vulnerabilities that AFL could not discover.
 \emph{rare branches} with the aim to drive the fuzzing process deeper into the
 \ac{SUT}~\cite{lemieux2017fairfuzz}. FairFuzz changes how the
 \texttt{SelectNext} and \texttt{MutateInput} functions of
-Algorithm~\ref{algo:cgf} work. When selecting inputs from the queue, FairFuzz
+\autoref{algo:cgf} work. When selecting inputs from the queue, FairFuzz
 prioritizes test-cases that exercise a rare branch; successively new fuzz is
 produced by applying byte-level mutation operators to the selected input trying
 to exercise the same rare branches while still exploring new parts of the
@@ -275,7 +275,7 @@ still covered by the mutated input.
 
 \subsection{Honggfuzz}
 Honggfuzz~\cite{honggfuzz} is another general-purpose \ac{CGF} which simplifies
-the semantics of Algorithm~\ref{algo:cgf} but offers state-of-the-art
+the semantics of \autoref{algo:cgf} but offers state-of-the-art
 implementation that grants huge throughput (generates lots of fuzz, especially
 in persistent mode). The most peculiar feature of Honggfuzz is allowing the user
 to gather feedback from the \ac{SUT} via software or hardware sources; it
@@ -295,7 +295,7 @@ uses lightweight static and dynamic analysis to gain knowledge about control-
 and data-flow features of the \ac{SUT}, which is then exploited to deploy an
 \emph{application-aware} mutation strategy. VUzzer follows the same
 population-based model of \acfp{EA} for which a generic representation is given
-in Algorithm~\ref{algo:ea}.
+in \autoref{algo:ea}.
 
 \begin{algorithm}
     \DontPrintSemicolon%
@@ -430,7 +430,7 @@ effective in exploring all feasible execution paths within real-word programs.
 \end{algorithm}
 
 An abstract view of a generic symbolic-assisted fuzzing engine is given in
-Algorithm~\ref{algo:symfuzz}. It maintains a set of inputs, initialized with the
+\autoref{algo:symfuzz}. It maintains a set of inputs, initialized with the
 initial seed input (line~\ref{algo:symfuzz:initq}), from which new inputs are
 generated. On line~\ref{algo:symfuzz:checkseed} the function
 \texttt{RunAndCheck} runs the \ac{SUT} with the given input and returns a true
@@ -451,7 +451,7 @@ to~\ref{algo:symfuzz:gen2}). \texttt{Score} evaluates the given input and assign
 a score that can be used in successive calls to \texttt{SelectNext}.
 
 % DART
-The specifics of each component of Algorithm~\ref{algo:symfuzz} is different
+The specifics of each component of \autoref{algo:symfuzz} is different
 from one implementation to another. The most peculiar ones, that differentiate
 the most symbolic-assisted fuzzers among each other,
 are\linebreak\texttt{SelectNext} (line~\ref{algo:symfuzz:sel}),

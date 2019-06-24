@@ -67,7 +67,7 @@ order to abstract over its implementation details.
 With these two primitives in place (not counting the latest introduced, which is
 optional), our cooperative framework is capable of interacting with the running
 fuzzer instances by directly accessing an uniform communication layer that uses
-test-cases as an atomic piece of information. Table~\ref{tab:system-primitives}
+test-cases as an atomic piece of information. \autoref{tab:system-primitives}
 summarizes the \ac{CFF} interface with fuzzer instances.
 
 \begin{table}[h]
@@ -123,14 +123,14 @@ user-defined strategy.
 \label{fig:system-comm}
 \end{figure}
 
-Figure~\ref{fig:system-comm} gives a graphical representation of the
+\autoref{fig:system-comm} gives a graphical representation of the
 communication model in the \ac{CFF}. More specifically,
-Figure~\ref{fig:system-comm-phy} depicts the \emph{physical} links between
-components of the framework; Figure~\ref{fig:system-comm-log} instead shows how,
+\autoref{fig:system-comm-phy} depicts the \emph{physical} links between
+components of the framework; \autoref{fig:system-comm-log} instead shows how,
 on the \emph{logical} level, each running fuzzer can directly exchange
 test-cases with other running fuzzers. In this configuration each running fuzzer
 communicates directly only with the central decisional unit by means of the
-common interface described in Section~\ref{sec:system-design-api}, without
+common interface described in \autoref{sec:system-design-api}, without
 having any knowledge about other running fuzzers.
 
 \subsection{Cooperative Fuzzing Strategies}
@@ -180,7 +180,7 @@ detailed view on the \ac{CFF} operation.
 \label{algo:system-strategy}
 \end{algorithm}
 
-Algorithm~\ref{algo:system-strategy} gives the generic template of a cooperative
+\autoref{algo:system-strategy} gives the generic template of a cooperative
 fuzzing strategy. There are three user-defined functions that describe which
 test-cases should be forwarded to which fuzzer (in other words they define the
 strategy). When a fuzzer stores a new interesting test-case, the extract
@@ -195,7 +195,7 @@ control which is ready to receive new inputs, selects a set of test-cases within
 the window set $W_f$ of inputs collected since the previous round.
 
 % describe requirements for a valid metric
-The \texttt{Score} function of Algorithm~\ref{algo:system-strategy} is a core
+The \texttt{Score} function of \autoref{algo:system-strategy} is a core
 component around which the design process of a cooperative strategy rotates.
 When devising a new strategy, one would start by defining a scoring function as
 the winner selection procedures will use its values to make the final decision.
@@ -219,7 +219,7 @@ can set the scoring function to return the number of basic blocks new to the
 fuzzer and select as winners fuzzers with a positive score. % TODO Jaccard
 
 % describe possible winning conditions
-The \texttt{Winning} function of Algorithm~\ref{algo:system-strategy} is
+The \texttt{Winning} function of \autoref{algo:system-strategy} is
 responsible for working out a set of running fuzzers, given the results of the
 scoring function. Fuzzers from this set, which can be empty, are to be injected
 with the test-case. This function resembles the selection stage of \acp{EA}:
@@ -237,10 +237,10 @@ scored test-cases to be injected into a single fuzzer.
 This section describes our implementation of the \ac{CFF}, which is composed of
 two executables: a \emph{driver} and a \emph{master}. A driver is responsible to
 run, monitor and interact with a fuzzer instance (\ie~via the \ac{API} defined
-in Section~\ref{sec:system-design-api}) while the master implements the central
-decisional unit as defined in Section~\ref{sec:system-design-cdu}; together,
+in \autoref{sec:system-design-api}) while the master implements the central
+decisional unit as defined in \autoref{sec:system-design-cdu}; together,
 drivers and master, implement the \ac{CFF} strategy described in
-Section~\ref{sec:system-design-strats}. The full implementation, which is
+\autoref{sec:system-design-strats}. The full implementation, which is
 available on Github\footnote{\url{https://github.com/acidghost/uberfuzz2}},
 consists of a total of $2,832$ lines of Rust, C and Bash source code.
 
@@ -248,7 +248,7 @@ consists of a total of $2,832$ lines of Rust, C and Bash source code.
 Driver and master are implemented as two separate executables to fulfill the
 requirement of being able to deploy the different components across different
 machines. To support this, drivers communicate with the master using three
-separate distributed message queues as depicted in Figure~\ref{fig:system-impl};
+separate distributed message queues as depicted in \autoref{fig:system-impl};
 these communication channels are implemented over
 ZeroMQ\footnote{\url{http://zeromq.org/}}, a popular asynchronous messaging
 library with binding for a large variety of languages, including Rust and C. All

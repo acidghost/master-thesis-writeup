@@ -47,7 +47,7 @@ as a library, the \ac{OS} or even the compiler.
 % introduce software development lifecycle and SDL
 Quality assurance prescribes that the whole software development lifecycle is
 checked for quality as well as the intermediate and final products.
-Figure~\ref{fig:waterfall} presents a simplified representation of the classical
+\autoref{fig:waterfall} presents a simplified representation of the classical
 waterfall model for software development lifecycle. Each stage produces an
 intermediate artifact that serves as input for the next stage. Quality control
 provides tools and methodologies to check the quality of artifacts and in case a
@@ -120,7 +120,7 @@ the Internet~\cite{scholte2012have}.
     }
 \end{lstlisting}
 
-Listing~\ref{lst:defensive-unsafe} and Listing~\ref{lst:defensive-safe} present
+\autoref{lst:defensive-unsafe} and \autoref{lst:defensive-safe} present
 two versions of a function to capitalize strings. The former can behave
 unexpectedly in a number of situations: the \texttt{input} string can be a
 null-pointer causing the program to crash inside the \texttt{strcpy} function;
@@ -131,7 +131,7 @@ again inside \texttt{strcpy}; ultimately, the resulting string may not be
 null-terminated, possibly causing a memory leak in other parts of the program.
 There are four possible failures waiting to happen in only four lines of code.
 Defensive programming practices aim at preventing those kind of errors, as shown
-in Listing~\ref{lst:defensive-safe}.
+in \autoref{lst:defensive-safe}.
 
 \subsection{Code Reviews}
 % reviews and inspections

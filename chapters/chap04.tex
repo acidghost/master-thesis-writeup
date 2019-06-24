@@ -36,7 +36,10 @@ with $16$GB of RAM, running Ubuntu 16.04. Because of a limitation of \vuzzer\
 implementation, we had to run it inside a virtual machine hosting Ubuntu 14.04.
 To allow communication with its driver running on the host machine, we used a
 shared folder; this allowed us to reuse the \texttt{inotify} infrastructure as
-if the fuzzer was running locally.
+if the fuzzer was running locally. Finally, we disable \ac{ASLR} before fuzzing
+and when running the crash triaging script; in the latter, we also limit the
+available address space to simulate the same environment of the fuzzer that
+found the crash.
 
 \paragraph{Testing Targets}
 
@@ -366,4 +369,163 @@ zero.
 
 \section{Crash Analysis}
 \label{sec:eval-crashes}
+
+This section presents our findings regarding crashes based on the experiments
+already described in \autoref{sec:eval-coop}. In the following we compare the
+union of fuzzers and two cooperative strategies; in figures, ``mono'' (colour
+red) refers to the union, ``multi'' (green) and ``single'' (blue) refer to the
+multiple and single winner strategies respectively.
+
+Unfortunately we were able to find crashes only in \listswf; when discussing
+results, the remaining of the section does not refer to the \sut\ explicitly as
+there is only one to consider for this analysis.
+
+Before presenting the results, we ought to define some terminology and the
+process that we used to obtain the final data. A \emph{unique crash} is an input
+that causes a crash in the \sut\ through a unique path. Each of the fuzzers we
+used in our experiments already track unique crashes, we developed some
+additional scripts to post-process the data and aggregate results of the five
+rounds we ran for each experiment. In particular, for each round of an
+experiment we collect all unique crashes from the fuzzer's folder and run the
+\sut\ with the given file (we also disable \ac{ASLR} and limit the address space
+appropriately). If the program terminates with a crash or timeouts (the time
+limit is taken from the respective fuzzer's parameter), we run the GDB utility
+\texttt{exploitable}~\cite{foote2013cert} and \texttt{backtrace} command and
+store the output into a file. The \emph{stack hash} computed by
+\texttt{exploitable}, which is the hash of the last five calls on the stack, is
+used to identify a unique crash. Then, for each experiment, we aggregate the
+results of the rounds into a single file that contains the elapsed time at which
+the crash was discovered and the stack hash; moreover, we do not remove
+duplicates.
+
+\autoref{tab:crashes} shows the number of \emph{distinct} unique crashes found
+across five rounds of each experiment, alongside the number of distinct crashes
+that were found by one experiment and not by the other.
+
+\begin{table}[h]
+    \centering%
+    \begin{tabular}{l c c c c}
+        & \textbf{Unique crashes} & \textbf{Vs.\ single} &
+            \textbf{Vs.\ multi} & \textbf{Vs.\ union} \\
+        \bottomrule%
+        \textbf{union} & $75$ & $21$ & $13$ & \\
+        \hline%
+        \textbf{multi} & $98$ & $44$ & & $36$ \\
+        \hline%
+        \textbf{single} & $63$ & & $9$ & $9$
+    \end{tabular}
+    \caption{Distinct unique crashes and amount discovered by one and not
+    discovered by another.}
+    \label{tab:crashes}
+\end{table}
+
+\autoref{fig:unique-crashes} presents the evolution over time of the unique
+crashes aggregated from the five rounds; in particular,
+\autoref{fig:crashes-count} shows the cumulative count of unique crashes, while
+\autoref{fig:crashes-density} shows their density.
+
+\begin{figure}[h]
+    \centering%
+    \subfloat[Cumulative count of unique crashes.]{%
+        \includegraphics[width=.5\textwidth]{figures/cropped/crashes-count-all}
+        \label{fig:crashes-count}
+    }
+    \subfloat[Density of unique crashes.]{%
+        \includegraphics[width=.5\textwidth]{figures/cropped/crashes-all}
+        \label{fig:crashes-density}
+    }
+    \caption{Unique crashes over time for \listswf.}
+    \label{fig:unique-crashes}
+\end{figure}
+
+With regards to the cumulative count, we see that not only the multiple winners
+strategy finds more distinct unique crashes (\ie~$98$ against $75$), but also
+the number of unique crashes itself it higher. Moreover, we see that the number
+of unique crashes for multiple winners is briefly taken over by that of the
+union of fuzzers, before becoming the highest again toward the end of the runs;
+this is also highlighted by the strongly bi-modal nature of the density.
+
+\autoref{fig:unique-crashes-inter} presents a subdivision of the results already
+presented in \autoref{fig:crashes-density}: \autoref{fig:unique-crashes-common}
+shows the density of unique crashes only for those that fall in the intersection
+among all three experiments; \autoref{fig:unique-crashes-uncommon} shows the
+density for those that do not fall in the intersection.
+
+\begin{figure}[h]
+    \centering%
+    \subfloat[Common unique crashes.]{%
+        \includegraphics[width=.5\textwidth]{figures/cropped/crashes-intersect}
+        \label{fig:unique-crashes-common}
+    }
+    \subfloat[Uncommon unique crashes.]{%
+        \includegraphics[width=.5\textwidth]{figures/cropped/crashes-not-intersect}
+        \label{fig:unique-crashes-uncommon}
+    }
+    \caption{Density of unique crashes over time for \listswf, divided in
+    intersection of hashes and not in the intersection.}
+    \label{fig:unique-crashes-inter}
+\end{figure}
+
+From the figure, we see that for the intersection of crashes, the union of
+fuzzers produces the most amount and, with the help of the density of the
+remaining, we see that the multiple winners strategy's effort is spend producing
+more crashes that are not found by the other experiments.
+
+\subsection{Known Vulnerabilities}
+
+For each of the unique crashes, we manually investigated the nature of the crash
+and tried to link it to a known vulnerability with an assigned \ac{CVE}
+identifier; note that multiple unique crashes may be caused by the same bug. We
+found exclusively memory access violations caused by unchecked heap memory
+allocations or reallocations, an example of which is given in \autoref{lst:cve}.
+We were able to link six (of the over $25$ found) to a \ac{CVE}; for those we
+report on the time of discovery in \autoref{fig:cves}.
+
+\begin{lstlisting}[caption={Unchecked memory allocation in
+                            \texttt{util/read.c:222} causing CVE-2017-7582.},
+                   label=lst:cve, float, floatplacement=h]
+char *readBytes(FILE *f,int size)
+{
+  int i;
+  char *buf;
+
+  buf = (char *)malloc(sizeof(char)*size);
+
+  for(i=0;i<size;i++)
+  {
+    buf[i]=(char)readUInt8(f);
+  }
+
+  return buf;
+}
+\end{lstlisting}
+
+\begin{figure}[t]
+    \centering%
+    \subfloat{%
+        \includegraphics[width=.45\textwidth]{figures/cropped/cve-2017-7582}
+    }
+    \subfloat{%
+        \includegraphics[width=.45\textwidth]{figures/cropped/cve-2017-8782}
+    }\\
+    \subfloat{%
+        \includegraphics[width=.45\textwidth]{figures/cropped/cve-2017-9988}
+    }
+    \subfloat{%
+        \includegraphics[width=.45\textwidth]{figures/cropped/cve-2017-9989}
+    }\\
+    \subfloat{%
+        \includegraphics[width=.45\textwidth]{figures/cropped/cve-2018-13066-parser-2029}
+    }
+    \subfloat{%
+        \includegraphics[width=.45\textwidth]{figures/cropped/cve-2018-13066-parser-619}
+    }
+    \caption{Bugs with assigned \acs{CVE} identifier found in \listswf.}
+    \label{fig:cves}
+\end{figure}
+
+We see that all \acp{CVE} found by the union of fuzzers have been found by the
+multiple winners strategy; moreover all but one are found on average before the
+union does. The multiple winners strategy finds also two \acp{CVE} that are not
+discovered by the union of fuzzers.
 

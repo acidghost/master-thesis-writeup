@@ -569,7 +569,33 @@ code coverage information).
 % - fuzzing as search problem
 % - NFL
 
+Because fuzzing for bugs can be seen as a search problem, we want to investigate
+fuzzing in the context of the No Free Lunch Theorem for
+optimization~\cite{wolpert1997no}, which states that there is no best search
+algorithm when the performance is averaged across all possible problems. In the
+context of fuzzing, we want to examine if one fuzzer performs decisively better
+than the others across a diverse set of practical programs. To push this
+further, we devise a system that tries to harness the power a set of
+\emph{existing} fuzzers that run in parallel and evaluate its effect. We achieve
+this thanks to a cooperative framework inspired by cooperative co-evolution in
+the field of Evolutionary Computing.
+
 % TODO: brief of this work
+
+\section{Thesis Outline}
+
+This chapter presented some introductory concepts about software quality and
+software testing. In \autoref{chap:related} we present a more detailed view of
+different kind of fuzzers (with an emphasis on those used in the implementation
+of our system) and related work on cooperative fuzzing. \autoref{chap:cff}
+presents the \ac{CFF} from its design to its implementation, with arguments for
+the different design decisions we take. \autoref{chap:evaluation} shows results
+of the evaluation of single fuzzers, run without cooperation, to asses the
+validity of the No Free Lunch Theorem on our programs sample; we also evaluate
+the effectiveness in terms of coverage and crashes of the implemented system and
+cooperation. \autoref{chap:discussion} includes a discussion on the results of
+the evaluation before, in \autoref{chap:future}, presenting possible
+improvements. \autoref{chap:conclusion} concludes this work.
 
 
 % \section{OLD Software Testing}

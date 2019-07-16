@@ -17,6 +17,28 @@ rejected because of poor quality. Notice that requirements may belong to
 different \emph{quality parameters} such as functionality, usability,
 reliability, performance, security and so on.
 
+\emph{Fuzzing} is a popular technique capable of testing software for security
+and reliability; fuzzers are used extensively by major companies such as
+Google~\cite{google2016fuzz,google2011fuzz,google2016oss,google2017oss} and
+Microsoft~\cite{microsoft2017srd,microsoft2017neural,microsoft2018ai}. As most
+fuzzing engines are highly specialized to a particular kind of software (\eg\
+network protocols, operating systems, compilers), the practitioner is often
+responsible to decide which fuzzer to use for the \sut; alternatively, if enough
+resources are available, they run different fuzzers sequentially.
+
+We propose a framework for interfacing with and coordinating different kinds of
+fuzzers, running in parallel, with the aim to harness the unique features of
+each one by means of cooperation. We also describe a possible implementation of
+such framework which we then evaluate on four UNIX utilities. The results show
+promising gains in code coverage and number of unique crashes found, compared to
+traditional fuzzing setups.
+
+The remainder of this chapter provides an introduction to software quality
+control and testing. \autoref{chap:related} presents a detailed view of some
+testing techniques closely related to our work, with an emphasis on the fuzzers
+used by our system. \autoref{chap:cff} presents our framework and proposed
+implementation; \autoref{chap:evaluation} contains its evaluation.
+
 \section{Quality Assurance and Control}
 % define quality assurance and control
 Quality assurance aims at improving the quality of the product by establishing

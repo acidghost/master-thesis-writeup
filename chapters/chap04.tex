@@ -17,17 +17,21 @@ terms of crashes found.
 
 \paragraph{Choice of Fuzzers}
 
-For the choice of fuzzers we decided to use \aflfast, \fairfuzz, \honggfuzz\
-and \vuzzer. The first two provide two different implementations of the
+For the choice of fuzzers we decided to use \aflfast, \fairfuzz, \honggfuzz\ and
+\vuzzer. The first two provide two different implementations of the
 state-of-the-art \ac{CGF}, \afl; we argue that two different implementation of
-the same core algorithm may yield different results. \honggfuzz\ is chosen as
-it provides different means to extract feedback from the \sut, possibly
-resulting in a different feedback signal (given the same input) compared to
-other methods (\eg\ \afl\ uses QEMU). Lastly, \vuzzer\ provides with an
-evolutionary fuzzer which uses static and lightweight program analysis; because
-of this, \ac{CFF} uses the congestion control mechanism to interact with
-\vuzzer. All fuzzers were run with the default parameters and configuration,
-with the exception of those required to correctly interface with the \sut.
+the same core algorithm may yield different results. \honggfuzz\ is chosen as it
+provides different means to extract feedback from the \sut, possibly resulting
+in a different feedback signal (given the same input) compared to other methods
+(\eg\ \afl\ uses QEMU). Lastly, \vuzzer\ provides with an evolutionary fuzzer
+which uses static and lightweight program analysis; because of this, \ac{CFF}
+uses the congestion control mechanism to interact with \vuzzer. All fuzzers were
+run with the default parameters and configuration, with the exception of those
+required to correctly interface with the \sut.  Moreover, as already mentioned
+in \autoref{sec:driver-impl}, all these fuzzers (besides \honggfuzz) support a
+file system based synchronization mechanism to periodically import new test
+cases; for \honggfuzz, we use an extended version that mimics AFL's
+synchronization component.
 
 \paragraph{Experimental Infrastructure}
 

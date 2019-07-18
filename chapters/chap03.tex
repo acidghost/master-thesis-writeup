@@ -349,7 +349,15 @@ from the inject queue. If a message is successfully read and is addressed to
 itself (\ie~\texttt{fuzzer\_ids} contains the right identifier), the driver adds
 the attached coverage information to the internal hash map and injects the input
 file into the fuzzer by creating a copy of the file in the fuzzer's working
-directory.
+directory. Most fuzzers already implement some kind of file system
+synchronization to import test cases: AFL and its extensions have a mechanism,
+used to synchronize instances running in parallel, that periodically checks a
+directory for new files and imports them; VUzzer writes all test cases after
+each generation and loads them again at the beginning of the next one.
+Honggfuzz, which is also used in the evaluation of \ac{CFF} in
+\autoref{chap:evaluation}, does not implement any such mechanism: we use a
+forked version of Honggfuzz which implements a basic synchronization component
+similar to AFL's.
 
 As a final remark, the driver has no knowledge of the kind of fuzzer it is
 interfacing with, instead it exposes a collection of command line parameters

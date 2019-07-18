@@ -1,10 +1,11 @@
 \chapter{Background and Related Work}
 \label{chap:related}
 
-In this chapter we are going to present the mechanics of some kind of fuzzers
-and some specific implementations of \acfp{CGF}. Then we move on presenting
-efforts of researchers trying to combine different fuzzing engines or testing
-techniques with the aim of improving performance or efficiency.
+In this chapter we present the mechanics of different kinds of fuzzers with an
+emphasis on specific implementations of \acfp{CGF} --- which are later used to
+evaluate our \acf{CFF}. Then we move on presenting efforts of researchers trying
+to combine different fuzzing engines or testing techniques with the aim of
+improving performance or efficiency.
 
 \section{Black-Box Mutational Fuzzing}
 \label{sec:bbfuzz}
@@ -572,7 +573,7 @@ executor by using state-of-the-art implementations and optimizations to expand
 over the intuition of \citeauthor{majumdar2007hybrid} in
 \citetitle{majumdar2007hybrid}. Driller uses AFL as \ac{CGF} and
 angr~\cite{shoshitaishvili2016sok} as symbolic executor. As with hybrid concolic
-testing, Driller starts off with AFL; whenever AFL communicates that it has no
+testing, Driller starts off with AFL\@; whenever AFL communicates that it has no
 pending favorites inputs waiting in the queue (\ie~when the property
 \texttt{pending\_favs} in AFL statistics file reaches zero), Driller invokes the
 symbolic executor. This in turn traces the execution of the unique inputs found

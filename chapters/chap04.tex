@@ -275,9 +275,10 @@ we take the maximum coverage after $6$ hours. We configured the \texttt{master}
 to execute two distinct winning strategies: one selects the single fuzzer with
 the highest metric reply; the other selects all fuzzers for which the metric
 reply is greater than zero. In case of a draw, the pool of candidate winners is
-randomly shuffled and the first one is selected. In this section we compare the
-results of running both strategies. \autoref{tab:eval-coop} presents the final
-mean coverage with $95\%$ confidence intervals.
+randomly shuffled and the first one is selected. Recall from
+\autoref{sec:driver-impl} that the metric is given by the number of undiscovered
+branches exercised by the given input (the metric is the same for all drivers).
+In this section we compare the results of running both strategies.
 
 \begin{table}[h]
     \centering%
@@ -294,13 +295,14 @@ mean coverage with $95\%$ confidence intervals.
     \label{tab:eval-coop}
 \end{table}
 
-Looking only at the final mean we can see that one of the two cooperative
-strategies outperforms the union of fuzzers for all programs, but none of the
-two outperforms the other. Moreover for \djpeg\ and \objdump\ the union of
-fuzzers seems to perform the worst while for \tiffpdf\ and \listswf\ it is the
-single winner cooperative strategy to be outperformed. For \djpeg\ we see that
-the differences are too small to be sensitive enough as is confirmed by Bayesian
-estimation in \autoref{fig:best-djpeg-single-union} and
+\autoref{tab:eval-coop} presents the final mean coverage with $95\%$ confidence
+intervals. Looking only at the final mean we can see that one of the two
+cooperative strategies outperforms the union of fuzzers for all programs, but
+none of the two outperforms the other. Moreover for \djpeg\ and \objdump\ the
+union of fuzzers seems to perform the worst while for \tiffpdf\ and \listswf\ it
+is the single winner cooperative strategy to be outperformed. For \djpeg\ we see
+that the differences are too small to be sensitive enough as is confirmed by
+Bayesian estimation in \autoref{fig:best-djpeg-single-union} and
 \autoref{fig:best-djpeg-single-multi}. By observing the mean coverage over time,
 shown in \autoref{fig:eval-coop-djpeg}, we see that the union of fuzzers
 struggles against both cooperative strategies for the first two hours, before
@@ -487,7 +489,7 @@ report on the time of discovery in \autoref{fig:cves}.
 
 \begin{lstlisting}[caption={Unchecked memory allocation in
                             \texttt{util/read.c:222} causing CVE-2017-7582.},
-                   label=lst:cve, float, floatplacement=h]
+                   label=lst:cve, float=h, basicstyle=\ttfamily\footnotesize]
 char *readBytes(FILE *f,int size)
 {
   int i;
@@ -503,6 +505,11 @@ char *readBytes(FILE *f,int size)
   return buf;
 }
 \end{lstlisting}
+
+We see that all \acp{CVE} found by the union of fuzzers have been found by the
+multiple winners strategy; moreover all but one are found on average before the
+union does. The multiple winners strategy finds also two \acp{CVE} that are not
+discovered by the union of fuzzers.
 
 \begin{figure}[t]
     \centering%
@@ -528,8 +535,4 @@ char *readBytes(FILE *f,int size)
     \label{fig:cves}
 \end{figure}
 
-We see that all \acp{CVE} found by the union of fuzzers have been found by the
-multiple winners strategy; moreover all but one are found on average before the
-union does. The multiple winners strategy finds also two \acp{CVE} that are not
-discovered by the union of fuzzers.
 

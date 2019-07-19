@@ -535,4 +535,50 @@ discovered by the union of fuzzers.
     \label{fig:cves}
 \end{figure}
 
+\section{Overhead Evaluation}
+\label{sec:overhead}
+
+In this final section we evaluate the overhead exercised by the operation of our
+implementation of the \ac{CFF} over the regular operation of the underlying
+fuzzers. The fuzzers operation within the context of the \ac{CFF} incur in some
+overhead due to the synchronization of external test cases injected from other
+fuzzers. \aflfast\ and \fairfuzz\ inherit from AFL a mechanism that periodically
+checks for test cases to import; each new file is fed to the \sut\ and saved to
+the internal queue if deemed interesting. \vuzzer, instead, synchronizes with
+inputs on the file system after each generation. As already mentioned in
+\autoref{sec:driver-impl}, \honggfuzz\ had to be extended to allow for a
+synchronization mechanism similar to that of AFL; our extension periodically
+checks for new files in a given folder and directly imports them into its local
+queue.
+
+The remaining overhead is given by the \texttt{drivers} and \texttt{master}
+operation. Recall from \autoref{sec:driver-impl} that a \texttt{driver}'s
+responsibility is three-fold:
+
+\begin{itemize}
+    \item checks for new interesting inputs via \texttt{inotify} and collects
+        coverage information by running the \sut\ with \ac{BTS} enabled before
+        pushing a new message to the \texttt{master};
+    \item replies to metric requests by processing the attached \ac{BTS} trace;
+    \item receives new inputs from the \texttt{master}, copies the attached
+        test case into the fuzzer's directory (to later be synced) and updates
+        the coverage information with the attached \ac{BTS} trace.
+\end{itemize}
+
+The \texttt{master}, recall from \autoref{sec:master-impl}, is responsible to
+collect new inputs from the \texttt{drivers}, request metric evaluations, select
+a winner (or multiple ones) and broadcast it via ZeroMQ\@. The average CPU usage
+after six hours for \texttt{driver} and \texttt{master} is respectively $2.63\%$
+and $0.18\%$ without including the time spent by waited-for children processes;
+with the inclusion of this, the CPU usage is $3.05\%$ for each \texttt{driver}
+and is unchanged for the \texttt{master} (because the \texttt{drivers} run the
+\sut\ and wait for its completion). Note also that these measures are based on
+the amount of time the respective process has been scheduled and so it includes
+the time the process has spent idling.
+
+The CPU usage of the \texttt{master} is clearly negligible; for the
+\texttt{drivers} instead, given that the CPU usage is only slightly higher with
+the inclusion of waited-for processes, we can deduce that the majority of
+resources are spent processing \ac{BTS} traces and computing metrics instead of
+running the \sut.
 

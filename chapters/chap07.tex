@@ -1,3 +1,67 @@
 \chapter{Conclusion}
 \label{chap:conclusion}
 
+In this work we investigated the efficacy of running different fuzzers on
+different programs. Our hypothesis is that, due to the No Free Lunch theorem for
+optimization, no best fuzzer exists when their performance is averaged across
+all possible programs. To contrast this, we devise a \acf{CFF} to allow
+communication and exchange of information between heterogeneous fuzzer instances
+running in parallel. We design a set of \acp{API} that fuzzers must comply to in
+order for them to interface with our framework. These \acp{API}, which are
+usually already implemented by most fuzzers, allow for \emph{extraction} and
+\emph{injection} of test cases from and into the fuzzer. A third, optional,
+interfacing method allows for a form of \emph{congestion control} for slower
+fuzzers (\eg~those using heavier-weight analysis).
+
+For every newly extracted test case, the framework evaluates it in terms of code
+coverage with regards to the already discovered execution tree for each of the
+running fuzzers (besides the one that found the test case); this evaluation
+consists in running the \sut\ with Intel \ac{BTS} enabled in order to obtain an
+hardware-generated execution trace in the form of basic block transitions and
+then synthesizing a numeric value to represent this evaluation. A \emph{central
+decisional unit} is responsible to collect these evaluations and reason about
+their returned values to come up with a set of fuzzers that are going to receive
+the given test case. The central decisional unit and the evaluation metric
+realize a specific \emph{cooperative fuzzing strategy}.
+
+We have implemented a prototype of the \ac{CFF} that uses the number of newly
+discovered basic block transitions in a test case as evaluation metric and
+supports a configurable winning strategy (\ie~the component responsible to
+select the set of fuzzers that are going to receive the new test case). Four
+general winning strategies can be configured: highest or lowest evaluation
+metric and higher or lower than a predetermined threshold.
+
+In the evaluation, we presented the results of running four fuzzers without
+cooperation with the aim of proving our hypothesis of no best fuzzer. We ran
+five experiments of 24 hours long on each \sut\ --- for four \acp{SUT} --- and
+compared the average obtained coverage over time. The results of Bayesian
+estimation of the difference of means provided support to the confirmation of
+our hypothesis as for all considered \acp{SUT} the best performing fuzzer is
+always different.
+
+Then we evaluated the effect of introducing cooperation by showing results of
+running our implementation of the \ac{CFF} for 6 hours on the same \acp{SUT}. We
+configured the framework to evaluate two strategies: one selects a single winner
+with the highest metric, the other selects all fuzzers that have returned a
+metric higher than zero. In the experiments we used \aflfast, \fairfuzz,
+\honggfuzz\ and \vuzzer\ as fuzzer components to the \ac{CFF}. We compared the
+results from the two cooperative strategies with the union of the results from
+running the same four fuzzers without cooperation. Unfortunately, although the
+final mean coverage is higher for all programs for one of the cooperative
+strategies, we cannot claim a definitive winner as Bayesian estimation of the
+difference of means does not support it with strong confidence, revealing
+instead a need for more data.
+
+Moreover, we compared the capability of finding unique crashes and known
+vulnerabilities of the \ac{CFF} and the union of fuzzers. In particular, the
+cooperative strategy that uncovers the most basic block transitions also finds
+more unique crashes than the union of fuzzers with a factor of $1.3$.
+Furthermore, the \ac{CFF} finds all the \acp{CVE} that the union finds, plus two
+more.
+
+Lastly, we provided an overhead evaluation in which we note that the resources
+consumed by the components of the \ac{CFF} are not excessive compared to the
+normal operation of its fuzzers. This is especially true, given that the present
+implementation has not been extensively developed with performance in mind and
+should be considered a prototype.
+

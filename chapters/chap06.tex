@@ -1,3 +1,41 @@
 \chapter{Future Work}
 \label{chap:future}
 
+In this chapter we discuss possible improvements to the \ac{CFF} and its
+evaluation. To begin with, one possible line of research for future improvements
+may be to devise a more complex strategy that can exploit the \ac{BTS} trace to
+the fullest. For example, one strategy could reason about the path exercised by
+a test case and compare it to the tree of already-discovered paths; a similarity
+metric can be returned to the master which will decide to which fuzzer to inject
+the test case. The similarity metric should be crafted so that higher values are
+associated to the exercised path which is closer to the discovered tree of the
+fuzzer. The intuition behind this is that the injection of such test cases may
+allow a fuzzer to better explore its vicinity. On the other hand one could
+devise a metric based on dissimilarity with the aim of injecting test cases that
+differ the most from the discovered tree to broaden the search and possibly
+escape local maxima.
+
+Another possible extension to the present work is to broaden the spectrum of
+fuzzers used to evaluate the \ac{CFF}. For example, the inclusion of a black box
+fuzzer wouldn't require any modification to the current implementation of the
+\ac{CFF} to integrate it into the roster of fuzzers. A fuzzer of this kind would
+provide with much more throughput in terms of number of \sut\ executions given
+that no instrumentation is used; because of this though, a black box fuzzer is
+missing the notion of interesting input and its interaction with the \ac{CFF}
+(only in the direction from the fuzzer to the \texttt{driver}) would need to be
+designed. To circumvent this, a black box mutational fuzzer may also be used
+only to inject new test cases (produced by other, more application-aware
+fuzzers) and not to extract them. The inclusion of a purely white box solution
+such as a symbolic execution engine could also yield interesting results. In
+this case, the \ac{CFF} might integrate with it using the congestion control
+mechanism as has been done for \vuzzer\ (\ie~by injecting the test case with the
+highest score over a time window).
+
+Finally, as already noted in \autoref{chap:discussion}, the evaluation of the
+\ac{CFF} would greatly benefit from having more than five runs for each
+experiment. This may allow for the Bayesian estimation to provide results on the
+difference of means that express less noise (\ie~more decisive results). On the
+same note, increasing the time length of the runs (\eg~from 6 hours to 24) would
+allow for the fuzzers to explore the \sut\ more and possibly reach and even more
+definite plateau in terms of coverage.
+

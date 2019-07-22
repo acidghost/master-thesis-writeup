@@ -24,10 +24,10 @@
 % in order to deactivate the time-stamp on the pages
 % (see ClassicThesis.pdf for more information):
 % ****************************************************************************************************
-\PassOptionsToPackage{
-  drafting=true,    % print version information on the bottom of the pages
+\PassOptionsToPackage{%
+  drafting=false,   % print version information on the bottom of the pages
   tocaligned=false, % the left column of the toc will be aligned (no indentation)
-  dottedtoc=false,  % page numbers in ToC flushed right
+  dottedtoc=true,   % page numbers in ToC flushed right
   parts=true,       % use part division
   eulerchapternumbers=true, % use AMS Euler for chapter font (otherwise Palatino)
   linedheaders=false,       % chaper headers will have line above and beneath
@@ -49,7 +49,7 @@
 \newcommand{\myOtherProf}{Put name here\xspace}
 \newcommand{\mySupervisor}{Put name here\xspace}
 \newcommand{\myFaculty}{Faculty of Science\xspace}
-\newcommand{\myDepartment}{Dept. of Computer Science\xspace}
+\newcommand{\myDepartment}{Dept.\ of Computer Science\xspace}
 \newcommand{\myUni}{Vrije Universiteit Amsterdam\xspace}
 \newcommand{\myLocation}{Amsterdam, Netherlands\xspace}
 \newcommand{\myTime}{July 2019\xspace}
@@ -227,6 +227,7 @@
       \renewcommand*{\sectionautorefname}{Section}%
       \renewcommand*{\subsectionautorefname}{Section}%
       \renewcommand*{\subsubsectionautorefname}{Section}%
+      \renewcommand*{\algorithmautorefname}{Algorithm}%
     }%
     \addto\extrasngerman{%
       \renewcommand*{\paragraphautorefname}{Absatz}%
@@ -333,6 +334,4 @@
 \newcommand\fairfuzz{FairFuzz}
 \newcommand\honggfuzz{Honggfuzz}
 \newcommand\vuzzer{VUzzer}
-
-\renewcommand*{\algorithmautorefname}{Algorithm}
 

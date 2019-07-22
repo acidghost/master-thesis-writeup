@@ -17,12 +17,12 @@ select the appropriate fuzzer for the \sut. Otherwise, if enough resources are
 available, they choose a set of fuzzer to run --- \emph{independently} --- in
 parallel or sequentially.
 
-In this thesis we present a \ac{CFF} that allows a set of fuzzers, running in
-parallel, to communicate and exchange information. We describe a distributed
-implementation of the framework that uses hardware-generated coverage feedback
-to control the flow of information among the fuzzer instances. Moreover, the
-system is designed to integrate with a generic fuzzer that implements an
-\acs{API} which is already implemented by most fuzzers.
+In this thesis we present a \emph{\ac{CFF}} that allows a set of fuzzers,
+running in parallel, to communicate and exchange information. We describe a
+distributed implementation of the framework that uses hardware-generated
+coverage feedback to control the flow of information among the fuzzer instances.
+Moreover, the system is designed to integrate with a generic fuzzer that
+implements an \acs{API} which is already implemented by most fuzzers.
 
 We evaluate the \ac{CFF} using four popular fuzzers on four UNIX utilities. The
 results show promising improvements both in terms of code coverage and unique

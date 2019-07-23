@@ -1,0 +1,39 @@
+\newcommand{\myTitle}{Uberfuzz\xspace}
+\newcommand{\mySubtitle}{A Cooperative Fuzzing Framework\xspace}
+\newcommand{\myDegree}{Master of Science in Artificial Intelligence\xspace}
+\newcommand{\myName}{Andrea Jemmett\xspace}
+\newcommand{\myProf}{Dr. Sanjay Rawat\xspace}
+\newcommand{\myOtherProf}{Put name here\xspace}
+\newcommand{\mySupervisor}{Put name here\xspace}
+\newcommand{\myFaculty}{Faculty of Science\xspace}
+\newcommand{\myDepartment}{Dept.\ of Computer Science\xspace}
+\newcommand{\myUni}{Vrije Universiteit Amsterdam\xspace}
+\newcommand{\myLocation}{Amsterdam, Netherlands\xspace}
+\newcommand{\myTime}{July 2019\xspace}
+
+\newcommand{\eg}{e.\,g.}
+\newcommand{\ie}{i.\,e.}
+
+\newcommand\hicell{\cellcolor[gray]{.85}}
+
+\newcommand\djpeg{\texttt{djpeg}}
+\newcommand\objdump{\texttt{objdump}}
+\newcommand\tiffpdf{\texttt{tiff2pdf}}
+\newcommand\listswf{\texttt{listswf}}
+
+\newcounter{lipsumi}
+\newcommand\lipsumseqrestart{\setcounter{lipsumi}{1}}
+\lipsumseqrestart%
+\newcommand\lipsumi{\value{lipsumi}}
+\newcommand\lipsumseq[1][1]{%
+    \lipsum[\lipsumi-\the\numexpr\lipsumi+#1-1]
+    \addtocounter{lipsumi}{#1}
+}
+
+\newcommand\sut{\ac{SUT}}
+\newcommand\afl{AFL}
+\newcommand\aflfast{AFLFast}
+\newcommand\fairfuzz{FairFuzz}
+\newcommand\honggfuzz{Honggfuzz}
+\newcommand\vuzzer{VUzzer}
+

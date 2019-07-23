@@ -4,35 +4,85 @@
 \begin{titlepage}
     % if you want the titlepage to be centered, uncomment and fine-tune the line below (KOMA classes environment)
     \begin{addmargin}[-1cm]{-3cm}
+
+%       \begin{center}
+%         \large
+%
+%         \hfill
+%
+%         \vfill
+%
+%         \begingroup
+%             \color{Maroon}\spacedallcaps{\myTitle} \\
+%             \spacedlowsmallcaps{\mySubtitle} \\
+%             \bigskip
+%         \endgroup
+%
+%         \spacedlowsmallcaps{\myName}
+%
+%         \vfill
+%
+%         \includegraphics[width=6cm]{figures/VU_logo.png} \\ \medskip
+%
+%         \medskip
+%         \myDegree \\
+%         \myDepartment \\
+%         \myFaculty \\
+%         \myUni \\ \bigskip
+%
+%         \myTime
+%
+%         \vfill
+%
+%     \end{center}
+
     \begin{center}
-        \large
 
-        \hfill
+    Vrije Universiteit Amsterdam \hspace*{2cm} Universiteit van Amsterdam
 
-        \vfill
+    \vspace{1mm}
 
-        \begingroup
-            \color{Maroon}\spacedallcaps{\myTitle} \\
-            \spacedlowsmallcaps{\mySubtitle} \\
-            \bigskip
-        \endgroup
+    \hspace*{-7.5cm}\includegraphics[height=25mm]{figures/vu-griffioen.pdf}
 
-        \spacedlowsmallcaps{\myName}
+    \vspace*{-2cm}\hspace*{7.5cm}\includegraphics[height=15mm]{figures/uva_logo.jpg}
 
-        \vfill
+    \vspace{2cm}
 
-        \includegraphics[width=6cm]{figures/VU_logo.png} \\ \medskip
+    {\Large Master Thesis}
 
-        \medskip
-        \myDegree \\
-        \myDepartment \\
-        \myFaculty \\
-        \myUni \\ \bigskip
+    \vspace*{1.5cm}
 
-        \myTime
+    \rule{.9\linewidth}{.6pt}\\[0.4cm]
+    {\huge \bfseries \myTitle: \mySubtitle\par}\vspace{0.4cm}
+    \rule{.9\linewidth}{.6pt}\\[1.5cm]
 
-        \vfill
+    \vspace*{2mm}
+
+    {\Large
+    \begin{tabular}{l}
+    \textbf{Author:} ~~\myName ~~~~ (student number)
+    \end{tabular}
+    }
+
+    \vspace*{2cm}
+
+    \begin{tabular}{ll}
+        \textit{1st supervisor:}   & ~~supervisor name \\
+        \textit{daily supervisor:} & ~~supervisor name ~~~~ (company, if applicable) \\
+        \textit{2nd reader:}       & ~~supervisor name
+    \end{tabular}
+
+    \vspace*{2.5cm}
+
+    \textit{A thesis submitted in fulfillment of the requirements for\\
+    the joint UvA-VU \myDegree}
+
+    \vspace*{1.8cm}
+
+    \today\\[4cm] % Date
 
     \end{center}
+
+
   \end{addmargin}
 \end{titlepage}

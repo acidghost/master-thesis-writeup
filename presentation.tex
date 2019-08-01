@@ -1,0 +1,66 @@
+\documentclass{beamer}
+
+\mode<presentation>
+\usetheme{CambridgeUS}
+\usecolortheme{seahorse}
+
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\title{Uberfuzz}
+\subtitle{A Cooperative Fuzzing Framework}
+\author{Andrea Jemmett}
+\institute[VU]{Vrije Universiteit Amsterdam}
+
+\AtBeginSection[]
+{%
+    \begin{frame}
+        \tableofcontents[currentsection,subsectionstyle=shaded]
+    \end{frame}
+}
+
+\AtBeginSubsection[]
+{%
+    \begin{frame}
+        \tableofcontents[currentsection,currentsubsection]
+    \end{frame}
+}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}{Outline}
+    \tableofcontents[pausesections]
+\end{frame}
+
+\section{Background and Related Work}
+
+\subsection{Software Testing}
+
+\subsection{Fuzzing Techniques}
+
+\subsection{Hybrid and Cooperative Fuzzing}
+
+\section{Cooperative Fuzzing Framework}
+
+\subsection{System Design}
+
+\subsection{System Implementation}
+
+\section{Evaluation}
+
+\subsection{Single Fuzzers Evaluation}
+
+\subsection{Cooperative Fuzzing Evaluation}
+
+\subsection{Crash Analysis and Known Vulnerabilities}
+
+\section{Discussion and Future Work}
+
+\subsection*{Discussion}
+
+\subsection*{Future Work}
+
+\end{document}

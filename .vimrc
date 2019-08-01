@@ -21,6 +21,7 @@ endfunction
 
 nnoremap <Leader>m :w<bar>!make<CR>
 nnoremap <Leader>mv :w<bar>!make view<CR>
+nnoremap <Leader>mp :w<bar>!make present<CR>
 nnoremap @ :nohlsearch<CR>
 inoremap <C-h> <C-o>:nohlsearch<CR>
 map <Leader>. :Sexplore<CR>

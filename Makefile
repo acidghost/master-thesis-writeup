@@ -1,8 +1,9 @@
 main := thesis
+pres := presentation
 viewer := mupdf
 
 .PHONY: FORCE_MAKE figures
-all: $(main).pdf
+all: $(main).pdf $(pres).pdf
 
 figures:
 	$(MAKE) -C figures
@@ -12,6 +13,9 @@ figures:
 
 view: $(main).pdf
 	@$(viewer) $(main).pdf &
+
+present: $(pres).pdf
+	@$(viewer) $(pres).pdf &
 
 clean:
 	@$(MAKE) -C figures clean

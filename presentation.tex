@@ -1,4 +1,5 @@
 \documentclass{beamer}
+% \documentclass[notes=only]{beamer}
 
 \mode<presentation>
 \usetheme{CambridgeUS}
@@ -7,18 +8,21 @@
 \usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage{xspace}
 
-\title{Uberfuzz}
-\subtitle{A Cooperative Fuzzing Framework}
-\author{Andrea Jemmett}
-\institute[VU]{Vrije Universiteit Amsterdam}
+\include{macros}
 
-\AtBeginSection[]
-{%
-    \begin{frame}
-        \tableofcontents[currentsection,subsectionstyle=shaded]
-    \end{frame}
-}
+\title{\myTitle}
+\subtitle{\mySubtitle}
+\author{\myName}
+\institute[VU]{\myUni}
+
+% \AtBeginSection[]
+% {%
+%     \begin{frame}
+%         \tableofcontents[currentsection,subsectionstyle=shaded]
+%     \end{frame}
+% }
 
 \AtBeginSubsection[]
 {%
@@ -39,7 +43,148 @@
 
 \subsection{Software Testing}
 
+% software quality
+\begin{frame}{Quality in Software Products}
+    \uncover<+->{Producing \alert{high-quality} software is more and more a
+    necessity}
+    \begin{itemize}[<+->]
+        \item{} banking systems
+        \item{} aerospace applications
+        \item{} ubiquitous and pervasive computing
+        \item{} and many more to come\ldots\
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Quality in Software Products}
+    \uncover<+->{Quality is conformance to \alert{requirements}}
+    \begin{itemize}[<+->]
+        \item{} determined by customer's needs
+        \item{} belong to different quality parameters\\
+            (\eg~functionality, usability, reliability, performance, security)
+    \end{itemize}
+\end{frame}
+
+% during development or after
+\begin{frame}{Developing with Quality}
+    \structure<+->{The best way to produce quality software is to put it there in
+        the first place}
+    \\~\\
+    \uncover<+->{Software engineers have different tools at their disposal:}
+    \begin{itemize}[<+->]
+        \item{} defensive programming;
+        \item{} code reviews;
+        \item{} advanced programming languages;
+        \item{} formal methods.
+    \end{itemize}~\\
+    \uncover<+->{%
+        \structure{\ldots~static methods need to be complemented by dynamic ones}
+    }
+\end{frame}
+
+% define software testing (w/ examples)
+\begin{frame}{Software Testing}
+    \begin{block}<+->{Definition of software testing from the SWEBOK Guide}
+        \begin{quote}
+            Software testing consists of the \alert{dynamic} verification that a
+            program provides \alert{expected} behaviours on a \alert{finite} set
+            of test cases, suitably \alert{selected} from the usually infinite
+            execution domain.
+        \end{quote}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Software Testing Techniques}
+    \begin{block}<+->{Commonly categorized by the knowledge they exploit}
+        \begin{itemize}[<+->]
+            \item{} black box: only functional specification;
+            \item{} white box: also knowledge about internal structure;
+            \item{} gray box: partial or inferred knowledge of internal structure.
+        \end{itemize}
+    \end{block}
+    \begin{exampleblock}<+->{Examples}
+        \begin{itemize}[<+->]
+            \item{} pairwise testing
+            \item{} equivalence-class partitioning
+            \item{} boundary-value analysis
+            \item{} symbolic execution
+            \item{} random testing (\ie~\alert{fuzzing})
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+% fuzz testing
+\begin{frame}{Fuzzing}
+    \begin{itemize}[<+->]
+        \item{} term coined in 1988 during a quiet and stormy night\ldots\
+        \item{} ``Mayhem'' wins 2016 DARPA Cyber Grand Challenge
+        \item{} used in industry by Microsoft and Google
+        \item{} particularly suited to reliability and security testing
+    \end{itemize}
+\end{frame}
+
 \subsection{Fuzzing Techniques}
+
+\begin{frame}{Black Box Mutational Fuzzing}
+    \begin{block}<+->{General operation}
+        \setbeamercovered{transparent}
+        \begin{enumerate}[<+->]
+            \item{} select an input from a seed corpus
+            \item{} mutate the input to produce a new one
+            \item{} execute the program with the mutated input
+            \item{} monitor for unexpected behaviours
+        \end{enumerate}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Coverage-Based Gray Box Fuzzing}
+    \begin{itemize}[<+->]
+        \item{} execution is monitored to gain feedback
+        \item{} the feedback is used to better instruct the search
+        \item{} maintains a set of inputs
+        \item{} at each iteration:
+            \begin{enumerate}
+                \item<.-> choose element from the set
+                \item{} choose how many inputs to generate
+                \item{} adds inputs to the set if increase coverage
+            \end{enumerate}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{American Fuzzy Lop}
+    \begin{itemize}[<+->]
+        \item{} one of the most popular coverage-based fuzzers
+        \item{} instruments the SUT to obtain coverage feedback
+        \item{} selects favorite inputs more often
+        \item{} mutation as deterministic and havoc stages
+        \item{} stores generated input if branch hit counts change bucket
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Extensions to AFL}
+    \begin{block}<+->{AFLFast}
+        \begin{itemize}[<+->]
+            \item{} models fuzzing as a Markov chain
+            \item{} focus fuzzing on low frequency paths
+            \item{} modifies search strategy
+                \note{mixture of least selected and then low frequency
+                (path exercised by the least inputs)}
+            \item{} modifies power schedules
+        \end{itemize}
+    \end{block}
+    \begin{block}<+->{FairFuzz}
+        \begin{itemize}[<+->]
+            \item{} focus fuzzing on rare branches
+            \item{} search strategy prioritizes inputs that hit a rare branch
+            \item{} mutation preserves parts necessary to hit rare branch
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{VUzzer}
+\end{frame}
+
+\begin{frame}{White Box Fuzzing}
+\end{frame}
 
 \subsection{Hybrid and Cooperative Fuzzing}
 

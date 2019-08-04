@@ -1,5 +1,4 @@
-\documentclass{beamer}
-% \documentclass[notes=only]{beamer}
+\documentclass[handout]{beamer}
 
 \mode<presentation>
 \usetheme{CambridgeUS}
@@ -39,12 +38,15 @@
     \tableofcontents[pausesections]
 \end{frame}
 
+\begin{frame}{Abstract}
+\end{frame}
+
 \section{Background and Related Work}
 
-\subsection{Software Testing}
+\subsection*{Software Testing}
 
 % software quality
-\begin{frame}{Quality in Software Products}
+\begin{frame}<presentation:0>[noframenumbering]{Quality in Software Products}
     \uncover<+->{Producing \alert{high-quality} software is more and more a
     necessity}
     \begin{itemize}[<+->]
@@ -55,7 +57,7 @@
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Quality in Software Products}
+\begin{frame}<presentation:0>[noframenumbering]{Quality in Software Products}
     \uncover<+->{Quality is conformance to \alert{requirements}}
     \begin{itemize}[<+->]
         \item{} determined by customer's needs
@@ -65,7 +67,7 @@
 \end{frame}
 
 % during development or after
-\begin{frame}{Developing with Quality}
+\begin{frame}<presentation:0>[noframenumbering]{Developing with Quality}
     \structure<+->{The best way to produce quality software is to put it there in
         the first place}
     \\~\\
@@ -82,7 +84,7 @@
 \end{frame}
 
 % define software testing (w/ examples)
-\begin{frame}{Software Testing}
+\begin{frame}<presentation:0>[noframenumbering]{Software Testing}
     \begin{block}<+->{Definition of software testing from the SWEBOK Guide}
         \begin{quote}
             Software testing consists of the \alert{dynamic} verification that a
@@ -93,7 +95,7 @@
     \end{block}
 \end{frame}
 
-\begin{frame}{Software Testing Techniques}
+\begin{frame}<presentation:0>[noframenumbering]{Software Testing Techniques}
     \begin{block}<+->{Commonly categorized by the knowledge they exploit}
         \begin{itemize}[<+->]
             \item{} black box: only functional specification;
@@ -112,6 +114,8 @@
     \end{exampleblock}
 \end{frame}
 
+\subsection{Fuzzing Techniques}
+
 % fuzz testing
 \begin{frame}{Fuzzing}
     \begin{itemize}[<+->]
@@ -121,8 +125,6 @@
         \item{} particularly suited to reliability and security testing
     \end{itemize}
 \end{frame}
-
-\subsection{Fuzzing Techniques}
 
 \begin{frame}{Black Box Mutational Fuzzing}
     \begin{block}<+->{General operation}
@@ -134,6 +136,9 @@
             \item{} monitor for unexpected behaviours
         \end{enumerate}
     \end{block}
+    \begin{exampleblock}<+->{Examples}
+        Radamsa, zzuf, Basic Fuzzing Framework
+    \end{exampleblock}
 \end{frame}
 
 \begin{frame}{Coverage-Based Gray Box Fuzzing}
@@ -180,13 +185,51 @@
     \end{block}
 \end{frame}
 
-\begin{frame}{VUzzer}
+\begin{frame}{Other Gray Box Fuzzers}
+    \begin{block}<+->{Honggfuzz}
+        \begin{itemize}[<+->]
+            \item{} provides great throughput compared to AFL
+            \item{} simplifies operation:
+                \begin{itemize}
+                    \item<.-> selects at random
+                    \item{} mutates only once
+                \end{itemize}
+            \item{} uses hardware sources for coverage
+        \end{itemize}
+    \end{block}
+    \begin{block}<+->{VUzzer}
+        \begin{itemize}[<+->]
+            \item{} employs a population-based model (\ie~Evolutionary Algorithms)
+            \item{} fitness function uses branch hit frequencies
+            \item{} application-aware recombination and mutation operators
+        \end{itemize}
+    \end{block}
 \end{frame}
 
-\begin{frame}{White Box Fuzzing}
+\begin{frame}{Symbolic-Assisted White Box Fuzzing}
+    \begin{block}<+->{Key features}
+        \begin{itemize}[<+->]
+            \item{} uses symbolic execution to collect path constraints
+            \item{} constraints are solved to provide new inputs
+            \item<+-|alert@+> \alert{constraints not always solvable or solver is slow}
+        \end{itemize}
+    \end{block}
+    \begin{exampleblock}<+->{Examples}
+        \begin{itemize}[<+->]
+            \item{} DART and SAGE
+            \item{} EXE and KLEE
+            \item{} Mayhem
+        \end{itemize}
+    \end{exampleblock}
 \end{frame}
 
 \subsection{Hybrid and Cooperative Fuzzing}
+
+\begin{frame}{Hybrid Approaches}
+\end{frame}
+
+\begin{frame}{Cooperative Fuzzing}
+\end{frame}
 
 \section{Cooperative Fuzzing Framework}
 

@@ -38,9 +38,6 @@
     \tableofcontents[pausesections]
 \end{frame}
 
-\begin{frame}{Abstract}
-\end{frame}
-
 \section{Background and Related Work}
 
 \subsection*{Software Testing}
@@ -211,7 +208,7 @@
         \begin{itemize}[<+->]
             \item{} uses symbolic execution to collect path constraints
             \item{} constraints are solved to provide new inputs
-            \item<+-|alert@+> \alert{constraints not always solvable or solver is slow}
+            \item<+-|alert@+-> \alert{constraints not always solvable or solver is slow}
         \end{itemize}
     \end{block}
     \begin{exampleblock}<+->{Examples}
@@ -226,9 +223,31 @@
 \subsection{Hybrid and Cooperative Fuzzing}
 
 \begin{frame}{Hybrid Approaches}
+    \structure<+->{Merge white box fuzzers with black or gray box ones}
+    \\~\\
+    \begin{exampleblock}<+->{Driller}
+        \begin{itemize}
+            \item{} uses AFL and custom symbolic execution engine
+            \item{} AFL becomes ``stuck'' $\rightarrow$ s.e.\ generates new inputs
+        \end{itemize}
+    \end{exampleblock}
 \end{frame}
 
 \begin{frame}{Cooperative Fuzzing}
+    \begin{block}<+->{A system that allows fuzzers to share information to achieve a common goal}
+        \begin{itemize}[<+->]
+            \item{} fuzzing is non-deterministic
+            \item{} there is no best fuzzer for all possible programs
+            \item{} information sharing as a mean to share features
+                \note{example: VUzzer may share input with magic bytes to AFL}
+        \end{itemize}
+    \end{block}
+    \begin{exampleblock}<+->{Examples}
+        \begin{itemize}
+            \item{} Levy Flights over an input space
+            \item{} Chemotactic test case recombination
+        \end{itemize}
+    \end{exampleblock}
 \end{frame}
 
 \section{Cooperative Fuzzing Framework}

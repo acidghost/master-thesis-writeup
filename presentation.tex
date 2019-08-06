@@ -8,6 +8,8 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{xspace}
+\usepackage[noend]{algorithm2e}
+\usepackage{graphicx}
 
 \include{macros}
 
@@ -253,6 +255,81 @@
 \section{Cooperative Fuzzing Framework}
 
 \subsection{System Design}
+
+\begin{frame}{Common Fuzzer Interface}
+    \begin{block}{Three API primitives}
+        \begin{itemize}[<+->]
+            \item{} \alert{extract} test cases from fuzzer
+            \item{} \alert{inject} test cases into fuzzer
+            \item{} \alert{congestion control} for slower or generational
+                fuzzers
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Central Decisional Unit}
+    \begin{columns}
+        \begin{column}{.5\textwidth}
+            \begin{figure}
+                \includegraphics[width=.5\textwidth]{figures/dia/system_design_logical}
+                \caption{Logical view}
+            \end{figure}
+            \begin{figure}
+                \includegraphics[width=.5\textwidth]{figures/dia/system_design_physical}
+                \caption{Physical view}
+            \end{figure}
+        \end{column}
+        \begin{column}{.5\textwidth}
+            \begin{itemize}
+                \item{} acts as intermediary for information exchange
+                \item{} uses API to implement a strategy
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Cooperative Fuzzing Strategies}
+\scalebox{.8}{%
+    \begin{algorithm}[H]
+        \DontPrintSemicolon%
+        \SetKwFunction{Score}{Score}
+        \SetKwFunction{Winning}{Winning}
+        \SetKwFunction{Inject}{Inject}
+        \SetKwFunction{WinningC}{WinningCongestion}
+        % \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+        % \Input{Set of running fuzzers $F$. Set of fuzzers that need congestion control $F_c$}
+        % \BlankLine%
+        \ForEach{$f \in F_c$}{%
+            $W_f \leftarrow \emptyset$\;
+        }
+        \While{all fuzzers are running}{%
+            \If{new test-case $t$ from a fuzzer $f_t$}{%
+                $S \leftarrow \emptyset$\;
+                \ForEach{$f \in F \setminus \{f_t\}$}{%
+                    $s \leftarrow \Score{f, t}$\;
+                    \uIf{$f \in F_c$}{%
+                        $W_f \leftarrow W_f \cup \{(t, s)\}$\;
+                    }
+                    \Else{%
+                        $S \leftarrow S \cup \{(f, s)\}$\;
+                    }
+                }
+                \ForEach{$f \in \Winning{S}$}{%
+                    \Inject{f, t}\;
+                }
+            }
+            \ForEach{$f \in F_c$}{%
+                \If{$f$ is ready to receive inputs}{%
+                    \ForEach{$t \in \WinningC{$W_f$}$}{%
+                        \Inject{f, t}\;
+                    }
+                    $W_f \leftarrow \emptyset$\;
+                }
+            }
+        }
+    \end{algorithm}
+}
+\end{frame}
 
 \subsection{System Implementation}
 

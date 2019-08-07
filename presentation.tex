@@ -10,6 +10,8 @@
 \usepackage{xspace}
 \usepackage[noend]{algorithm2e}
 \usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{ifthen,xstring,calc,pgfopts,tikz-uml}
 
 \include{macros}
 
@@ -332,6 +334,31 @@
 \end{frame}
 
 \subsection{System Implementation}
+
+\begin{frame}{Overview}
+    \begin{tikzpicture}
+        \umlbasiccomponent[x=-2,y=0]{Fuzzer}
+        \begin{umlcomponent}[x=3,y=0]{CFF}
+            \umlbasiccomponent[x=0,y=0]{Driver}
+            \umlbasiccomponent[x=4,y=1.5]{Master}
+            \only<3->{%
+                \umlassemblyconnector[interface=Interesting,geometry=-|,%
+                    anchors=180 and 90,first arm]{Master}{Driver}
+            }
+            \only<4->{%
+                \umlassemblyconnector[interface=Metric,geometry=|-,%
+                    anchors=230 and 10]{Master}{Driver}
+            }
+            \only<5->{%
+                \umlassemblyconnector[interface=Inject,geometry=-|,%
+                    anchors=-30 and 290,first arm]{Driver}{Master}
+            }
+        \end{umlcomponent}
+        \only<2->{%
+            \umlassemblyconnector[interface=API]{Driver}{Fuzzer}
+        }
+    \end{tikzpicture}
+\end{frame}
 
 \section{Evaluation}
 

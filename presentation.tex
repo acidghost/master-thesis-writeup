@@ -1,4 +1,4 @@
-\documentclass[handout]{beamer}
+\documentclass[]{beamer}
 
 \mode<presentation>
 \usetheme{CambridgeUS}
@@ -9,6 +9,7 @@
 \usepackage[T1]{fontenc}
 \usepackage{xspace}
 \usepackage[noend]{algorithm2e}
+\usepackage{listings}
 \usepackage{graphicx}
 \usepackage{tikz}
 \usepackage{ifthen,xstring,calc,pgfopts,tikz-uml}
@@ -119,104 +120,94 @@
 
 % fuzz testing
 \begin{frame}{Fuzzing}
-    \begin{itemize}[<+->]
-        \item{} term coined in 1988 during a quiet and stormy night\ldots\
-        \item{} ``Mayhem'' wins 2016 DARPA Cyber Grand Challenge
-        \item{} used in industry by Microsoft and Google
-        \item{} particularly suited to reliability and security testing
+    \begin{itemize}
+        \item<1-> term coined in 1988 during a quiet and stormy night\ldots\
+        \item<2-> established reliability and security testing practice
+        \item<2-> ``Mayhem'' wins 2016 DARPA Cyber Grand Challenge
+        \item<2-> used in industry by Microsoft and Google
     \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Challenges}
+% TODO: example of challenging SUT
+\begin{lstlisting}[language=C]
+void fn(int i) {}
+\end{lstlisting}
 \end{frame}
 
 \begin{frame}{Black Box Mutational Fuzzing}
     \begin{block}<+->{General operation}
         \setbeamercovered{transparent}
         \begin{enumerate}[<+->]
-            \item{} select an input from a seed corpus
-            \item{} mutate the input to produce a new one
-            \item{} execute the program with the mutated input
+            \item{} select input from seed corpus
+            \item{} mutate input to produce new one
+            \item{} execute SUT with mutated input
             \item{} monitor for unexpected behaviours
         \end{enumerate}
     \end{block}
     \begin{exampleblock}<+->{Examples}
-        Radamsa, zzuf, Basic Fuzzing Framework
+        \begin{itemize}
+            \item{} Radamsa, zzuf
+            \item{} Basic Fuzzing Framework
+        \end{itemize}
     \end{exampleblock}
 \end{frame}
 
 \begin{frame}{Coverage-Based Gray Box Fuzzing}
-    \begin{itemize}[<+->]
-        \item{} execution is monitored to gain feedback
-        \item{} the feedback is used to better instruct the search
-        \item{} maintains a set of inputs
-        \item{} at each iteration:
-            \begin{enumerate}
-                \item<.-> choose element from the set
-                \item{} choose how many inputs to generate
-                \item{} adds inputs to the set if increase coverage
-            \end{enumerate}
-    \end{itemize}
+    \begin{block}<+->{Overview}
+        \begin{itemize}
+            \item{} execution is monitored to gain \alert{feedback}
+            \item{} the feedback is used to better instruct the search
+        \end{itemize}
+    \end{block}
+    \begin{exampleblock}<+->{American Fuzzy Lop}
+        \begin{itemize}
+            \item{} instruments the SUT to get coverage feedback
+            \item{} selects ``favorite'' inputs more often
+            \item{} mutation as deterministic and havoc stages
+            \item{} stores generated input if branch hit counts change bucket
+        \end{itemize}
+    \end{exampleblock}
 \end{frame}
 
-\begin{frame}{American Fuzzy Lop}
-    \begin{itemize}[<+->]
-        \item{} one of the most popular coverage-based fuzzers
-        \item{} instruments the SUT to obtain coverage feedback
-        \item{} selects favorite inputs more often
-        \item{} mutation as deterministic and havoc stages
-        \item{} stores generated input if branch hit counts change bucket
-    \end{itemize}
-\end{frame}
-
-\begin{frame}{Extensions to AFL}
-    \begin{block}<+->{AFLFast}
-        \begin{itemize}[<+->]
-            \item{} models fuzzing as a Markov chain
-            \item{} focus fuzzing on low frequency paths
-            \item{} modifies search strategy
-                \note{mixture of least selected and then low frequency
-                (path exercised by the least inputs)}
-            \item{} modifies power schedules
-        \end{itemize}
-    \end{block}
-    \begin{block}<+->{FairFuzz}
-        \begin{itemize}[<+->]
-            \item{} focus fuzzing on rare branches
-            \item{} search strategy prioritizes inputs that hit a rare branch
-            \item{} mutation preserves parts necessary to hit rare branch
-        \end{itemize}
-    \end{block}
-\end{frame}
-
-\begin{frame}{Other Gray Box Fuzzers}
-    \begin{block}<+->{Honggfuzz}
-        \begin{itemize}[<+->]
-            \item{} provides great throughput compared to AFL
-            \item{} simplifies operation:
-                \begin{itemize}
-                    \item<.-> selects at random
-                    \item{} mutates only once
-                \end{itemize}
-            \item{} uses hardware sources for coverage
-        \end{itemize}
-    \end{block}
-    \begin{block}<+->{VUzzer}
-        \begin{itemize}[<+->]
-            \item{} employs a population-based model (\ie~Evolutionary Algorithms)
-            \item{} fitness function uses branch hit frequencies
-            \item{} application-aware recombination and mutation operators
-        \end{itemize}
-    \end{block}
+\begin{frame}<presentation:0>[noframenumbering]{Other Gray Box Fuzzers}
+    \setbeamercovered{transparent}
+    \begin{description}
+        \item[AFLFast]<1>
+            \begin{itemize}
+                \item{} models fuzzing as Markov chain
+                \item{} focus fuzzing on low frequency paths
+            \end{itemize}
+        \item[FairFuzz]<2>
+            \begin{itemize}
+                \item{} focus fuzzing on rare branches
+                \item{} search strategy prioritizes inputs that hit a rare branch
+                \item{} mutation preserves parts necessary to hit rare branch
+            \end{itemize}
+        \item[Honggfuzz]<3>
+            \begin{itemize}
+                \item{} simplifies operation
+                \item{} uses hardware sources for coverage
+            \end{itemize}
+        \item[VUzzer]<4>
+            \begin{itemize}
+                \item{} population-based model (\ie~Evolutionary Algorithms)
+                \item{} fitness function uses branch hit frequencies
+                \item{} application-aware recombination and mutation operators
+            \end{itemize}
+    \end{description}
 \end{frame}
 
 \begin{frame}{Symbolic-Assisted White Box Fuzzing}
-    \begin{block}<+->{Key features}
-        \begin{itemize}[<+->]
+    \begin{block}{Key features}
+        \begin{itemize}
             \item{} uses symbolic execution to collect path constraints
             \item{} constraints are solved to provide new inputs
-            \item<+-|alert@+-> \alert{constraints not always solvable or solver is slow}
+            \item<alert@2-> constraints not always solvable or solver is slow
         \end{itemize}
     \end{block}
-    \begin{exampleblock}<+->{Examples}
-        \begin{itemize}[<+->]
+    \begin{exampleblock}<3->{Examples}
+        \begin{itemize}
             \item{} DART and SAGE
             \item{} EXE and KLEE
             \item{} Mayhem
@@ -239,7 +230,7 @@
 
 \begin{frame}{Cooperative Fuzzing}
     \begin{block}<+->{A system that allows fuzzers to share information to achieve a common goal}
-        \begin{itemize}[<+->]
+        \begin{itemize}
             \item{} fuzzing is non-deterministic
             \item{} there is no best fuzzer for all possible programs
             \item{} information sharing as a mean to share features

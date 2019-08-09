@@ -1,4 +1,5 @@
-\documentclass[]{beamer}
+\def\HandoutMode{handout}
+\documentclass[\HandoutMode]{beamer}
 
 \mode<presentation>
 \usetheme{CambridgeUS}
@@ -14,19 +15,17 @@
 \usepackage{tikz}
 \usepackage{ifthen,xstring,calc,pgfopts,tikz-uml}
 
+\ifthenelse{\equal{\HandoutMode}{handout}}{%
+    \usepackage{pgfpages}
+    \pgfpagesuselayout{2 on 1}[a4paper,border shrink=5mm]
+}{}
+
 \include{macros}
 
 \title{\myTitle}
 \subtitle{\mySubtitle}
 \author{\myName}
 \institute[VU]{\myUni}
-
-% \AtBeginSection[]
-% {%
-%     \begin{frame}
-%         \tableofcontents[currentsection,subsectionstyle=shaded]
-%     \end{frame}
-% }
 
 \AtBeginSubsection[]
 {%
@@ -47,7 +46,6 @@
 
 \subsection{Fuzzing Techniques}
 
-% fuzz testing
 \begin{frame}{Fuzzing}
     \begin{itemize}
         \item<1-> term coined in 1988 during a quiet and stormy night\ldots\

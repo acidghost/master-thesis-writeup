@@ -14,6 +14,7 @@
 \usepackage{graphicx}
 \usepackage{tikz}
 \usepackage{ifthen,xstring,calc,pgfopts,tikz-uml}
+\usepackage{xcolor}
 
 \ifthenelse{\equal{\HandoutMode}{handout}}{%
     \usepackage{pgfpages}
@@ -33,6 +34,26 @@
         \tableofcontents[currentsection,currentsubsection]
     \end{frame}
 }
+
+\lstdefinelanguage[modern]{C}[ANSI]{C}{%
+    morekeywords={bool,true,false,size_t,uint8_t}}
+
+\lstdefinestyle{mystyle}{%
+    basicstyle=\small\ttfamily,
+    keywordstyle=\color{blue},
+    stringstyle=\color{teal},
+    commentstyle=\color{red}}
+
+\lstdefinestyle{nonumbered}{%
+    style=mystyle,
+    numbers=none}
+
+\lstdefinestyle{numbered}{%
+    style=mystyle,
+    numbers=left,
+    numbersep=12pt,
+    numberstyle=\tiny,
+    xleftmargin=12pt}
 
 \begin{document}
 
@@ -56,9 +77,20 @@
 \end{frame}
 
 \begin{frame}[fragile]{Challenges}
-% TODO: example of challenging SUT
-\begin{lstlisting}[language=C]
-void fn(int i) {}
+\begin{lstlisting}[language={[modern]C},style=numbered]
+void process_buffer (const char *buf) {
+    size_t n = strlen(buf);
+    if (n > 1000 || n < 4)
+        return;
+    if (buf[1] == 0xFF && buf[0] == 0xFD) {
+        uint8_t i = (uint8_t) buf[3];
+        if (i > 3 && i < n) {
+            if (strncmp(&buf[i], "CHK", 3) == 0) {
+                // bug here
+            }
+        }
+    }
+}
 \end{lstlisting}
 \end{frame}
 

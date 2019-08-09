@@ -1,5 +1,5 @@
 \def\HandoutMode{handout}
-\documentclass[\HandoutMode]{beamer}
+\documentclass[\HandoutMode,table]{beamer}
 
 \mode<presentation>
 \usetheme{CambridgeUS}
@@ -15,6 +15,7 @@
 \usepackage{tikz}
 \usepackage{ifthen,xstring,calc,pgfopts,tikz-uml}
 \usepackage{xcolor}
+\usepackage{booktabs}
 
 \ifthenelse{\equal{\HandoutMode}{handout}}{%
     \usepackage{pgfpages}
@@ -22,6 +23,8 @@
 }{}
 
 \include{macros}
+\newcommand\ac[1]{#1}           % dummy \ac command, does nothing
+\renewcommand\hicell{\cellcolor[RGB]{255, 101, 66}}
 
 \title{\myTitle}
 \subtitle{\mySubtitle}
@@ -313,6 +316,41 @@ void process_buffer (const char *buf) {
 \section{Evaluation}
 
 \subsection{Single Fuzzers Evaluation}
+
+\begin{frame}{Finding the Best Fuzzer}
+    \begin{block}{Choice of fuzzers}
+        \begin{description}
+            \item[AFLFast] CGF with focus on paths
+            \item[FairFuzz] CGF with focus on branches
+            \item[Honggfuzz] hardware feedback, high throughput
+            \item[VUzzer] application-aware, population-based
+        \end{description}
+    \end{block}
+    \begin{block}{Experiment design}
+        \begin{enumerate}
+            \item{} run each fuzzer independently for 24 hours
+            \item{} collect coverage with granularity 1 minute
+            \item{} compare mean coverage over 5 runs
+        \end{enumerate}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Mean Coverage}
+    \begin{table}
+        \scriptsize
+        \begin{tabular}{l*{4}c}
+            \input{tables/eval-mono}
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+\begin{frame}{Bayesian Estimation of Means}
+    % TODO: show 1st vs 2nd charts, maybe key points of BEST
+\end{frame}
+
+\begin{frame}{Fuzzers Uncover Disjoint Transitions Sets}
+    % TODO: table 4.3 and figure 4.5
+\end{frame}
 
 \subsection{Cooperative Fuzzing Evaluation}
 

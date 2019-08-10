@@ -16,6 +16,7 @@
 \usepackage{ifthen,xstring,calc,pgfopts,tikz-uml}
 \usepackage{xcolor}
 \usepackage{booktabs}
+\usepackage{subfig}
 
 \ifthenelse{\equal{\HandoutMode}{handout}}{%
     \usepackage{pgfpages}
@@ -320,10 +321,10 @@ void process_buffer (const char *buf) {
 \begin{frame}{Finding the Best Fuzzer}
     \begin{block}{Choice of fuzzers}
         \begin{description}
-            \item[AFLFast] CGF with focus on paths
-            \item[FairFuzz] CGF with focus on branches
-            \item[Honggfuzz] hardware feedback, high throughput
-            \item[VUzzer] application-aware, population-based
+            \item[\aflfast] CGF with focus on paths
+            \item[\fairfuzz] CGF with focus on branches
+            \item[\honggfuzz] hardware feedback, high throughput
+            \item[\vuzzer] application-aware, population-based
         \end{description}
     \end{block}
     \begin{block}{Experiment design}
@@ -345,11 +346,27 @@ void process_buffer (const char *buf) {
 \end{frame}
 
 \begin{frame}{Bayesian Estimation of Means}
-    % TODO: show 1st vs 2nd charts, maybe key points of BEST
+    \begin{figure}
+        \subfloat[\djpeg\\\honggfuzz\ vs.\ \fairfuzz]{%
+            \includegraphics[width=.33\textwidth]{figures/cropped/djpeg-m-hongg-fair}
+        }
+        \subfloat[\objdump\\\fairfuzz\ vs.\ \aflfast]{%
+            \includegraphics[width=.33\textwidth]{figures/cropped/objdump-m-fair-afl}
+        }
+        \subfloat[\tiffpdf\\\aflfast\ vs.\ \fairfuzz]{%
+            \includegraphics[width=.33\textwidth]{figures/cropped/tiff2pdf-m-afl-fair}
+        }
+    \end{figure}
 \end{frame}
 
 \begin{frame}{Fuzzers Uncover Disjoint Transitions Sets}
-    % TODO: table 4.3 and figure 4.5
+    \begin{table}
+        \begin{tabular}{l c l c}
+            \input{tables/eval-mono-union}
+        \end{tabular}
+    \end{table}
+    \vspace{2\baselineskip}
+    \structure{Bayesian estimation agrees, except for \djpeg}
 \end{frame}
 
 \subsection{Cooperative Fuzzing Evaluation}

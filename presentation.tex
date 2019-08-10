@@ -26,6 +26,7 @@
 \include{macros}
 \newcommand\ac[1]{#1}           % dummy \ac command, does nothing
 \renewcommand\hicell{\cellcolor[RGB]{255, 101, 66}}
+\newcommand\figwidth\textwidth
 
 \title{\myTitle}
 \subtitle{\mySubtitle}
@@ -346,15 +347,17 @@ void process_buffer (const char *buf) {
 \end{frame}
 
 \begin{frame}{Bayesian Estimation of Means}
+    \renewcommand\figwidth{.33\textwidth}
+    \setcounter{subfigure}{0}
     \begin{figure}
         \subfloat[\djpeg\\\honggfuzz\ vs.\ \fairfuzz]{%
-            \includegraphics[width=.33\textwidth]{figures/cropped/djpeg-m-hongg-fair}
+            \includegraphics[width=\figwidth]{figures/cropped/djpeg-m-hongg-fair}
         }
         \subfloat[\objdump\\\fairfuzz\ vs.\ \aflfast]{%
-            \includegraphics[width=.33\textwidth]{figures/cropped/objdump-m-fair-afl}
+            \includegraphics[width=\figwidth]{figures/cropped/objdump-m-fair-afl}
         }
         \subfloat[\tiffpdf\\\aflfast\ vs.\ \fairfuzz]{%
-            \includegraphics[width=.33\textwidth]{figures/cropped/tiff2pdf-m-afl-fair}
+            \includegraphics[width=\figwidth]{figures/cropped/tiff2pdf-m-afl-fair}
         }
     \end{figure}
 \end{frame}

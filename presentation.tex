@@ -17,7 +17,7 @@
 \usepackage{xcolor}
 \usepackage{booktabs}
 \usepackage{subfig}
-\usepackage[justification=centering]{caption}
+\usepackage[justification=centering,format=hang]{caption}
 \usepackage{adjustbox}
 
 \ifthenelse{\equal{\HandoutMode}{handout}}{%
@@ -423,6 +423,77 @@ void process_buffer (const char *buf) {
 \end{frame}
 
 \subsection{Crash Analysis and Known Vulnerabilities}
+
+\begin{frame}{Unique Crash Analysis}
+    \begin{block}{Obtaining unique crashes}
+        \begin{enumerate}
+            \item{} fuzzers collect unique crashes in folder
+            \item{} re-execute SUT with input and run \texttt{exploitable} (stack hash)
+            \item{} stack hash and elapsed time for 5 runs in single file
+        \end{enumerate}
+    \end{block}
+    \vspace{\baselineskip}
+    \begin{table}
+        \begin{tabular}{l c c c c}
+            \input{tables/crashes}
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+\begin{frame}{Unique Crashes Over Time}
+    \renewcommand\figwidth{.32\textwidth}
+    \setcounter{subfigure}{0}
+    \captionsetup[subfigure]{margin=3pt}
+    \begin{figure}
+        \subfloat[Cumulative count of unique crashes]{%
+            \includegraphics[width=\figwidth]{figures/cropped/crashes-count-all}
+        }
+        \subfloat[Density of unique crashes]{%
+            \includegraphics[width=\figwidth]{figures/cropped/crashes-all}
+        }
+        \subfloat[Uncommon unique crashes]{%
+            \includegraphics[width=\figwidth]{figures/cropped/crashes-not-intersect}
+        }
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Known Vulnerabilities}
+    \begin{columns}
+        \begin{column}{.66\textwidth}
+            \renewcommand\figwidth{.33\textwidth}
+            \vspace{-20pt}
+            \begin{figure}
+                \subfloat{%
+                    \includegraphics[width=\figwidth]{figures/cropped/cve-2017-7582}
+                }
+                \subfloat{%
+                    \includegraphics[width=\figwidth]{figures/cropped/cve-2017-8782}
+                }
+                \subfloat{%
+                    \includegraphics[width=\figwidth]{figures/cropped/cve-2017-9988}
+                }
+                \vspace{-8pt}
+                \subfloat{%
+                    \includegraphics[width=\figwidth]{figures/cropped/cve-2017-9989}
+                }
+                \subfloat{%
+                    \includegraphics[width=\figwidth]{figures/cropped/cve-2018-13066-parser-2029}
+                }
+                \subfloat{%
+                    \includegraphics[width=\figwidth]{figures/cropped/cve-2018-13066-parser-619}
+                }
+            \end{figure}
+        \end{column}
+        \begin{column}{.33\textwidth}
+            \begin{itemize}
+                \item{} over 25 bugs,\\6 linked to a CVE
+                \item{} multi winners\\finds all CVE\\found by union
+                \item{} all but one found earlier than union
+                \item{} finds two CVE\\not found by union
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
 
 \section{Discussion and Future Work}
 

@@ -17,6 +17,8 @@
 \usepackage{xcolor}
 \usepackage{booktabs}
 \usepackage{subfig}
+\usepackage[justification=centering]{caption}
+\usepackage{adjustbox}
 
 \ifthenelse{\equal{\HandoutMode}{handout}}{%
     \usepackage{pgfpages}
@@ -373,6 +375,52 @@ void process_buffer (const char *buf) {
 \end{frame}
 
 \subsection{Cooperative Fuzzing Evaluation}
+
+\begin{frame}{Evaluating the Effect of Cooperation}
+    \begin{block}{Cooperative strategies}
+        \begin{itemize}
+            \item{} score is number of newly discovered BTS transitions
+            \item{} single highest winner strategy
+            \item{} multiple positive-scored winners strategy
+        \end{itemize}
+    \end{block}
+    \begin{block}{Experiment design}
+        \begin{enumerate}
+            \item{} run CFF with selected strategy for 6 hours
+            \item{} drivers log coverage for respective fuzzer
+            \item{} compare mean coverage over 5 runs against union of fuzzers
+        \end{enumerate}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Mean Coverage}
+    \begin{table}
+        \begin{tabular}{l c c c}
+            \input{tables/eval-coop}
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+\begin{frame}{Bayesian Estimation of Means}
+    \renewcommand\figwidth{.28\textwidth}
+    \setcounter{subfigure}{0}
+    \begin{figure}
+        \begin{adjustbox}{center}
+            \subfloat[\djpeg\\single vs.\ union]{%
+                \includegraphics[width=\figwidth]{figures/cropped/djpeg-m-single-uni}
+            }\hspace{-.05\textwidth}
+            \subfloat[\objdump\\single vs.\ union]{%
+                \includegraphics[width=\figwidth]{figures/cropped/objdump-m-single-uni}
+            }\hspace{-.05\textwidth}
+            \subfloat[\tiffpdf\\multi vs.\ union]{%
+                \includegraphics[width=\figwidth]{figures/cropped/tiff2pdf-m-multi-uni}
+            }\hspace{-.05\textwidth}
+            \subfloat[\listswf\\multi vs.\ union]{%
+                \includegraphics[width=\figwidth]{figures/cropped/ming-m-multi-uni}
+            }
+        \end{adjustbox}
+    \end{figure}
+\end{frame}
 
 \subsection{Crash Analysis and Known Vulnerabilities}
 

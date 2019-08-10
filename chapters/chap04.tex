@@ -218,12 +218,7 @@ examined programs.
 \begin{table}[h]
     \centering%
     \begin{tabular}{l c l c}
-        \textbf{\sut} & \multicolumn{2}{c}{\textbf{best single}} & \textbf{union} \\
-        \bottomrule%
-        \djpeg& $4112.8 \pm 39.5476$ & \honggfuzz& \hicell$4157.2 \pm 40.0495$ \\
-        \objdump& $5067 \pm 62.6821$ & \fairfuzz& \hicell$5404.6 \pm 38.1997$ \\
-        \tiffpdf& $8971.2 \pm 152.8626$ & \aflfast& \hicell$9695 \pm 129.7239$ \\
-        \listswf& $8586.8 \pm 87.7451$ & \fairfuzz& \hicell$8916.6 \pm 83.8365$
+        \input{tables/eval-mono-union}
     \end{tabular}
     \caption{Mean coverage with $95\%$ confidence intervals for best single
     fuzzer and union of coverage traces.}

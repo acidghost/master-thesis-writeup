@@ -268,12 +268,7 @@ In this section we compare the results of running both strategies.
 \begin{table}[h]
     \centering%
     \begin{tabular}{l c c c}
-        \textbf{\sut} & \textbf{multi} & \textbf{single} & \textbf{union} \\
-        \bottomrule%
-        \djpeg& $4056.4 \pm 76.9499$ & \hicell$4078.4 \pm 85.6738$ & $4028.6 \pm 47.7396$ \\
-        \objdump& $5414.6 \pm 224.121$ & \hicell$5529.6 \pm 338.651$ & $5035.6 \pm 54.5944$ \\
-        \tiffpdf& \hicell$8765.6 \pm 183.682$ & $8577.6 \pm 99.2457$ & $8623.2 \pm 183.399$ \\
-        \listswf& \hicell$9008.4 \pm 122.81$ & $8801.4 \pm 96.4045$ & $8916.6 \pm 83.8381$
+        \input{tables/eval-coop}
     \end{tabular}
     \caption{Mean coverage with $95\%$ confidence intervals for winning
     strategies that select single or multiple winners and without cooperation.}

@@ -341,13 +341,31 @@ void process_buffer (const char *buf) {
     \end{block}
 \end{frame}
 
-\begin{frame}{Mean Coverage}
-    \begin{table}
-        \scriptsize
-        \begin{tabular}{l*{4}c}
-            \input{tables/eval-mono}
-        \end{tabular}
-    \end{table}
+\begin{frame}[label=single-time]{Mean Coverage Over Time}
+    \renewcommand\figwidth{.42\textwidth}
+    \setcounter{subfigure}{0}
+    \vspace{-\baselineskip}
+    \begin{figure}
+        \begin{adjustbox}{center}
+            \subfloat[\djpeg]{%
+                \includegraphics[width=\figwidth]{figures/mono-djpeg}
+            }
+            \subfloat[\objdump]{%
+                \includegraphics[width=\figwidth]{figures/mono-objdump}
+            }
+        \end{adjustbox}
+        \begin{adjustbox}{center}
+            \subfloat[\tiffpdf]{%
+                \includegraphics[width=\figwidth]{figures/mono-tiff2pdf}
+            }
+            \subfloat[\listswf]{%
+                \includegraphics[width=\figwidth]{figures/mono-ming}
+            }
+        \end{adjustbox}
+    \end{figure}
+    \buttons{%
+        \hyperlink{single-final<1>}{\beamergotobutton{Jump to final values}}
+    }
 \end{frame}
 
 \begin{frame}{Bayesian Estimation of Means}
@@ -395,12 +413,31 @@ void process_buffer (const char *buf) {
     \end{block}
 \end{frame}
 
-\begin{frame}{Mean Coverage}
-    \begin{table}
-        \begin{tabular}{l c c c}
-            \input{tables/eval-coop}
-        \end{tabular}
-    \end{table}
+\begin{frame}[label=coop-time]{Mean Coverage Over Time}
+    \renewcommand\figwidth{.42\textwidth}
+    \setcounter{subfigure}{0}
+    \vspace{-\baselineskip}
+    \begin{figure}[h]
+        \begin{adjustbox}{center}
+            \subfloat[\djpeg]{%
+                \includegraphics[width=\figwidth]{figures/vs-djpeg}
+            }
+            \subfloat[\objdump]{%
+                \includegraphics[width=\figwidth]{figures/vs-objdump}
+            }
+        \end{adjustbox}
+        \begin{adjustbox}{center}
+            \subfloat[\tiffpdf]{%
+                \includegraphics[width=\figwidth]{figures/vs-tiff2pdf}
+            }
+            \subfloat[\listswf]{%
+                \includegraphics[width=\figwidth]{figures/vs-ming}
+            }
+        \end{adjustbox}
+    \end{figure}
+    \buttons{%
+        \hyperlink{coop-final<1>}{\beamergotobutton{Jump to final values}}
+    }
 \end{frame}
 
 \begin{frame}{Bayesian Estimation of Means}
@@ -502,5 +539,37 @@ void process_buffer (const char *buf) {
 \subsection*{Discussion}
 
 \subsection*{Future Work}
+
+\appendix
+
+\section*{Appendix}
+
+\setbeamertemplate{page number in head/foot}{}
+
+\begin{frame}[noframenumbering,label=single-final]{Final Mean Coverage for Single Fuzzers}
+    \begin{table}
+        \scriptsize
+        \begin{tabular}{l*{4}c}
+            \input{tables/eval-mono}
+        \end{tabular}
+    \end{table}
+    \buttons{%
+        \vspace{2\baselineskip}
+        \hyperlink{single-time<1>}{\beamerreturnbutton{Return to coverage over time}}
+    }
+\end{frame}
+
+\begin{frame}[noframenumbering,label=coop-final]
+    \frametitle{Final Mean Coverage for Cooperative Fuzzing}
+    \begin{table}
+        \begin{tabular}{l c c c}
+            \input{tables/eval-coop}
+        \end{tabular}
+    \end{table}
+    \buttons{%
+        \vspace{2\baselineskip}
+        \hyperlink{coop-time<1>}{\beamerreturnbutton{Return to coverage over time}}
+    }
+\end{frame}
 
 \end{document}

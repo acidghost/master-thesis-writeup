@@ -1,4 +1,5 @@
 \def\HandoutMode{handout}
+\def\ButtonsMode{0}
 \documentclass[\HandoutMode,table]{beamer}
 
 \mode<presentation>
@@ -29,6 +30,7 @@
 \newcommand\ac[1]{#1}           % dummy \ac command, does nothing
 \renewcommand\hicell{\cellcolor[RGB]{255, 101, 66}}
 \newcommand\figwidth\textwidth
+\newcommand\buttons[1]{\if\ButtonsMode1 #1 \fi}
 
 \title{\myTitle}
 \subtitle{\mySubtitle}

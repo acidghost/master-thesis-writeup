@@ -1,5 +1,5 @@
-\def\HandoutMode{handout}
-\def\ButtonsMode{0}
+\def\HandoutMode{}
+\def\ButtonsMode{1}
 \documentclass[\HandoutMode,table]{beamer}
 
 \mode<presentation>
@@ -323,7 +323,7 @@ void process_buffer (const char *buf) {
 
 \subsection{Single Fuzzers Evaluation}
 
-\begin{frame}{Finding the Best Fuzzer}
+\begin{frame}{Is There a Best Fuzzer?}
     \begin{block}{Choice of fuzzers}
         \begin{description}
             \item[\aflfast] CGF with focus on paths
@@ -332,7 +332,7 @@ void process_buffer (const char *buf) {
             \item[\vuzzer] application-aware, population-based
         \end{description}
     \end{block}
-    \begin{block}{Experiment design}
+    \begin{block}<2->{Experiment design}
         \begin{enumerate}
             \item{} run each fuzzer independently for 24 hours
             \item{} collect coverage with granularity 1 minute
@@ -364,12 +364,12 @@ void process_buffer (const char *buf) {
         \end{adjustbox}
     \end{figure}
     \buttons{%
-        \hyperlink{single-final<1>}{\beamergotobutton{Jump to final values}}
+        \hyperlink{single-final<1>}{\beamergotobutton{Final means table}}
     }
 \end{frame}
 
-\begin{frame}{Bayesian Estimation of Means}
-    \renewcommand\figwidth{.33\textwidth}
+\begin{frame}[label=single-best]{Bayesian Estimation of Means}
+    \renewcommand\figwidth{.32\textwidth}
     \setcounter{subfigure}{0}
     \begin{figure}
         \subfloat[\djpeg\\\honggfuzz\ vs.\ \fairfuzz]{%
@@ -382,15 +382,25 @@ void process_buffer (const char *buf) {
             \includegraphics[width=\figwidth]{figures/cropped/tiff2pdf-m-afl-fair}
         }
     \end{figure}
+    \begin{itemize}
+        \item{} choose one for all $\longrightarrow$ \alert{\fairfuzz}
+        \item{} chose one for each $\longrightarrow$ \alert{indecisive} for \djpeg~and \tiffpdf%
+    \end{itemize}
+    \buttons{%
+        \hyperlink{single-final<1>}{\beamergotobutton{Final means table}}
+    }
 \end{frame}
 
-\begin{frame}{Fuzzers Uncover Disjoint Transitions Sets}
+\begin{frame}<presentation:0>[noframenumbering]
+    \frametitle{Do Fuzzers Uncover Different Transitions Sets?}
+    \structure{Compare the fuzzer with highest coverage with union of fuzzers}
+    \vspace{\baselineskip}
     \begin{table}
         \begin{tabular}{l c l c}
             \input{tables/eval-mono-union}
         \end{tabular}
     \end{table}
-    \vspace{2\baselineskip}
+    \vspace{\baselineskip}
     \structure{Bayesian estimation agrees, except for \djpeg}
 \end{frame}
 
@@ -404,7 +414,7 @@ void process_buffer (const char *buf) {
             \item{} multiple positive-scored winners strategy
         \end{itemize}
     \end{block}
-    \begin{block}{Experiment design}
+    \begin{block}<2->{Experiment design}
         \begin{enumerate}
             \item{} run CFF with selected strategy for 6 hours
             \item{} drivers log coverage for respective fuzzer
@@ -436,11 +446,11 @@ void process_buffer (const char *buf) {
         \end{adjustbox}
     \end{figure}
     \buttons{%
-        \hyperlink{coop-final<1>}{\beamergotobutton{Jump to final values}}
+        \hyperlink{coop-final<1>}{\beamergotobutton{Final means table}}
     }
 \end{frame}
 
-\begin{frame}{Bayesian Estimation of Means}
+\begin{frame}[label=coop-best]{Bayesian Estimation of Means}
     \renewcommand\figwidth{.28\textwidth}
     \setcounter{subfigure}{0}
     \begin{figure}
@@ -459,6 +469,16 @@ void process_buffer (const char *buf) {
             }
         \end{adjustbox}
     \end{figure}
+    \begin{itemize}
+        \item{} \djpeg, \tiffpdf~and \listswf~$\longrightarrow$ \alert{indecisive}
+        \item{} \objdump~$\longrightarrow$ \parbox{.7\textwidth}{%
+                \alert{indecisive} but not by much\\
+                multi vs.\ union $96.7\%$ of HDI is $> 0$}
+    \end{itemize}
+    \buttons{%
+        \vspace{.5\baselineskip}
+        \hyperlink{coop-final<1>}{\beamergotobutton{Final means table}}
+    }
 \end{frame}
 
 \subsection{Crash Analysis and Known Vulnerabilities}
@@ -476,27 +496,28 @@ void process_buffer (const char *buf) {
         \begin{tabular}{l c c c c}
             \input{tables/crashes}
         \end{tabular}
+        \caption{Crashes in \listswf}
     \end{table}
 \end{frame}
 
-\begin{frame}{Unique Crashes Over Time}
+\begin{frame}{Unique Crashes Over Time --- \listswf}
     \renewcommand\figwidth{.32\textwidth}
     \setcounter{subfigure}{0}
     \captionsetup[subfigure]{margin=3pt}
     \begin{figure}
-        \subfloat[Cumulative count of unique crashes]{%
+        \subfloat[Cumulative]{%
             \includegraphics[width=\figwidth]{figures/cropped/crashes-count-all}
         }
-        \subfloat[Density of unique crashes]{%
+        \subfloat[Density]{%
             \includegraphics[width=\figwidth]{figures/cropped/crashes-all}
         }
-        \subfloat[Uncommon unique crashes]{%
+        \subfloat[Uncommon density]{%
             \includegraphics[width=\figwidth]{figures/cropped/crashes-not-intersect}
         }
     \end{figure}
 \end{frame}
 
-\begin{frame}{Known Vulnerabilities}
+\begin{frame}{Known Vulnerabilities --- \listswf}
     \begin{columns}
         \begin{column}{.66\textwidth}
             \renewcommand\figwidth{.33\textwidth}
@@ -534,11 +555,43 @@ void process_buffer (const char *buf) {
     \end{columns}
 \end{frame}
 
-\section{Discussion and Future Work}
+\section{Discussion and Conclusion}
+
+\begin{frame}
+    \tableofcontents[currentsection]
+\end{frame}
 
 \subsection*{Discussion}
 
-\subsection*{Future Work}
+\begin{frame}{Discussion}
+    \begin{itemize}
+        \item{} \structure{is there a best fuzzer?}
+            \begin{itemize}
+                \item{} on average yes, but need more than 4 targets
+                \item{} indecisive for some targets, need more than 5 runs
+            \end{itemize}
+        \item{} \structure{does cooperation increase coverage?}
+            \begin{itemize}
+                \item{} observed means suggest yes (on average better more
+                    communication)
+                \item{} $95\%$ HDI difference of means never excludes zero
+                \item{} nonetheless promising results, need more data
+            \end{itemize}
+        \item{} \structure{what is the effect of cooperation on crashes?}
+            \begin{itemize}
+                \item{} unfortunately data only on one target
+                \item{} multi finds $30\%$ more distinct unique crashes than union
+                \item{} multi finds more unique crashes not found by other
+                \item{} multi has strongly bimodal crash density
+                \item{} multi finds all CVE union finds (+2 more), earlier
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\subsection*{Conclusion}
+
+\begin{frame}{Conclusion}
+\end{frame}
 
 \appendix
 
@@ -555,7 +608,8 @@ void process_buffer (const char *buf) {
     \end{table}
     \buttons{%
         \vspace{2\baselineskip}
-        \hyperlink{single-time<1>}{\beamerreturnbutton{Return to coverage over time}}
+        \hyperlink{single-time<1>}{\beamerreturnbutton{Coverage over time}}
+        \hyperlink{single-best<1>}{\beamerreturnbutton{Bayesian estimation}}
     }
 \end{frame}
 
@@ -568,7 +622,8 @@ void process_buffer (const char *buf) {
     \end{table}
     \buttons{%
         \vspace{2\baselineskip}
-        \hyperlink{coop-time<1>}{\beamerreturnbutton{Return to coverage over time}}
+        \hyperlink{coop-time<1>}{\beamerreturnbutton{Coverage over time}}
+        \hyperlink{coop-best<1>}{\beamerreturnbutton{Bayesian estimation}}
     }
 \end{frame}
 

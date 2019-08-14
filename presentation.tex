@@ -662,4 +662,27 @@ void process_buffer (const char *buf) {
     }
 \end{frame}
 
+\subsection{Overhead Evaluation}
+
+\begin{frame}[noframenumbering]{Overhead of CFF}
+    \begin{block}{Sources of overhead}
+        \begin{itemize}
+            \item{} fuzzers synchronize with file system
+            \item{} drivers:
+                \begin{itemize}
+                    \item{} get BTS trace for every ``interesting'' input
+                    \item{} reply to metric requests (BTS diff)
+                    \item{} receives new input from master (copy input, add coverage)
+                \end{itemize}
+            \item{} master:
+                \begin{itemize}
+                    \item{} interacts with ZeroMQ channels
+                    \item{} selects winner(s)
+                \end{itemize}
+        \end{itemize}
+    \end{block}
+    \vspace{\baselineskip}
+    \structure{Average CPU usage is $0.18\%$ (master) and $3.05\%$ (driver)}
+\end{frame}
+
 \end{document}

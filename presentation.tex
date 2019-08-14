@@ -68,7 +68,20 @@
 
 \frame{\titlepage}
 
-\begin{frame}{Outline}
+\begin{frame}{Overview}
+    \begin{itemize}
+        \item{} design a framework that lets diverse fuzzers cooperate
+        \item{} evaluating cooperation shows promising results:
+            \begin{itemize}
+                \item{} increased code coverage
+                \item{} $30\%$ more distinct unique crashes
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\section*{Outline}
+
+\begin{frame}
     \tableofcontents[pausesections]
 \end{frame}
 
@@ -619,7 +632,7 @@ void process_buffer (const char *buf) {
 
 \AtBeginSubsection[]{}
 
-\subsection{Additional Evaluation Data}
+\subsection{Mean Coverage Tables}
 
 \begin{frame}[noframenumbering,label=single-final]{Final Mean Coverage for Single Fuzzers}
     \begin{table}

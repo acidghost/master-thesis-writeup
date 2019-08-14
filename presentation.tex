@@ -609,9 +609,17 @@ void process_buffer (const char *buf) {
 
 \appendix
 
-\section*{Appendix}
+\section{\appendixname}
 
 \setbeamertemplate{page number in head/foot}{}
+
+\begin{frame}[noframenumbering]
+    \tableofcontents[]
+\end{frame}
+
+\AtBeginSubsection[]{}
+
+\subsection{Additional Evaluation Data}
 
 \begin{frame}[noframenumbering,label=single-final]{Final Mean Coverage for Single Fuzzers}
     \begin{table}

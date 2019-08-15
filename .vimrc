@@ -1,5 +1,6 @@
 set spell
 au BufEnter *.tex call SetForTex()
+au BufEnter presentation.tex call SetForPres()
 
 function SetForTex()
   setlocal spelllang=en
@@ -17,6 +18,11 @@ function SetForTex()
   syn match texNoSpellComment "%.*$" contained contains=@NoSpell
   syn region texNoSpell contained matchgroup=texComment start="%\s*nospell\s*{" end="%\s*nospell\s*}" contains=@texFoldGroup,@NoSpell,texNoSpellComment
   hi link texNoSpellComment texComment
+endfunction
+
+function SetForPres()
+  let g:Tex_FoldedEnvironments = 'tikzpicture,figure,table,frame'
+  let g:Tex_FoldedMisc = 'preamble,<<<'
 endfunction
 
 nnoremap <Leader>m :w<bar>!make<CR>

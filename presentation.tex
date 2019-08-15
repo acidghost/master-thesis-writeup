@@ -91,7 +91,8 @@
 
 \frame{\titlepage}
 
-\begin{frame}{Overview}
+\begin{frame}
+    {Overview}
     \begin{itemize}
         \item{} design a framework that lets diverse fuzzers cooperate
         \item{} evaluating cooperation shows promising results:
@@ -112,7 +113,8 @@
 
 \subsection{Fuzzing Techniques}
 
-\begin{frame}{Fuzzing}
+\begin{frame}
+    {Fuzzing}
     \begin{itemize}
         \item<1-> term coined in 1988 during a quiet and stormy night\ldots\
         \item<2-> established reliability and security testing practice
@@ -121,7 +123,8 @@
     \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{Challenges}
+\begin{frame}[fragile]
+    {Challenges}
 \begin{lstlisting}[language={[modern]C},style=numbered]
 void process_buffer (const char *buf) {
     size_t n = strlen(buf);
@@ -139,7 +142,8 @@ void process_buffer (const char *buf) {
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}{Black Box Mutational Fuzzing}
+\begin{frame}
+    {Black Box Mutational Fuzzing}
     \begin{block}<+->{General operation}
         \setbeamercovered{transparent}
         \begin{enumerate}[<+->]
@@ -157,7 +161,8 @@ void process_buffer (const char *buf) {
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Coverage-Based Gray Box Fuzzing}
+\begin{frame}
+    {Coverage-Based Gray Box Fuzzing}
     \begin{block}<+->{Overview}
         \begin{itemize}
             \item{} execution is monitored to gain \alert{feedback}
@@ -174,7 +179,8 @@ void process_buffer (const char *buf) {
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}<presentation:0>[noframenumbering]{Other Gray Box Fuzzers}
+\begin{frame}<presentation:0>[noframenumbering]
+    {Other Gray Box Fuzzers}
     \setbeamercovered{transparent}
     \begin{description}
         \item[AFLFast]<1>
@@ -202,7 +208,8 @@ void process_buffer (const char *buf) {
     \end{description}
 \end{frame}
 
-\begin{frame}{Symbolic-Assisted White Box Fuzzing}
+\begin{frame}
+    {Symbolic-Assisted White Box Fuzzing}
     \begin{block}{Key features}
         \begin{itemize}
             \item{} uses symbolic execution to collect path constraints
@@ -221,7 +228,8 @@ void process_buffer (const char *buf) {
 
 \subsection{Hybrid and Cooperative Fuzzing}
 
-\begin{frame}{Hybrid Approaches}
+\begin{frame}
+    {Hybrid Approaches}
     \structure<+->{Merge white box fuzzers with black or gray box ones}
     \\~\\
     \begin{exampleblock}<+->{Driller}
@@ -232,7 +240,8 @@ void process_buffer (const char *buf) {
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Cooperative Fuzzing}
+\begin{frame}
+    {Cooperative Fuzzing}
     \begin{block}<+->{A system that allows fuzzers to share information to achieve a common goal}
         \begin{itemize}
             \item{} fuzzing is non-deterministic
@@ -253,7 +262,8 @@ void process_buffer (const char *buf) {
 
 \subsection{System Design}
 
-\begin{frame}{Common Fuzzer Interface}
+\begin{frame}
+    {Common Fuzzer Interface}
     \begin{block}{Three API primitives}
         \begin{itemize}[<+->]
             \item{} \alert{extract} test cases from fuzzer
@@ -264,7 +274,8 @@ void process_buffer (const char *buf) {
     \end{block}
 \end{frame}
 
-\begin{frame}{Central Decisional Unit}
+\begin{frame}
+    {Central Decisional Unit}
     \begin{columns}
         \begin{column}{.5\textwidth}
             \begin{figure}
@@ -285,7 +296,8 @@ void process_buffer (const char *buf) {
     \end{columns}
 \end{frame}
 
-\begin{frame}[fragile]{Cooperative Fuzzing Strategies}
+\begin{frame}[fragile]
+    {Cooperative Fuzzing Strategies}
 \scalebox{.8}{%
     \begin{algorithm}[H]
         \DontPrintSemicolon%
@@ -330,7 +342,8 @@ void process_buffer (const char *buf) {
 
 \subsection{System Implementation}
 
-\begin{frame}{Overview}
+\begin{frame}
+    {Overview}
     \begin{tikzpicture}
         \umlbasiccomponent[x=-2,y=0]{Fuzzer}
         \begin{umlcomponent}[x=3,y=0]{CFF}
@@ -359,7 +372,8 @@ void process_buffer (const char *buf) {
 
 \subsection{Single Fuzzers Evaluation}
 
-\begin{frame}{Is There a Best Fuzzer?}
+\begin{frame}
+    {Is There a Best Fuzzer?}
     \begin{block}{Choice of fuzzers}
         \begin{description}
             \item[\aflfast] CGF with focus on paths
@@ -377,7 +391,8 @@ void process_buffer (const char *buf) {
     \end{block}
 \end{frame}
 
-\begin{frame}[label=single-time]{Mean Coverage Over Time}
+\begin{frame}[label=single-time]
+    {Mean Coverage Over Time}
     \renewcommand\figwidth{.42\textwidth}
     \setcounter{subfigure}{0}
     \vspace{-\baselineskip}
@@ -404,7 +419,8 @@ void process_buffer (const char *buf) {
     }
 \end{frame}
 
-\begin{frame}[label=single-best]{Bayesian Estimation of Means}
+\begin{frame}[label=single-best]
+    {Bayesian Estimation of Means}
     \renewcommand\figwidth{.32\textwidth}
     \setcounter{subfigure}{0}
     \begin{figure}
@@ -428,7 +444,7 @@ void process_buffer (const char *buf) {
 \end{frame}
 
 \begin{frame}<presentation:0>[noframenumbering]
-    \frametitle{Do Fuzzers Uncover Different Transitions Sets?}
+    {Do Fuzzers Uncover Different Transitions Sets?}
     \structure{Compare the fuzzer with highest coverage with union of fuzzers}
     \vspace{\baselineskip}
     \begin{table}
@@ -442,7 +458,8 @@ void process_buffer (const char *buf) {
 
 \subsection{Cooperative Fuzzing Evaluation}
 
-\begin{frame}{Evaluating the Effect of Cooperation}
+\begin{frame}
+    {Evaluating the Effect of Cooperation}
     \begin{block}{Cooperative strategies}
         \begin{itemize}
             \item{} score is number of newly discovered BTS transitions
@@ -459,7 +476,8 @@ void process_buffer (const char *buf) {
     \end{block}
 \end{frame}
 
-\begin{frame}[label=coop-time]{Mean Coverage Over Time}
+\begin{frame}[label=coop-time]
+    {Mean Coverage Over Time}
     \renewcommand\figwidth{.42\textwidth}
     \setcounter{subfigure}{0}
     \vspace{-\baselineskip}
@@ -486,7 +504,8 @@ void process_buffer (const char *buf) {
     }
 \end{frame}
 
-\begin{frame}[label=coop-best]{Bayesian Estimation of Means}
+\begin{frame}[label=coop-best]
+    {Bayesian Estimation of Means}
     \renewcommand\figwidth{.28\textwidth}
     \setcounter{subfigure}{0}
     \begin{figure}
@@ -519,7 +538,8 @@ void process_buffer (const char *buf) {
 
 \subsection{Crash Analysis and Known Vulnerabilities}
 
-\begin{frame}{Unique Crash Analysis}
+\begin{frame}
+    {Unique Crash Analysis}
     \begin{block}{Obtaining unique crashes}
         \begin{enumerate}
             \item{} fuzzers collect unique crashes in folder
@@ -536,7 +556,8 @@ void process_buffer (const char *buf) {
     \end{table}
 \end{frame}
 
-\begin{frame}{Unique Crashes Over Time --- \listswf}
+\begin{frame}
+    {Unique Crashes Over Time --- \listswf}
     \renewcommand\figwidth{.32\textwidth}
     \setcounter{subfigure}{0}
     \captionsetup[subfigure]{margin=3pt}
@@ -553,7 +574,8 @@ void process_buffer (const char *buf) {
     \end{figure}
 \end{frame}
 
-\begin{frame}{Known Vulnerabilities --- \listswf}
+\begin{frame}
+    {Known Vulnerabilities --- \listswf}
     \begin{columns}
         \begin{column}{.66\textwidth}
             \renewcommand\figwidth{.33\textwidth}
@@ -599,7 +621,8 @@ void process_buffer (const char *buf) {
 
 \subsection*{Discussion}
 
-\begin{frame}{Discussion}
+\begin{frame}
+    {Discussion}
     \begin{itemize}
         \item{} \structure{is there a best fuzzer?}
             \begin{itemize}
@@ -626,7 +649,8 @@ void process_buffer (const char *buf) {
 
 \subsection*{Conclusion}
 
-\begin{frame}{Conclusion}
+\begin{frame}
+    {Conclusion}
     \begin{block}{Summary}
         \begin{itemize}
             \item{} design of Cooperative Fuzzing Framework
@@ -703,7 +727,8 @@ void process_buffer (const char *buf) {
 
 \subsection{Mean Coverage Tables}
 
-\begin{frame}[noframenumbering,label=single-final]{Final Mean Coverage for Single Fuzzers}
+\begin{frame}[noframenumbering,label=single-final]
+    {Final Mean Coverage for Single Fuzzers}
     \begin{table}
         \scriptsize
         \begin{tabular}{l*{4}c}
@@ -718,7 +743,7 @@ void process_buffer (const char *buf) {
 \end{frame}
 
 \begin{frame}[noframenumbering,label=coop-final]
-    \frametitle{Final Mean Coverage for Cooperative Fuzzing}
+    {Final Mean Coverage for Cooperative Fuzzing}
     \begin{table}
         \begin{tabular}{l c c c}
             \input{tables/eval-coop}
@@ -733,7 +758,8 @@ void process_buffer (const char *buf) {
 
 \subsection{Overhead Evaluation}
 
-\begin{frame}[noframenumbering]{Overhead of CFF}
+\begin{frame}[noframenumbering]
+    {Overhead of CFF}
     \begin{block}{Sources of overhead}
         \begin{itemize}
             \item{} fuzzers synchronize with file system

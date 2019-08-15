@@ -1,0 +1,3 @@
+[submodule "distribution_diagrams"]
+	path = distribution_diagrams
+	url = https://github.com/rasmusab/distribution_diagrams.git

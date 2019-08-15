@@ -13,8 +13,11 @@
 \usepackage[noend]{algorithm2e}
 \usepackage{listings}
 \usepackage{graphicx}
+
 \usepackage{tikz}
 \usepackage{ifthen,xstring,calc,pgfopts,tikz-uml}
+\usetikzlibrary{positioning}
+
 \usepackage{xcolor}
 \usepackage{booktabs}
 \usepackage{subfig}
@@ -63,6 +66,26 @@
     numbersep=12pt,
     numberstyle=\tiny,
     xleftmargin=12pt}
+
+\graphicspath{{./distribution_diagrams/png/}}
+\newcommand\tdist{\includegraphics[scale=.3]{t_distrib}}
+\newcommand\normdist{\includegraphics[scale=.3]{normal}}
+\newcommand\nodenormdist[2]{%
+    \node[box,#2] (#1) {\normdist};
+    \node[box,above of=#1] {$M$};
+    \node[box,right of=#1] {$S$};
+}
+\newcommand\unidist{\includegraphics[scale=.3]{uniform}}
+\newcommand\nodeunidist[2]{%
+    \node[box,#2] (#1) {\unidist};
+    \node[box,left of=#1] {$L$};
+    \node[box,right of=#1] {$H$};
+}
+\newcommand\shifexpdist{\includegraphics[scale=.3]{shifted_exp}}
+\newcommand\nodeshifexpdist[2]{%
+    \node[box,#2] (#1) {\shifexpdist};
+    \node[box,above of=#1] (R) {$R$};
+}
 
 \begin{document}
 
@@ -631,6 +654,52 @@ void process_buffer (const char *buf) {
 \end{frame}
 
 \AtBeginSubsection[]{}
+
+\subsection{Bayesian Estimation}
+
+\begin{frame}[noframenumbering,label=best]
+    {Bayesian Estimation Supersedes the $t$ Test}
+    \begin{center}
+        \begin{tikzpicture}[
+            box/.style = {rectangle,
+                color = lightgray,
+                text = black,
+                text width = 2cm,
+                align = center},
+            node distance=.3cm]
+            \node[box] (y1) {$y_{1i}$};
+            \node[box,xshift=4cm] (y2) {$y_{2i}$};
+            \node[box,above=of y1] (t1) {\tdist};
+            \node[box,above=of y2] (t2) {\tdist};
+            \node[box,above=of y1,yshift=.5cm] (mu1) {$\mu_1$};
+            \node[box,above=of y2,yshift=.5cm] (mu2) {$\mu_2$};
+            \node[box,above=of y1.west,yshift=.4cm] (sig1) {$\sigma_1$};
+            \node[box,above=of y2.east,yshift=.4cm] (sig2) {$\sigma_2$};
+            \node[box,above=of y1.north east,yshift=.4cm] (nu1) {$\nu$};
+            \node[box,above=of y2.north west,yshift=.4cm] (nu2) {$\nu$};
+            \nodeshifexpdist{nu}{above=of t1,yshift=-.8cm,xshift=2cm}
+            \nodenormdist{norm1}{above=of t1}
+            \nodenormdist{norm2}{above=of t2}
+            \nodeunidist{uni1}{above=of t1.north west,yshift=-.8cm,xshift=-.6cm}
+            \nodeunidist{uni2}{above=of t2.north east,yshift=-.8cm,xshift=.6cm}
+            \draw[->] (t1) -- (y1);
+            \draw[->] (t2) -- (y2);
+            \draw[->] (norm1) -- node[left] {$\sim$} (mu1);
+            \draw[->] (norm2) -- node[left] {$\sim$} (mu2);
+            \draw[->] (uni1) -- node[left] {$\sim$} (sig1);
+            \draw[->] (uni2) -- node[right] {$\sim$} (sig2);
+            \draw[->] (nu) -- node[left] {$\sim$} (nu1);
+            \draw[->] (nu) -- node[right] {$\sim$} (nu2);
+        \end{tikzpicture}
+    \end{center}
+    \begin{itemize}
+        \item{} models two groups of observations as two $t$ distributions\\
+            parameters are $\langle\mu_1,\sigma_1,\mu_2,\sigma_2,\nu\rangle$
+        \item{} broad priors with parameters scaled on data
+        \item{} Markov Chain Monte Carlo sampling\\
+            (\eg~$\mu_1-\mu_2$ computed at each sample)
+    \end{itemize}
+\end{frame}
 
 \subsection{Mean Coverage Tables}
 

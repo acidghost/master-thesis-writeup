@@ -1,6 +1,7 @@
 main := thesis
 pres := presentation
 viewer := mupdf
+duration := 25
 
 .PHONY: FORCE_MAKE figures
 all: $(main).pdf $(pres).pdf
@@ -22,8 +23,11 @@ tikz-uml.sty:
 	mv tikzuml-v1.0-2016-03-29/tikz-uml.sty ./tikz-uml.sty
 	rm -rf tikzuml-v1.0-2016-03-29.tbz tikzuml-v1.0-2016-03-29
 
-present: $(pres).pdf
+view-presentation: $(pres).pdf
 	@$(viewer) $(pres).pdf &
+
+present: $(pres).pdf
+	pdfpc -n right -w -d $(duration) $(pres).pdf
 
 clean:
 	@$(MAKE) -C figures clean

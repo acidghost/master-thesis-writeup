@@ -94,24 +94,39 @@
 
 \begin{document}
 
-\frame{\titlepage}
+\begin{frame}
+    \titlepage%
+    \note[item]{welcome everyone}
+    \note[item]{present yourself and your work}
+    \note[item]{don't be nervous!}
+\end{frame}
 
 \begin{frame}
     {Overview}
     \begin{itemize}
         \item{} design a framework that lets diverse fuzzers cooperate
-        \item{} evaluating cooperation shows promising results:
+        \item{} evaluating effect of cooperation shows promising results:
             \begin{itemize}
                 \item{} increased code coverage
                 \item{} $30\%$ more distinct unique crashes
             \end{itemize}
     \end{itemize}
+    \note[item]{be brief, concise and clear}
+    \note[item]{put emphasis on ``\emph{diverse} fuzzers''}
 \end{frame}
 
 \section*{Outline}
 
 \begin{frame}
     \tableofcontents[pausesections]
+    \note<1->[item]{we'll begin with a brief introduction to different fuzzing
+        techniques and how those can be used together}
+    \note<2->[item]{then we'll move on to describe our CFF, with a focus on its
+        design and implementation}
+    \note<3->[item]{we proceed with an evaluation of fuzzers with and without
+        cooperation}
+    \note<4->[item]{and finally conclude with a discussion of results and future
+        improvements}
 \end{frame}
 
 \section{Background and Related Work}
@@ -121,10 +136,19 @@
 \begin{frame}
     {Fuzzing}
     \begin{itemize}
-        \item<1-> term coined in 1988 during a quiet and stormy night\ldots\
+        \item<1-> term coined in 1988 during a quiet and stormy night\ldots%
+            \note<1>{%
+                Prof. Barton Miller from University of Wisconsin was logged into
+                his office's terminal via a dial-up modem. The heavy rain was
+                causing noise on the line which would scramble his inputs; he
+                noted that this was causing programs on the other end to crash.}
         \item<2-> established reliability and security testing practice
         \item<2-> ``Mayhem'' wins 2016 DARPA Cyber Grand Challenge
+            \note<2>[item]{Mayhem -- system that uses S.E.\ + directed fuzz.\ in offence}
+            \note<2>[item]{CGC -- world's first all-machine CTF}
         \item<2-> used in industry by Microsoft and Google
+            \note<2>[item]{Project Springfield (commercial, Microsoft)}
+            \note<2>[item]{OSS-Fuzz (for OSS, Google)}
     \end{itemize}
 \end{frame}
 
@@ -145,23 +169,36 @@ void process_buffer (const char *buf) {
     }
 }
 \end{lstlisting}
+    \note{Find an input that lets execution reach bug (line 9)}
+    \note[item]{metadata like length (line 3)}
+    \note[item]{magic bytes (line 5)}
+    \note[item]{markers (\ie~magic bytes at dynamic position) (line 8)}
+    \note[item]{nested statements (lines 5,7,8)}
 \end{frame}
 
 \begin{frame}
     {Black Box Mutational Fuzzing}
-    \begin{block}<+->{General operation}
+    \note<1>{it is the simplest form of fuzzing}
+    \begin{block}<1->{General operation}
         \setbeamercovered{transparent}
-        \begin{enumerate}[<+->]
-            \item{} select input from seed corpus
-            \item{} mutate input to produce new one
-            \item{} execute SUT with mutated input
-            \item{} monitor for unexpected behaviours
+        \begin{enumerate}
+            \item<2-> select input from seed corpus
+                \note<2>[item]{better if valid inputs}
+            \item<3-> mutate input to produce new one
+                \note<3>[item]{is the core component}
+                \note<3>[item]{\eg~bit flips, adding, removing, replacing bytes
+                    (or groups of bytes)}
+            \item<4-> execute SUT with mutated input
+            \item<5-> monitor for unexpected behaviours
+                \note<5>[item]{\eg~crash, assertion failures, timeouts\ldots}
         \end{enumerate}
     \end{block}
-    \begin{exampleblock}<+->{Examples}
+    \begin{exampleblock}<6->{Examples}
         \begin{itemize}
             \item{} Radamsa, zzuf
+                \note<6>[item]{first two implement only step 2 -- mutation; zzuf only bit flips}
             \item{} Basic Fuzzing Framework
+                \note<6>[item]{BFF manages entire campaign, adapting parameters on runtime}
         \end{itemize}
     \end{exampleblock}
 \end{frame}
@@ -171,15 +208,24 @@ void process_buffer (const char *buf) {
     \begin{block}<+->{Overview}
         \begin{itemize}
             \item{} execution is monitored to gain \alert{feedback}
+                \note<1>[item]{usually in the form of coverage (\eg~executed
+                    instructions, branches, \ldots)}
             \item{} the feedback is used to better instruct the search
         \end{itemize}
     \end{block}
-    \begin{exampleblock}<+->{American Fuzzy Lop}
+    \begin{exampleblock}<+->{American Fuzzy Lop (AFL)}
         \begin{itemize}
             \item{} instruments the SUT to get coverage feedback
+                \note<2>[item]{inject snippet into source or use QEMU}
             \item{} selects ``favorite'' inputs more often
+                \note<2>[item]{``favorite'' is smallest and fastest input for
+                    any of branches it exercises}
             \item{} mutation as deterministic and havoc stages
+                \note<2>[item]{deterministic applies mutation by traversing the
+                    input; havoc applies random mutations}
             \item{} stores generated input if branch hit counts change bucket
+                \note<2>[item]{allows to track new branches and increased loop
+                    executions by powers of two (up to 128+)}
         \end{itemize}
     \end{exampleblock}
 \end{frame}
@@ -218,15 +264,30 @@ void process_buffer (const char *buf) {
     \begin{block}{Key features}
         \begin{itemize}
             \item{} uses symbolic execution to collect path constraints
+                \note<1>[item]{inputs are treated as symbolic variables}
+                \note<1>[item]{constraints are collected at branching points}
             \item{} constraints are solved to provide new inputs
-            \item<alert@2-> constraints not always solvable or solver is slow
+                \note<1>[item]{solved for the symbolic variables}
+            \item{} symbolic execution and constraint solving \alert{can be slow}
+                \note<1>[item]{slow due to path explosion problem (fork state at
+                    each branch)}
+            \item{} constraints \alert{aren't always solvable}
+                \note<1>[item]{aren't solvable due to limitation in solver
+                    (\eg~solver handles only linear, while constraint is non-linear)}
+                \note<1>[item]{specific target limitations (\eg~\texttt{x = hash(y)})}
         \end{itemize}
     \end{block}
-    \begin{exampleblock}<3->{Examples}
+    \begin{exampleblock}<2->{Examples}
         \begin{itemize}
             \item{} DART and SAGE
+                \note<2>[item]{DART applies symbolic execution to random testing}
+                \note<2>[item]{SAGE expands upon DART\\
+                    first white box fuzzer (generational search)}
             \item{} EXE and KLEE
+                \note<2>[item]{EXE one of the first examples using concolic execution}
+                \note<2>[item]{KLEE improves upon EXE with various optimizations}
             \item{} Mayhem
+                \note<2>[item]{Mayhem symbolic execution engine winner of DARPA CGC 2016}
         \end{itemize}
     \end{exampleblock}
 \end{frame}
@@ -235,30 +296,43 @@ void process_buffer (const char *buf) {
 
 \begin{frame}
     {Hybrid Approaches}
-    \structure<+->{Merge white box fuzzers with black or gray box ones}
-    \\~\\
-    \begin{exampleblock}<+->{Driller}
+    \structure{Merge white box fuzzers with black or gray box ones}
+    \vspace{\baselineskip}
+    \begin{exampleblock}<2->{Driller}
         \begin{itemize}
             \item{} uses AFL and custom symbolic execution engine
             \item{} AFL becomes ``stuck'' $\rightarrow$ s.e.\ generates new inputs
+                \note<2>[item]{AFL is considered stuck when it does not discover
+                    new coverage over a period of time}
         \end{itemize}
     \end{exampleblock}
 \end{frame}
 
 \begin{frame}
     {Cooperative Fuzzing}
-    \begin{block}<+->{A system that allows fuzzers to share information to achieve a common goal}
+    \begin{block}{Definition}
+        \begin{itemize}
+            \item{} fuzzers running in parallel
+            \item{} communicate with each other to achieve a common goal
+        \end{itemize}
+    \end{block}
+    \begin{block}{Motivations}
         \begin{itemize}
             \item{} fuzzing is non-deterministic
             \item{} there is no best fuzzer for all possible programs
             \item{} information sharing as a mean to share features
-                \note{example: VUzzer may share input with magic bytes to AFL}
+                \note<1>[item]{example: VUzzer may share input with magic bytes to AFL}
         \end{itemize}
     \end{block}
-    \begin{exampleblock}<+->{Examples}
+    \begin{exampleblock}<2->{Examples}
         \begin{itemize}
-            \item{} Levy Flights over an input space
+            \item{} L\'evy flight swarms
+                \note<2>[item]{Levy: swarm of fuzzers that explore according to Levy
+                    flights (\ie~random walk with step lengths that exhibit power
+                    law tails) and receive information from neighbors}
             \item{} Chemotactic test case recombination
+                \note<2>[item]{Chemotactic: feedback driven explorers guide
+                    high-throughput workers}
         \end{itemize}
     \end{exampleblock}
 \end{frame}

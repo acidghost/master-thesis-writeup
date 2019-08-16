@@ -1,4 +1,5 @@
 \def\HandoutMode{}
+\def\NotesSecondScreen{1}
 \def\ButtonsMode{1}
 \documentclass[\HandoutMode,table]{beamer}
 
@@ -24,10 +25,14 @@
 \usepackage[justification=centering,format=hang]{caption}
 \usepackage{adjustbox}
 
+\usepackage{pgfpages}
 \ifthenelse{\equal{\HandoutMode}{handout}}{%
-    \usepackage{pgfpages}
     \pgfpagesuselayout{2 on 1}[a4paper,border shrink=5mm]
-}{}
+}{%
+    \ifthenelse{\not\equal{\NotesSecondScreen}{}}{%
+        \setbeameroption{show notes on second screen}
+    }{}
+}
 
 \include{macros}
 \newcommand\ac[1]{#1}           % dummy \ac command, does nothing

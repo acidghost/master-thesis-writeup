@@ -1,0 +1,55 @@
+\defbeamertemplate{note page}{bigger}
+{%
+    {%
+    \scriptsize
+    \usebeamerfont{note title}\usebeamercolor[fg]{note title}%
+    \ifbeamercolorempty[bg]{note title}{}{%
+      \insertvrule{.46\paperheight}{note title.bg}%
+      \vskip-.46\paperheight%
+      \nointerlineskip%
+    }%
+    \vbox{%
+      \hfill\insertslideintonotes{.45}
+      \vskip-.45\paperheight
+    }%
+    \nointerlineskip
+    \vbox to .45\paperheight{\vskip.6em
+      \hbox{\insertshorttitle[width=.4\textwidth]}%
+      \hbox{\insertsection}%
+      \hbox{\footnotesize\insertsubsection}%
+      %\hbox{\insertshortframetitle}%
+      \vfil}%
+  }%
+  \ifbeamercolorempty[bg]{note page}{}{%
+    \nointerlineskip%
+    \insertvrule{.75\paperheight}{note page.bg}%
+    \vskip-.75\paperheight%
+  }%
+  \vskip.25em
+  \nointerlineskip
+  \insertnote
+}
+
+\defbeamertemplate{note page}{plain+}
+{%
+    \vskip.4em
+    \usebeamercolor[fg]{note title}
+    {%
+        \tiny\insertframenumber~/~\insertmainframenumber
+        \ifthenelse{\equal{\insertsection}{}}{}{%
+            \scriptsize
+            \qquad|~\insertsection
+            \ifthenelse{\equal{\insertsubsection}{}}{}
+                {~|~\insertsubsection}
+        }
+    }
+    \vskip.2em
+    \nointerlineskip
+    \vbox{\centering\insertslideintonotes{.5}}
+    \vskip0em
+    \nointerlineskip
+    \usebeamercolor[fg]{note page}
+    \pagecolor{bg}
+    \insertnote
+}
+

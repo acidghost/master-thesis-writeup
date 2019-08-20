@@ -30,7 +30,7 @@
     \pgfpagesuselayout{2 on 1}[a4paper,border shrink=5mm]
 }{%
     \ifthenelse{\not\equal{\NotesSecondScreen}{}}{%
-        \setbeameroption{show notes on second screen}
+        \setbeameroption{show notes on second screen=right}
     }{}
 }
 
@@ -51,6 +51,9 @@
         \tableofcontents[currentsection,currentsubsection]
     \end{frame}
 }
+
+\input{notes-template}
+\setbeamertemplate{note page}[plain+]
 
 \lstdefinelanguage[modern]{C}[ANSI]{C}{%
     morekeywords={bool,true,false,size_t,uint8_t}}

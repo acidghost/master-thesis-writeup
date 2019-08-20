@@ -27,7 +27,7 @@ view-presentation: $(pres).pdf
 	@$(viewer) $(pres).pdf &
 
 present: $(pres).pdf
-	pdfpc -n right -w -d $(duration) $(pres).pdf
+	pdfpc -n right -w -g -d $(duration) $(pres).pdf &
 
 clean:
 	@$(MAKE) -C figures clean

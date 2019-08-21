@@ -561,6 +561,21 @@ void process_buffer (const char *buf) {
             \item[\vuzzer] application-aware, population-based
         \end{description}
     \end{block}
+    \note<1>{%
+        Before delving into the evaluation of cooperation, I'm going to present
+        an evaluation of individual fuzzers later used in the evaluation of the
+        CFF\@. The fuzzers I evaluate are:
+        \vspace{-.4em}
+        \begin{itemize}
+            \smallitemsep
+            \item{} \aflfast~and~\fairfuzz, which are both extensions to AFL but
+                with different focus;
+            \item{} \honggfuzz, which uses hardware feedback and provides high
+                throughput;
+            \item{} and finally \vuzzer, which employs lightweight static and
+                dynamic analysis to implement smart mutation operators
+        \end{itemize}
+    }
     \begin{block}<2->{Experiment design}
         \begin{enumerate}
             \item{} run each fuzzer independently for 24 hours
@@ -568,6 +583,22 @@ void process_buffer (const char *buf) {
             \item{} compare mean coverage over 5 runs
         \end{enumerate}
     \end{block}
+    \note<2>{%
+        With this first evaluation I try to answer two questions:
+        \vspace{-.4em}
+        \begin{enumerate}
+            \smallitemsep
+            \item{} is there a best fuzzer, in terms of code coverage, on
+                average across different targets?
+            \item{} is there a best fuzzer for each specific target?
+        \end{enumerate}
+        \vspace{-.4em}
+        Each experiment is conducted for 4 targets. In particular each fuzzer
+        runs for 24 hours and coverage is collected with granularity of 1 minute
+        by re-evaluating stored inputs with BTS\@. Each experiment is repeated 5
+        times and the mean coverage for each fuzzer is compared with the other,
+        for each target.
+    }
 \end{frame}
 
 \begin{frame}[label=single-time]
@@ -596,6 +627,15 @@ void process_buffer (const char *buf) {
     \buttons{%
         \hyperlink{single-final<1>}{\beamergotobutton{Final means table}}
     }
+    \note{%
+        The figure shows the mean coverage over time for the 4 fuzzers on the 4
+        targets. We see that in the first 3 cases, the curves are similar for
+        the top 2 fuzzers; while for listswf, \fairfuzz\ seems to perform much
+        better than the other.\\
+        To have a better understanding, besides looking at the final means, I
+        used a Bayesian estimation method to evaluate the difference of means
+        between two fuzzers.
+    }
 \end{frame}
 
 \begin{frame}[label=single-best]
@@ -619,6 +659,20 @@ void process_buffer (const char *buf) {
     \end{itemize}
     \buttons{%
         \hyperlink{single-final<1>}{\beamergotobutton{Final means table}}
+    }
+    \note{%
+        \footnotesize
+        The BEST method that I used models two groups of data as two separate
+        $t$ distributions with priors on the means and standard deviations.
+        Than, a sampling algorithm produces a number of parameter samples
+        (\eg~two means, two standard deviations,\ldots) which are in accordance
+        with the data. Each figure shows the difference of means at each sample
+        for the first vs.\ second fuzzers in order of final mean coverage.
+
+        To decide whether the difference in mean is high enough to declare a
+        fuzzer better than the other, it is sufficient to look at the $95\%$
+        High Density Interval: if it does not include zero, than one fuzzer is
+        better than the other.
     }
 \end{frame}
 
@@ -646,6 +700,13 @@ void process_buffer (const char *buf) {
             \item{} multiple positive-scored winners strategy
         \end{itemize}
     \end{block}
+    \note<1>{%
+        I'm going to present results on two coop.\ strategies that use the same
+        scoring function (number of newly discovered BTS transitions) and change
+        how they select winners: one selects a single winner with the highest
+        score; the other selects all fuzzers which report a score greater than
+        zero.
+    }
     \begin{block}<2->{Experiment design}
         \begin{enumerate}
             \item{} run CFF with selected strategy for 6 hours
@@ -653,6 +714,14 @@ void process_buffer (const char *buf) {
             \item{} compare mean coverage over 5 runs against union of fuzzers
         \end{enumerate}
     \end{block}
+    \note<2>{%
+        Experiments are conducted on the same 4 targets as before, except that
+        they last 6 hours instead of 24. Coverage is collected during normal
+        operation of the system and the result from each coop.\ strategy is
+        compared with the union of BTS transitions discovered by single fuzzers.
+        In other words, the union is a post processing step on the data obtained
+        during our previous evaluation, limited to the 6th hour mark.
+    }
 \end{frame}
 
 \begin{frame}[label=coop-time]
@@ -680,6 +749,12 @@ void process_buffer (const char *buf) {
     \end{figure}
     \buttons{%
         \hyperlink{coop-final<1>}{\beamergotobutton{Final means table}}
+    }
+    \note{%
+        The figure shows the mean coverage over time for the two coop.\
+        strategies and the union of fuzzers. In particular the multi.\ strat.\
+        outperforms the union for all targets, while the single strat.\ performs
+        the best for the first two targets and the worst for the last two.
     }
 \end{frame}
 
@@ -713,6 +788,16 @@ void process_buffer (const char *buf) {
         \vspace{.5\baselineskip}
         \hyperlink{coop-final<1>}{\beamergotobutton{Final means table}}
     }
+    \note{%
+        Again, I used BEST to mutually compare the final means for the different
+        experiments. The figures show the result for the strat.\ with highest
+        final mean coverage vs.\ the union of fuzzers.
+
+        Unfortunately, by looking at the $95\%$ HDI, we cannot say with high
+        credibility that any of the coop.\ strategies outperforms the union of
+        fuzzers. In particular for 3 targets, roughly $77\%$ of HDI is above
+        zero and for objdump $95.3\%$ is.
+    }
 \end{frame}
 
 \subsection{Crash Analysis and Known Vulnerabilities}
@@ -721,8 +806,8 @@ void process_buffer (const char *buf) {
     {Unique Crash Analysis}
     \begin{block}{Obtaining unique crashes}
         \begin{enumerate}
-            \item{} fuzzers collect unique crashes in folder
-            \item{} re-execute SUT with input and run \texttt{exploitable} (stack hash)
+            \item{} fuzzers collect crashes in folder
+            \item{} re-execute target with input and run \texttt{exploitable} (stack hash)
             \item{} stack hash and elapsed time for 5 runs in single file
         \end{enumerate}
     \end{block}
@@ -733,6 +818,20 @@ void process_buffer (const char *buf) {
         \end{tabular}
         \caption{Crashes in \listswf}
     \end{table}
+    \note{%
+        \footnotesize
+        To obtain unique crashes, which are inputs that cause a crash through a
+        unique path, every crashing input stored by fuzzers is fed to the
+        target. This is done to validate the crash and get its stack hash, which
+        is the hash of the last calls on the stack before the crash. The stack
+        hashes and relative elapsed time from 5 runs are accumulated into a
+        single file and processed. Unfortunately crashes were found only on
+        listswf. The table shows the number of distinct unique crashes and the
+        number of unique crashes that are found by one fuzzer and not by
+        another. In particular the multi strat.\ finds $30\%$ more distinct
+        unique crashes than the union and more crashes that the union doesn't
+        find.
+    }
 \end{frame}
 
 \begin{frame}

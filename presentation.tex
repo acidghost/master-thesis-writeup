@@ -1,6 +1,7 @@
 \def\HandoutMode{}
 \def\NotesSecondScreen{1}
 \def\ButtonsMode{1}
+\def\ScriptMode{1}
 \documentclass[\HandoutMode,table]{beamer}
 
 \mode<presentation>
@@ -32,6 +33,14 @@
     \ifthenelse{\not\equal{\NotesSecondScreen}{}}{%
         \setbeameroption{show notes on second screen=right}
     }{}
+}
+
+\ifthenelse{\equal{\ScriptMode}{}}
+{%
+    \newcommand<>{\script}[1]{}
+}
+{%
+    \newcommand<>{\script}[1]{\note#2{#1}}
 }
 
 \include{macros}
@@ -271,7 +280,7 @@ void process_buffer (const char *buf) {
 
 \begin{frame}
     {Symbolic-Assisted White Box Fuzzing}
-    \note<1>{%
+    \script<1>{%
         Lastly, white box techniques have full knowledge of internals of target.\\
         Symbolic-assisted fuzzing uses symbolic execution to collect
         constraints on the input along the execution path.\\
@@ -389,7 +398,7 @@ void process_buffer (const char *buf) {
 
 \begin{frame}
     {Common Fuzzer Interface}
-    \note{%
+    \script{%
         As we want the system to be able to interface with different, existing,
         fuzzers, we have to first define an API that the system can use to communicate
         with the different fuzzers.\\
@@ -411,7 +420,7 @@ void process_buffer (const char *buf) {
 
 \begin{frame}
     {Central Decisional Unit}
-    \note{%
+    \script{%
         Then we need a CDU to mediate the exchange of info. To do so the system
         uses the API just introduced. How these API methods are used is defined
         by the specific coop.\ strategy, which we'll talk about in the next
@@ -481,7 +490,7 @@ void process_buffer (const char *buf) {
         }
     \end{algorithm}
 }
-\note{%
+\script{%
     With the architectural design in place, we can look at coop.\ strategies.\\
     A coop.\ strategy determines how info flows among fuzzers.\\
     The algorithm gives a template for a generic strategy.\\
@@ -517,17 +526,17 @@ void process_buffer (const char *buf) {
             \umlassemblyconnector[interface=API]{Driver}{Fuzzer}
         }
     \end{tikzpicture}
-    \note<1>{%
+    \script<1>{%
         This is the component view of the system which is split into a master
         and a driver for each fuzzer.
     }
-    \note<2>{%
+    \script<2>{%
         The driver uses the API to interface with the fuzzer.\\
         As most fuzzers synchronize test cases periodically with the file
         system, our implementation listens for and injects new files in
         predetermined folders the fuzzer uses.
     }
-    \note<3>{%
+    \script<3>{%
         \footnotesize
         Drivers and master, which may reside on different machines, communicate
         using 3 channels, two of which mirror extraction and injection of the API.
@@ -561,7 +570,7 @@ void process_buffer (const char *buf) {
             \item[\vuzzer] application-aware, population-based
         \end{description}
     \end{block}
-    \note<1>{%
+    \script<1>{%
         Before delving into the evaluation of cooperation, I'm going to present
         an evaluation of individual fuzzers later used in the evaluation of the
         CFF\@. The fuzzers I evaluate are:
@@ -583,7 +592,7 @@ void process_buffer (const char *buf) {
             \item{} compare mean coverage over 5 runs
         \end{enumerate}
     \end{block}
-    \note<2>{%
+    \script<2>{%
         With this first evaluation I try to answer two questions:
         \vspace{-.4em}
         \begin{enumerate}
@@ -627,7 +636,7 @@ void process_buffer (const char *buf) {
     \buttons{%
         \hyperlink{single-final<1>}{\beamergotobutton{Final means table}}
     }
-    \note{%
+    \script{%
         The figure shows the mean coverage over time for the 4 fuzzers on the 4
         targets. We see that in the first 3 cases, the curves are similar for
         the top 2 fuzzers; while for listswf, \fairfuzz\ seems to perform much
@@ -660,7 +669,7 @@ void process_buffer (const char *buf) {
     \buttons{%
         \hyperlink{single-final<1>}{\beamergotobutton{Final means table}}
     }
-    \note{%
+    \script{%
         \footnotesize
         The BEST method that I used models two groups of data as two separate
         $t$ distributions with priors on the means and standard deviations.
@@ -700,7 +709,7 @@ void process_buffer (const char *buf) {
             \item{} multiple positive-scored winners strategy
         \end{itemize}
     \end{block}
-    \note<1>{%
+    \script<1>{%
         I'm going to present results on two coop.\ strategies that use the same
         scoring function (number of newly discovered BTS transitions) and change
         how they select winners: one selects a single winner with the highest
@@ -714,7 +723,7 @@ void process_buffer (const char *buf) {
             \item{} compare mean coverage over 5 runs against union of fuzzers
         \end{enumerate}
     \end{block}
-    \note<2>{%
+    \script<2>{%
         Experiments are conducted on the same 4 targets as before, except that
         they last 6 hours instead of 24. Coverage is collected during normal
         operation of the system and the result from each coop.\ strategy is
@@ -750,7 +759,7 @@ void process_buffer (const char *buf) {
     \buttons{%
         \hyperlink{coop-final<1>}{\beamergotobutton{Final means table}}
     }
-    \note{%
+    \script{%
         The figure shows the mean coverage over time for the two coop.\
         strategies and the union of fuzzers. In particular the multi.\ strat.\
         outperforms the union for all targets, while the single strat.\ performs
@@ -788,7 +797,7 @@ void process_buffer (const char *buf) {
         \vspace{.5\baselineskip}
         \hyperlink{coop-final<1>}{\beamergotobutton{Final means table}}
     }
-    \note{%
+    \script{%
         Again, I used BEST to mutually compare the final means for the different
         experiments. The figures show the result for the strat.\ with highest
         final mean coverage vs.\ the union of fuzzers.
@@ -804,33 +813,36 @@ void process_buffer (const char *buf) {
 
 \begin{frame}
     {Unique Crash Analysis}
-    \begin{block}{Obtaining unique crashes}
+    \begin{block}<1->{Obtaining unique crashes}
         \begin{enumerate}
             \item{} fuzzers collect crashes in folder
             \item{} re-execute target with input and run \texttt{exploitable} (stack hash)
             \item{} stack hash and elapsed time for 5 runs in single file
         \end{enumerate}
     \end{block}
-    \vspace{\baselineskip}
-    \begin{table}
-        \begin{tabular}{l c c c c}
-            \input{tables/crashes}
-        \end{tabular}
-        \caption{Crashes in \listswf}
-    \end{table}
-    \note{%
-        \footnotesize
+    \script<1>{%
         To obtain unique crashes, which are inputs that cause a crash through a
         unique path, every crashing input stored by fuzzers is fed to the
         target. This is done to validate the crash and get its stack hash, which
         is the hash of the last calls on the stack before the crash. The stack
         hashes and relative elapsed time from 5 runs are accumulated into a
-        single file and processed. Unfortunately crashes were found only on
-        listswf. The table shows the number of distinct unique crashes and the
-        number of unique crashes that are found by one fuzzer and not by
-        another. In particular the multi strat.\ finds $30\%$ more distinct
-        unique crashes than the union and more crashes that the union doesn't
-        find.
+        single file and processed.
+    }
+    \uncover<2->{%
+        \vspace{\baselineskip}
+        \begin{table}
+            \begin{tabular}{l c c c c}
+                \input{tables/crashes}
+            \end{tabular}
+            \caption{Crashes in \listswf}
+        \end{table}
+    }
+    \script<2>{%
+        Unfortunately crashes were found only on listswf. The table shows the
+        number of distinct unique crashes and the number of unique crashes that
+        are found by one fuzzer and not by another. In particular the multi
+        strat.\ finds $30\%$ more distinct unique crashes than the union and
+        more crashes that the union doesn't find.
     }
 \end{frame}
 

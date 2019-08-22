@@ -862,6 +862,16 @@ void process_buffer (const char *buf) {
             \includegraphics[width=\figwidth]{figures/cropped/crashes-not-intersect}
         }
     \end{figure}
+    \script{%
+        The figure on the left shows the cumulative count of crashes over time,
+        across the 5 runs; we see that the curves for the multi strategy and the
+        union of fuzzers are similar. The figure in the middle shows the density
+        of crashes over time: in particular we note that the multi strategy
+        finds the most crashes at the beginning and at the very end of the runs.
+        This is also true for the union of fuzzers, but with less amplitude on
+        the peaks. The same behaviour is visible in the last figure where only
+        crashes not found by the others are considered.
+    }
 \end{frame}
 
 \begin{frame}
@@ -901,6 +911,16 @@ void process_buffer (const char *buf) {
             \end{itemize}
         \end{column}
     \end{columns}
+    \script{%
+        To conclude the analysis, I manually investigated unique crashes to try
+        to group them by causing bug, as more unique crashes may be caused by
+        the same bug. Of the over 25 bugs I was able to link 6 to a CVE
+        identifier. Each of the figures shows a boxplot of the elapsed time to
+        find a crash that triggers the specific vulnerability. In particular the
+        multi strategy finds all vulnerabilities found by the union of fuzzers
+        and all but one are found earlier. Moreover it finds two vulnerabilities
+        that the union doesn't find.
+    }
 \end{frame}
 
 \section{Discussion and Conclusion}

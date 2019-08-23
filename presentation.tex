@@ -642,10 +642,11 @@ void process_buffer (const char *buf) {
 \begin{frame}
     {Overview}
     \begin{tikzpicture}
-        \umlbasiccomponent[x=-2,y=0]{Fuzzer}
-        \begin{umlcomponent}[x=3,y=0]{CFF}
-            \umlbasiccomponent[x=0,y=0]{Driver}
-            \umlbasiccomponent[x=4,y=1.5]{Master}
+        \usebeamercolor{section in head/foot}
+        \umlbasiccomponent[x=-2,y=0,bottom color=bg, top color=white]{Fuzzer}
+        \begin{umlcomponent}[x=3,y=0,bottom color=bg, top color=white]{CFF}
+            \umlbasiccomponent[x=0,y=0,bottom color=bg, top color=white]{Driver}
+            \umlbasiccomponent[x=4,y=1.5,bottom color=bg, top color=white]{Master}
             \only<3->{%
                 \umlassemblyconnector[interface=Interesting,geometry=-|,%
                     anchors=180 and 90,first arm]{Master}{Driver}

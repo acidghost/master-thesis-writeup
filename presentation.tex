@@ -15,18 +15,27 @@
 \usepackage[noend]{algorithm2e}
 \usepackage{listings}
 \usepackage{graphicx}
+\usepackage{pgfpages,pgfopts}
+\usepackage{ifthen}
+\usepackage{xstring}
+\usepackage{calc}
 
 \usepackage{tikz}
-\usepackage{ifthen,xstring,calc,pgfopts,tikz-uml}
+\usepackage{smartdiagram}
+\usepackage{tikz-uml}
 \usetikzlibrary{positioning}
+\usesmartdiagramlibrary{additions}
+% dirty hack to make smartdiagram and tikz-uml work together
+\pgfsetlayers{background,main,smart diagram arrow back,%
+    component0,component1,component2,connections}
 
 \usepackage{xcolor}
 \usepackage{booktabs}
 \usepackage{subfig}
 \usepackage[justification=centering,format=hang]{caption}
 \usepackage{adjustbox}
+\usepackage{mathtools}
 
-\usepackage{pgfpages}
 \ifthenelse{\equal{\HandoutMode}{handout}}{%
     \pgfpagesuselayout{2 on 1}[a4paper,border shrink=5mm]
 }{%
@@ -49,6 +58,9 @@
 \newcommand\figwidth\textwidth
 \newcommand\buttons[1]{\if\ButtonsMode1 #1 \fi}
 \newcommand\smallitemsep{\setlength\itemsep{-.4em}}
+\newcommand\shadedvrule{\textcolor{black!50}{\vrule{}}}
+\newcommand{\pro}{\item[\boldmath$\mathclap{\color{green}+}$ ]}
+\newcommand{\con}{\item[\boldmath$ \mathclap{\color{red}-}$ ]}
 
 \title{\myTitle}
 \subtitle{\mySubtitle}
@@ -103,6 +115,49 @@
 \newcommand\nodeshifexpdist[2]{%
     \node[box,#2] (#1) {\shifexpdist};
     \node[box,above of=#1] (R) {$R$};
+}
+
+\tikzset{%
+  -|-/.style={%
+    to path={%
+      (\tikztostart) -| ($(\tikztostart)!#1!(\tikztotarget)$) |- (\tikztotarget)
+      \tikztonodes
+    }
+  },
+  -|-/.default=0.5,
+  |-|/.style={%
+    to path={%
+      (\tikztostart) |- ($(\tikztostart)!#1!(\tikztotarget)$) -| (\tikztotarget)
+      \tikztonodes
+    }
+  },
+  |-|/.default=0.5,
+}
+
+\smartdiagramset{%
+    back arrow disabled = true,
+    module minimum width = 1.2cm,
+    module minimum height = 0.6cm,
+    module y sep = 1.5,
+    uniform arrow color = true,
+    uniform color list = bg for 10 items,
+    additions = {%
+        additional item font = \footnotesize,
+        additional item border color = blue,
+        additional item width = 1.2cm,
+        additional item height = 0.6cm
+    }
+}
+
+\newcommand\twocols[2]{%
+    \begin{columns}
+        \begin{column}{.5\textwidth}
+            #1
+        \end{column}
+        \begin{column}{.5\textwidth}
+            #2
+        \end{column}
+    \end{columns}%
 }
 
 \begin{document}
@@ -190,6 +245,70 @@ void process_buffer (const char *buf) {
 \end{frame}
 
 \begin{frame}
+    {Fuzzing with Different Levels of Knowledge --- Black Box}
+    \twocols{%
+        \begin{center}
+            \usebeamercolor{section in head/foot}
+            \smartdiagram[flow diagram]{Input generator,Target,Output monitor}
+        \end{center}
+    }{%
+        \begin{itemize}
+            \item{} input generator is often\\random or mutational
+            \pro{} high throughput
+            \con{} struggles to go deep
+        \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}
+    {Fuzzing with Different Levels of Knowledge --- White Box}
+    \twocols{%
+        \begin{center}
+            \usebeamercolor{section in head/foot}
+            \smartdiagramset{additions = {additional item offset = 0cm}}
+            \smartdiagramadd[flow diagram]
+                {Input generator,Target,Output monitor}
+                {above left of module1/Program analysis,
+                above right of module1/Program specification}
+            \begin{tikzpicture}[remember picture, overlay]
+                \draw[additional item arrow type] (additional-module1) |- (module1);
+                \draw[additional item arrow type] (additional-module2) |- (module1);
+            \end{tikzpicture}
+        \end{center}
+    }{%
+        \begin{itemize}
+            \item{} \eg~taint analysis,\\symbolic execution\ldots
+            \pro{} systematical, deep exploration
+            \con{} doesn't scale for large targets
+        \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}
+    {Fuzzing with Different Levels of Knowledge --- Gray Box}
+    \twocols{%
+        \begin{center}
+            \usebeamercolor{section in head/foot}
+            \smartdiagramset{additions = {additional item offset = 0.2cm}}
+            \smartdiagramadd[flow diagram]
+                {Input generator,Target,Output monitor}
+                {above right of module2/Feedback}
+            \begin{tikzpicture}[remember picture, overlay]
+                \draw[additional item arrow type] (module2) -| (additional-module1);
+                \draw[additional item arrow type] (additional-module1) |- (module1);
+            \end{tikzpicture}
+        \end{center}
+    }{%
+        \begin{itemize}
+            \item{} feedback guides input generation
+            \item{} \eg~executed instructions,\\basic block transitions\ldots
+            \pro{} low overhead, informed decisions
+            \con{} struggles with multibyte and\\deeply nested conditions
+        \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}<presentation:0>[noframenumbering]
     {Black Box Mutational Fuzzing}
     \note<1>[item]{it is the simplest form of fuzzing}
     \note<1>[item]{has no knowledge of internals of target}
@@ -217,7 +336,7 @@ void process_buffer (const char *buf) {
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}
+\begin{frame}<presentation:0>[noframenumbering]
     {Coverage-Based Gray Box Fuzzing}
     \note<1>[item]{uses partial or inferred information of internals of target}
     \begin{block}<+->{Overview}
@@ -278,7 +397,7 @@ void process_buffer (const char *buf) {
     \end{description}
 \end{frame}
 
-\begin{frame}
+\begin{frame}<presentation:0>[noframenumbering]
     {Symbolic-Assisted White Box Fuzzing}
     \script<1>{%
         Lastly, white box techniques have full knowledge of internals of target.\\

@@ -528,6 +528,23 @@ void process_buffer (const char *buf) {
         and injection), plus one optional that allows a fuzzer to signal when it
         is able to receive new inputs via an inject call.
     }
+    \begin{center}
+        \usebeamercolor{section in head/foot}
+        \begin{tikzpicture}[%
+            box/.style = {%
+                bottom color=bg, top color=white, rectangle},
+            node distance = 40pt]
+            \umlbasiccomponent[bottom color=bg, top color=white]{Fuzzer}
+            \node[rectangle, left=of Fuzzer] (inject)
+                {\includegraphics[width=1cm]{figures/docs.png}};
+            \node[rectangle, right=of Fuzzer] (extract)
+                {\includegraphics[width=1cm]{figures/docs.png}};
+            \node[box, draw, below=of Fuzzer, yshift=30pt] (congestion) {Congestion};
+            \draw[additional item arrow type] (inject) to node[above] {inject} (Fuzzer);
+            \draw[additional item arrow type] (Fuzzer) to node[above] {extract} (extract);
+            \draw[dashed] (congestion) to (Fuzzer);
+        \end{tikzpicture}
+    \end{center}
     \begin{block}{Three API primitives}
         \begin{itemize}
             \item{} \alert{extract} test cases from fuzzer

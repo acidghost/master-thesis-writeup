@@ -118,20 +118,26 @@
 }
 
 \tikzset{%
-  -|-/.style={%
-    to path={%
-      (\tikztostart) -| ($(\tikztostart)!#1!(\tikztotarget)$) |- (\tikztotarget)
-      \tikztonodes
-    }
-  },
-  -|-/.default=0.5,
-  |-|/.style={%
-    to path={%
-      (\tikztostart) |- ($(\tikztostart)!#1!(\tikztotarget)$) -| (\tikztotarget)
-      \tikztonodes
-    }
-  },
-  |-|/.default=0.5,
+    -|-/.style={%
+        to path={%
+            (\tikztostart) -| ($(\tikztostart)!#1!(\tikztotarget)$) |- (\tikztotarget)
+            \tikztonodes
+        }
+    },
+    -|-/.default=0.5,
+    |-|/.style={%
+        to path={%
+            (\tikztostart) |- ($(\tikztostart)!#1!(\tikztotarget)$) -| (\tikztotarget)
+            \tikztonodes
+        }
+    },
+    |-|/.default=0.5,
+    box/.style = {%
+        bottom color=bg,
+        top color=white,
+        rectangle,
+        rounded corners
+    },
 }
 
 \smartdiagramset{%
@@ -142,10 +148,11 @@
     uniform arrow color = true,
     uniform color list = bg for 10 items,
     additions = {%
-        additional item font = \footnotesize,
+        additional item font = \scriptsize,
         additional item border color = blue,
-        additional item width = 1.2cm,
-        additional item height = 0.6cm
+        additional item width = 1cm,
+        additional item height = 0.6cm,
+        additional item text width = 1.2cm
     }
 }
 
@@ -269,7 +276,7 @@ void process_buffer (const char *buf) {
             \smartdiagramadd[flow diagram]
                 {Input generator,Target,Output monitor}
                 {above left of module1/Program analysis,
-                above right of module1/Program specification}
+                above right of module1/Program spec}
             \begin{tikzpicture}[remember picture, overlay]
                 \draw[additional item arrow type] (additional-module1) |- (module1);
                 \draw[additional item arrow type] (additional-module2) |- (module1);
@@ -530,19 +537,15 @@ void process_buffer (const char *buf) {
     }
     \begin{center}
         \usebeamercolor{section in head/foot}
-        \begin{tikzpicture}[%
-            box/.style = {%
-                bottom color=bg, top color=white, rectangle},
-            node distance = 40pt]
+        \providecommand\docspic{\includegraphics[width=1cm]{figures/docs.png}}
+        \begin{tikzpicture}[node distance = 40pt]
             \umlbasiccomponent[bottom color=bg, top color=white]{Fuzzer}
-            \node[rectangle, left=of Fuzzer] (inject)
-                {\includegraphics[width=1cm]{figures/docs.png}};
-            \node[rectangle, right=of Fuzzer] (extract)
-                {\includegraphics[width=1cm]{figures/docs.png}};
+            \node[rectangle, left=of Fuzzer] (inject) {\docspic};
+            \node[rectangle, right=of Fuzzer] (extract) {\docspic};
             \node[box, draw, below=of Fuzzer, yshift=30pt] (congestion) {Congestion};
             \draw[additional item arrow type] (inject) to node[above] {inject} (Fuzzer);
             \draw[additional item arrow type] (Fuzzer) to node[above] {extract} (extract);
-            \draw[dashed] (congestion) to (Fuzzer);
+            \draw[dotted] (congestion) to (Fuzzer);
         \end{tikzpicture}
     \end{center}
     \begin{block}{Three API primitives}

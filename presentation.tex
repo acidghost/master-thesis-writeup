@@ -35,6 +35,7 @@
 \usepackage[justification=centering,format=hang]{caption}
 \usepackage{adjustbox}
 \usepackage{mathtools}
+\usepackage{comment}
 
 \ifthenelse{\equal{\HandoutMode}{handout}}{%
     \pgfpagesuselayout{2 on 1}[a4paper,border shrink=5mm]
@@ -315,7 +316,8 @@ void process_buffer (const char *buf) {
     }
 \end{frame}
 
-\begin{frame}<presentation:0>[noframenumbering]
+\begin{comment}
+\begin{frame}
     {Black Box Mutational Fuzzing}
     \note<1>[item]{it is the simplest form of fuzzing}
     \note<1>[item]{has no knowledge of internals of target}
@@ -342,8 +344,10 @@ void process_buffer (const char *buf) {
         \end{itemize}
     \end{exampleblock}
 \end{frame}
+\end{comment}
 
-\begin{frame}<presentation:0>[noframenumbering]
+\begin{comment}
+\begin{frame}
     {Coverage-Based Gray Box Fuzzing}
     \note<1>[item]{uses partial or inferred information of internals of target}
     \begin{block}<+->{Overview}
@@ -374,8 +378,10 @@ void process_buffer (const char *buf) {
         \end{itemize}
     \end{exampleblock}
 \end{frame}
+\end{comment}
 
-\begin{frame}<presentation:0>[noframenumbering]
+\begin{comment}
+\begin{frame}
     {Other Gray Box Fuzzers}
     \setbeamercovered{transparent}
     \begin{description}
@@ -403,8 +409,10 @@ void process_buffer (const char *buf) {
             \end{itemize}
     \end{description}
 \end{frame}
+\end{comment}
 
-\begin{frame}<presentation:0>[noframenumbering]
+\begin{comment}
+\begin{frame}
     {Symbolic-Assisted White Box Fuzzing}
     \script<1>{%
         Lastly, white box techniques have full knowledge of internals of target.\\
@@ -432,6 +440,7 @@ void process_buffer (const char *buf) {
         \end{itemize}
     \end{exampleblock}
 \end{frame}
+\end{comment}
 
 \subsection{Hybrid and Cooperative Fuzzing}
 
@@ -822,7 +831,8 @@ void process_buffer (const char *buf) {
     }
 \end{frame}
 
-\begin{frame}<presentation:0>[noframenumbering]
+\begin{comment}
+\begin{frame}
     {Do Fuzzers Uncover Different Transitions Sets?}
     \structure{Compare the fuzzer with highest coverage with union of fuzzers}
     \vspace{\baselineskip}
@@ -834,6 +844,7 @@ void process_buffer (const char *buf) {
     \vspace{\baselineskip}
     \structure{Bayesian estimation agrees, except for \djpeg}
 \end{frame}
+\end{comment}
 
 \subsection{Cooperative Fuzzing Evaluation}
 

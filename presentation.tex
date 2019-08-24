@@ -48,9 +48,11 @@
 \ifthenelse{\equal{\ScriptMode}{}}
 {%
     \newcommand<>{\script}[1]{}
+    \providecommand\slideintonotemag{.5}
 }
 {%
     \newcommand<>{\script}[1]{\note#2{#1}}
+    \providecommand\slideintonotemag{.3}
 }
 
 \include{macros}

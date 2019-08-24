@@ -172,6 +172,26 @@
     \end{columns}%
 }
 
+\newcommand\fuzzknowledgediagram[1]{%
+    \begin{center}
+        \smartdiagramset{%
+            % set color list = {black!60,gray!40,gray!15},
+            set color list = {black,gray,gray!15},
+            sequence item height = 0.2cm,
+            sequence item width = 1cm,
+            sequence item border color = white,
+            additions = {%
+                additional item border color = white,
+                additional item height = 0.01cm,
+                additional connections disabled = false
+            }
+        }
+        \smartdiagramadd[sequence diagram]{,,}{above of sequence-item#1/}
+        \smartdiagramdefaultset%
+    \end{center}
+    \vspace{20pt}
+}
+
 \begin{document}
 
 \begin{frame}

@@ -292,6 +292,18 @@ void process_buffer (const char *buf) {
             \con{} struggles to go deep
         \end{itemize}
     }
+    \script{%
+        Fuzzing is most often categorized by the amount of knowledge of the
+        target internals it has access to. Black box fuzzing is the simplest
+        form as requires no knowledge of the target internals. Its core
+        component is an input generator which is often mutational (\ie~mutates
+        already existing inputs by bit flips, byte replacements, etc.) or
+        generational random (\ie~generates new inputs randomly). New inputs are
+        fed to the target which is monitored for unexpected behaviours such as
+        crashes, timeouts and so on. Its simplicity provides high throughput in
+        terms of generated inputs but unfortunately it doesn't allow BB fuzzing
+        to explore deeper portions of the target.
+    }
 \end{frame}
 
 \begin{frame}
@@ -299,10 +311,9 @@ void process_buffer (const char *buf) {
     \twocols{%
         \begin{center}
             \usebeamercolor{section in head/foot}
-            \smartdiagramset{additions = {additional item offset = 0cm}}
-            \smartdiagramadd[flow diagram]
-                {Input generator,Target,Output monitor}
-                {above left of module1/Program analysis,
+            \smartdiagramset{additions = {additional item offset = 0.2cm}}
+            \smartdiagramadd[flow diagram]{Input generator,Target,Output monitor}{%
+                above left of module1/Program analysis,
                 above right of module1/Program spec}
             \begin{tikzpicture}[remember picture, overlay]
                 \draw[additional item arrow type] (additional-module1) |- (module1);
@@ -315,6 +326,18 @@ void process_buffer (const char *buf) {
             \pro{} systematical, deep exploration
             \con{} doesn't scale for large targets
         \end{itemize}
+    }
+    \script{%
+        White box fuzzing on the other hand has full knowledge of the target
+        internals by leveraging program analysis or the program specification.
+        This knowledge is exploited to generate inputs that systematically
+        increase code coverage and explore new paths. \Eg~symbolic execution can
+        track constraints on the input along an execution path; those are then
+        solved by a constraint solver to provide an input that exercises that
+        path concretely. Dynamic taint analysis instead, can track how the input
+        is used by the target and unlock information that enable to infer an
+        input grammar. Unfortunately, while providing great efficiency, white
+        box techniques do not scale well for larger programs.
     }
 \end{frame}
 
@@ -339,6 +362,17 @@ void process_buffer (const char *buf) {
             \pro{} low overhead, informed decisions
             \con{} struggles with multibyte and\\deeply nested conditions
         \end{itemize}
+    }
+    \script{%
+        Finally, gray box fuzzing serves as a middle-ground between black box
+        and white box fuzzing as it uses partial or inferred knowledge of the
+        target internals. In particular, it uses lightweight instrumentation to
+        get feedback from the execution of the target, given a generated input.
+        This feedback is most commonly in the form of code coverage such as
+        executed instructions or basic block transitions. Gray box fuzzing
+        provides low overhead and the ability to peek into the target internals;
+        unfortunately the information obtained is not enough to reliably pass
+        multibyte checks or deeply nested conditions.
     }
 \end{frame}
 

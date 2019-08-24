@@ -21,7 +21,7 @@ function SetForTex()
 endfunction
 
 function SetForPres()
-  let g:Tex_FoldedEnvironments = 'tikzpicture,figure,table,frame'
+  let g:Tex_FoldedEnvironments = 'tikzpicture,figure,table,frame,comment'
   let g:Tex_FoldedMisc = 'preamble,<<<'
 endfunction
 

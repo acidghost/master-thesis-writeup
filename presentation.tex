@@ -141,21 +141,25 @@
     },
 }
 
-\smartdiagramset{%
-    back arrow disabled = true,
-    module minimum width = 1.2cm,
-    module minimum height = 0.6cm,
-    module y sep = 1.5,
-    uniform arrow color = true,
-    uniform color list = bg for 10 items,
-    additions = {%
-        additional item font = \scriptsize,
-        additional item border color = blue,
-        additional item width = 1cm,
-        additional item height = 0.6cm,
-        additional item text width = 1.2cm
+\newcommand\smartdiagramdefaultset{%
+    \smartdiagramset{%
+        back arrow disabled = true,
+        module minimum width = 1.2cm,
+        module minimum height = 0.6cm,
+        module y sep = 1.5,
+        uniform arrow color = true,
+        uniform color list = bg for 10 items,
+        additions = {%
+            additional item font = \scriptsize,
+            additional item border color = blue,
+            additional item width = 1cm,
+            additional item height = 0.6cm,
+            additional item text width = 1.2cm
+        }
     }
 }
+
+\smartdiagramdefaultset%
 
 \newcommand\twocols[2]{%
     \begin{columns}

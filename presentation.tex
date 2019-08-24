@@ -48,10 +48,12 @@
 \ifthenelse{\equal{\ScriptMode}{}}
 {%
     \newcommand<>{\script}[1]{}
+    \newcommand<>{\speakernote}[2][]{\note#3[#1]{#2}}
     \providecommand\slideintonotemag{.5}
 }
 {%
     \newcommand<>{\script}[1]{\note#2{#1}}
+    \newcommand<>{\speakernote}[2][]{}
     \providecommand\slideintonotemag{.3}
 }
 
@@ -198,9 +200,13 @@
 
 \begin{frame}
     \titlepage%
-    \note[item]{welcome everyone}
-    \note[item]{present yourself and your work}
-    \note[item]{don't be nervous!}
+    \script{%
+        Welcome everyone, my name is \myName\ and I'd like to present to you my
+        Master project titled ``\myTitle: \mySubtitle''.
+    }
+    \speakernote[item]{welcome everyone}
+    \speakernote[item]{present yourself and your work}
+    \speakernote[item]{don't be nervous!}
 \end{frame}
 
 \begin{frame}
@@ -213,8 +219,14 @@
                 \item{} $30\%$ more distinct unique crashes
             \end{itemize}
     \end{itemize}
-    \note[item]{be brief, concise and clear}
-    \note[item]{put emphasis on ``\emph{diverse} fuzzers''}
+    \script{%
+        In particular, I designed and implemented a framework that allows
+        diverse fuzzers, running in parallel, to cooperate. The evaluation of
+        the effect of cooperation shows promising results both in terms of
+        coverage and number of unique crashes discovered.
+    }
+    \speakernote[item]{be brief, concise and clear}
+    \speakernote[item]{put emphasis on ``\emph{diverse} fuzzers''}
 \end{frame}
 
 \section*{Outline}
@@ -239,19 +251,33 @@
     {Fuzzing}
     \begin{itemize}
         \item<1-> term coined in 1988 during a quiet and stormy night\ldots%
-            \note<1>{%
-                Prof. Barton Miller from University of Wisconsin was logged into
-                his office's terminal via a dial-up modem. The heavy rain was
-                causing noise on the line which would scramble his inputs; he
-                noted that this was causing programs on the other end to crash.}
         \item<2-> established reliability and security testing practice
         \item<2-> ``Mayhem'' wins 2016 DARPA Cyber Grand Challenge
-            \note<2>[item]{Mayhem -- system that uses S.E.\ + directed fuzz.\ in offence}
-            \note<2>[item]{CGC -- world's first all-machine CTF}
         \item<2-> used in industry by Microsoft and Google
-            \note<2>[item]{Project Springfield (commercial, Microsoft)}
-            \note<2>[item]{OSS-Fuzz (for OSS, Google)}
     \end{itemize}
+    \script<1>{%
+        Prof. Barton Miller from University of Wisconsin was logged into his
+        office's terminal via a dial-up modem. The heavy rain was causing noise
+        on the line which would scramble his inputs before they could reach the
+        other end; he noticed that these random inputs were causing receiving
+        programs to crash and decided to investigate the phenomenon.
+    }
+    \script<2>{%
+        Since then fuzzing has evolved into an established reliability and
+        security testing practice. For example Mayhem, a system that uses
+        symbolic execution and directed fuzzing to find vulnerabilities, won the
+        2016 DARPA Cyber Grand Challenge, the first all-machine CTF competition.
+        Moreover, fuzzing is widely used in the industry for example at
+        Microsoft and Google.
+    }
+    \speakernote<1>[item]{coined in 1988 Prof. Barton Miller, Univ.\ of Wisconsin}
+    \speakernote<1>[item]{was logged into his office terminal}
+    \speakernote<1>[item]{heavy rain causing noise on the line}
+    \speakernote<1>[item]{noise on line cause inputs to scramble and crash}
+    \speakernote<2>[item]{Mayhem -- system that uses S.E.\ + directed fuzz.\ in offence}
+    \speakernote<2>[item]{CGC -- first all-machine CTF}
+    \speakernote<2>[item]{Project Springfield (commercial, Microsoft)}
+    \speakernote<2>[item]{OSS-Fuzz (for OSS, Google)}
 \end{frame}
 
 \begin{frame}[fragile]
@@ -271,11 +297,27 @@ void process_buffer (const char *buf) {
     }
 }
 \end{lstlisting}
-    \note{Find an input that lets execution reach bug (line 9)}
-    \note[item]{metadata like length (line 3)}
-    \note[item]{magic bytes (line 5)}
-    \note[item]{markers (\ie~magic bytes at dynamic position) (line 8)}
-    \note[item]{nested statements (lines 5,7,8)}
+    \script{%
+        The goal of fuzzing is, given for example the function shown, to find
+        the bug on line 9. To do so, it needs to find an input that lets
+        execution reach the bug; to achieve this, the input needs to satisfy a
+        number of checks the target imposes:
+        \begin{itemize}
+            \item{} checks on metadata such as the length of the input
+            \item{} checks for magic bytes, which are specific values at
+                specific positions in the input
+            \item{} check on markers, which are magic bytes at dynamic positions
+            \item{} and finally all those kind of checks can be nested
+        \end{itemize}
+        Different fuzzing techniques tackle these challenges differently, based
+        on the amount of knowledge they have of the internal structure of the
+        target.
+    }
+    \speakernote{Find an input to reach bug (line 9)}
+    \speakernote[item]{metadata like length (line 3)}
+    \speakernote[item]{magic bytes (line 5)}
+    \speakernote[item]{markers (\ie~magic bytes at dynamic position) (line 8)}
+    \speakernote[item]{nested statements (lines 5,7,8)}
 \end{frame}
 
 \begin{frame}
@@ -293,16 +335,15 @@ void process_buffer (const char *buf) {
         \end{itemize}
     }
     \script{%
-        Fuzzing is most often categorized by the amount of knowledge of the
-        target internals it has access to. Black box fuzzing is the simplest
-        form as requires no knowledge of the target internals. Its core
-        component is an input generator which is often mutational (\ie~mutates
-        already existing inputs by bit flips, byte replacements, etc.) or
-        generational random (\ie~generates new inputs randomly). New inputs are
-        fed to the target which is monitored for unexpected behaviours such as
-        crashes, timeouts and so on. Its simplicity provides high throughput in
-        terms of generated inputs but unfortunately it doesn't allow BB fuzzing
-        to explore deeper portions of the target.
+        Black box fuzzing is the simplest form as requires no knowledge of the
+        target internals. Its core component is an input generator which is
+        often mutational (\ie~mutates already existing inputs by bit flips, byte
+        replacements, etc.) or generational random (\ie~generates new inputs
+        randomly). New inputs are fed to the target which is monitored for
+        unexpected behaviours such as crashes, timeouts and so on. Its
+        simplicity provides high throughput in terms of generated inputs but
+        unfortunately it doesn't allow BB fuzzing to explore deeper portions of
+        the target.
     }
 \end{frame}
 

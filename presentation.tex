@@ -567,24 +567,21 @@ void process_buffer (const char *buf) {
         The figure shows how fuzzers broadcast info to all other fuzzers but the
         channels are mediated by the CDU.
     }
-    \begin{columns}
-        \begin{column}{.5\textwidth}
-            \begin{figure}
-                \includegraphics[width=.5\textwidth]{figures/dia/system_design_logical}
-                \caption{Logical view}
-            \end{figure}
-            \begin{figure}
-                \includegraphics[width=.5\textwidth]{figures/dia/system_design_physical}
-                \caption{Physical view}
-            \end{figure}
-        \end{column}
-        \begin{column}{.5\textwidth}
-            \begin{itemize}
-                \item{} acts as intermediary for information exchange
-                \item{} uses API to implement a cooperative strategy
-            \end{itemize}
-        \end{column}
-    \end{columns}
+    \twocols{%
+        \begin{figure}
+            \includegraphics[width=.5\textwidth]{figures/dia/system_design_logical}
+            \caption{Logical view}
+        \end{figure}
+        \begin{figure}
+            \includegraphics[width=.5\textwidth]{figures/dia/system_design_physical}
+            \caption{Physical view}
+        \end{figure}
+    }{%
+        \begin{itemize}
+            \item{} acts as intermediary for information exchange
+            \item{} uses API to implement a cooperative strategy
+        \end{itemize}
+    }
 \end{frame}
 
 \begin{frame}[fragile]

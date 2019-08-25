@@ -304,15 +304,15 @@ void process_buffer (const char *buf) {
     \script{%
         The goal of fuzzing is, given for example the function shown, to find
         the bug on line 9. To do so, it needs to find an input that lets
-        execution reach the bug; to achieve this, the input needs to satisfy a
-        number of checks that the target imposes:
+        execution reach that portion of code; to achieve this, the input needs
+        to satisfy a number of checks that the target imposes:
         \begin{itemize}
             \item{} checks on metadata such as the length of the input
             \item{} checks for magic bytes, which are specific values at
                 specific positions in the input
-            \item{} checks for markers, which are magic bytes at dynamic
+            \item{} checks for markers, which are specific values at dynamic
                 positions
-            \item{} and finally all those kind of checks can be nested
+            \item{} and finally nested checks
         \end{itemize}
         Different fuzzing techniques tackle these challenges differently, based
         on the amount of knowledge they have of the internal structure of the
@@ -378,12 +378,12 @@ void process_buffer (const char *buf) {
         internals by leveraging program analysis or the program specification.
         This knowledge is exploited to generate inputs that systematically
         increase code coverage and explore new paths. \Eg~symbolic execution can
-        track constraints on the input along an execution path; those are then
+        track constraints on the input along an execution path which are then
         solved by a constraint solver to provide an input that exercises that
         path concretely. Dynamic taint analysis instead, can track how the input
-        is used by the target and unlock information that enable to infer an
-        input grammar. Unfortunately, while providing great efficiency, white
-        box techniques do not scale well for larger programs.
+        is used by the target and unlock information that enable, for example,
+        to infer an input grammar. Unfortunately, while providing great
+        efficiency, white box techniques do not scale well for larger programs.
     }
 \end{frame}
 
@@ -577,10 +577,10 @@ void process_buffer (const char *buf) {
         difficult checks on the input.
         \begin{itemize}
             \item{} The system described in Hybrid Fuzz Testing uses s.e.\ to
-                reach a configurable number of so called frontier nodes. Then it
+                reach a configurable number of so called frontier nodes; then, it
                 switches to black box mutational fuzzing where mutation is
                 constrained so that generated inputs still reach the frontier
-                nodes.
+                nodes while exploring new paths.
             \item{} Driller, on the other hand, starts off with AFL, a popular
                 coverage-based gray box fuzzer, and whenever no new interesting
                 inputs are generated, it uses symbolic execution to find an
@@ -592,13 +592,12 @@ void process_buffer (const char *buf) {
 \begin{frame}
     {Cooperative Fuzzing}
     \script<1>{%
-        Finally we can move on to coop.\ fuzzing. The term is not used in the
-        literature and I use it to refer to a system that runs a number of
-        fuzzers, possibly of different kind, in parallel. Moreover these fuzzers
-        communicate with each other to achieve a common goal. The motivations
-        for such system are:
+        Finally we can move on to coop.\ fuzzing. I use the term to refer to a
+        system that runs a number of fuzzers, possibly of different kind, in
+        parallel. Moreover these fuzzers communicate with each other to achieve
+        a common goal. The motivations for such system are:
         \begin{itemize}
-            \item{} fuzzing is non-deterministic so parallelization is beneficial
+            \item{} fuzzing is non-deterministic so parallelization is favorable
             \item{} because most fuzzers are optimized for specific kinds of
                 targets or focus on specific problems, diversity is beneficial
             \item{} communication allows a fuzzer to share information obtained
@@ -649,10 +648,9 @@ void process_buffer (const char *buf) {
     \script{%
         As we want the system to be able to interface with different, existing
         fuzzers, we have to first define an API that the system can use to
-        communicate with the different fuzzers. Test cases are used as a common
-        information unit that can be extracted from and injected into fuzzers as
-        most of them already maintain an internal queue of inputs. The system
-        requires fuzzers to implement two API primitives (extraction and
+        communicate with them. Test cases are used as a common information unit
+        that can be extracted from and injected into fuzzers. The system
+        requires them to implement two API primitives (extraction and
         injection), plus one optional, for congestion control, that allows a
         fuzzer to signal when it is able to receive new inputs via an inject
         call.
@@ -682,11 +680,11 @@ void process_buffer (const char *buf) {
 \begin{frame}
     {Central Decisional Unit}
     \script{%
-        Then we need a CDU to mediate the exchange of info. To do so the system
-        uses the API just introduced. How these API methods are used is defined
-        by the specific coop.\ strategy, which we'll talk about in the next
-        slide. The figure shows how fuzzers broadcast info to all other fuzzers
-        but the channels are mediated by the CDU.
+        Then we need a central decisional unit to mediate the exchange of info.
+        To do so the system uses the API just introduced. How these API methods
+        are used is defined by the specific coop.\ strategy, which we'll talk
+        about in the next slide. The figure shows how fuzzers broadcast info to
+        all other fuzzers but the channels are mediated by the decisional unit.
     }
     \twocols{%
         \begin{figure}
@@ -760,9 +758,8 @@ void process_buffer (const char *buf) {
     In red are highlighted the important bits, excluding congestion control
     mechanics. Whenever a new input is extracted from a fuzzer, the system
     starts a competition; all other fuzzers are scored with regards to the new
-    input and the winners are injected with the input. Scoring function and
-    winner selection are central components defining a specific cooperative
-    strategy.
+    input and the winners are injected with it. Scoring function and winner
+    selection are central components defining a specific cooperative strategy.
 }
 \end{frame}
 
@@ -834,9 +831,8 @@ void process_buffer (const char *buf) {
 \subsection{Single Fuzzers Evaluation}
 
 \script{%
-    We now move on to the evaluation, but before delving into the evaluation of
-    cooperation, I'm going to present an evaluation of individual fuzzers
-    without cooperation.
+    We now move on to the evaluation, but before looking at cooperation, I'm
+    going to present an evaluation of individual fuzzers without cooperation.
 }
 
 \begin{frame}
@@ -1072,7 +1068,7 @@ void process_buffer (const char *buf) {
         \item{} \djpeg, \tiffpdf~and \listswf~$\longrightarrow$ \alert{indecisive}
         \item{} \objdump~$\longrightarrow$ \parbox{.7\textwidth}{%
                 \alert{indecisive} but not by much\\
-                multi vs.\ union $96.7\%$ of HDI is $> 0$}
+                multi vs.\ union $96.7\%$ of density is $> 0$}
     \end{itemize}
     \buttons{%
         \vspace{.5\baselineskip}
@@ -1083,9 +1079,9 @@ void process_buffer (const char *buf) {
         experiments. The figures show the result for the strat.\ with highest
         final mean coverage vs.\ the union of fuzzers. Unfortunately, by looking
         at the $95\%$ HDI, we cannot say with high credibility that any of the
-        coop.\ strategies outperforms the union of fuzzers. In particular for 3
-        targets, roughly $77\%$ of HDI is above zero and for objdump $95.3\%$
-        is.
+        coop.\ strategies outperforms the union of fuzzers. In particular the
+        density is by $95.3\%$ above zero for objdump and roughly $77\%$ for the
+        other targets.
     }
 \end{frame}
 
@@ -1245,18 +1241,18 @@ void process_buffer (const char *buf) {
             \end{itemize}
     \end{itemize}
     \script{%
-        Regarding the evaluation of fuzzers without cooperation, on average we
-        found that \fairfuzz\ performs the best; this result was unexpected and
-        evaluating on a broader array of targets may yield different results. On
-        the same note, repeating runs for more than 5 times may remove some
-        noise and yield more decisive results. For the evaluation of
-        cooperation, the observed means suggest that cooperation is beneficial
-        to increase code coverage; unfortunately though, BEST does not provide
-        high confidence. To try to cope with this, more, longer runs may yield
-        more definitive results. Finally, cooperation proved to be beneficial in
+        Regarding the evaluation of fuzzers without cooperation, on average
+        \fairfuzz\ performs the best; this result was unexpected and evaluating
+        on a broader array of targets may yield different results. On the same
+        note, repeating runs for more than 5 times may remove some noise and
+        yield more decisive results. For the evaluation of cooperation, the
+        observed means suggest that cooperation is beneficial to increase code
+        coverage; unfortunately though, BEST does not provide high confidence to
+        support this. To try to cope with this, more, longer runs may yield more
+        definitive results. Finally, cooperation proved to be beneficial in
         finding unique crashes, with an increase of $30\%$ over the fuzzers
         without cooperation. Unfortunately only one target revealed crashes and
-        so a more thoughtful analysis would include data for more targets.
+        so a more representative analysis would include data for more targets.
     }
 \end{frame}
 

@@ -235,7 +235,7 @@
     \tableofcontents[pausesections]
     \note<1->[item]{we'll begin with a brief introduction to different fuzzing
         techniques and how those can be used together}
-    \note<2->[item]{then we'll move on to describe our CFF, with a focus on its
+    \note<2->[item]{then we'll move on to describe the CFF, with a focus on its
         design and implementation}
     \note<3->[item]{we proceed with an evaluation of fuzzers with and without
         cooperation}
@@ -247,6 +247,8 @@
 
 \subsection{Fuzzing Techniques}
 
+\script{Let's begin by looking at different fuzzing techniques}
+
 \begin{frame}
     {Fuzzing}
     \begin{itemize}
@@ -256,11 +258,13 @@
         \item<2-> used in industry by Microsoft and Google
     \end{itemize}
     \script<1>{%
-        Prof. Barton Miller from University of Wisconsin was logged into his
-        office's terminal via a dial-up modem. The heavy rain was causing noise
-        on the line which would scramble his inputs before they could reach the
-        other end; he noticed that these random inputs were causing receiving
-        programs to crash and decided to investigate the phenomenon.
+        The term fuzzing was initially coined in 1988, quite literally during a
+        quiet and stormy night. Prof. Barton Miller from University of Wisconsin
+        was logged into his office's terminal via a dial-up modem. The heavy
+        rain was causing noise on the line which would scramble his inputs
+        before they could reach the other end; he noticed that these random
+        inputs were causing receiving programs to crash and decided to
+        investigate the phenomenon.
     }
     \script<2>{%
         Since then fuzzing has evolved into an established reliability and
@@ -301,12 +305,13 @@ void process_buffer (const char *buf) {
         The goal of fuzzing is, given for example the function shown, to find
         the bug on line 9. To do so, it needs to find an input that lets
         execution reach the bug; to achieve this, the input needs to satisfy a
-        number of checks the target imposes:
+        number of checks that the target imposes:
         \begin{itemize}
             \item{} checks on metadata such as the length of the input
             \item{} checks for magic bytes, which are specific values at
                 specific positions in the input
-            \item{} check on markers, which are magic bytes at dynamic positions
+            \item{} checks for markers, which are magic bytes at dynamic
+                positions
             \item{} and finally all those kind of checks can be nested
         \end{itemize}
         Different fuzzing techniques tackle these challenges differently, based
@@ -335,15 +340,15 @@ void process_buffer (const char *buf) {
         \end{itemize}
     }
     \script{%
-        Black box fuzzing is the simplest form as requires no knowledge of the
-        target internals. Its core component is an input generator which is
-        often mutational (\ie~mutates already existing inputs by bit flips, byte
-        replacements, etc.) or generational random (\ie~generates new inputs
-        randomly). New inputs are fed to the target which is monitored for
-        unexpected behaviours such as crashes, timeouts and so on. Its
-        simplicity provides high throughput in terms of generated inputs but
-        unfortunately it doesn't allow BB fuzzing to explore deeper portions of
-        the target.
+        Black box fuzzing is the simplest form of fuzzing as requires no
+        knowledge of the target internals. Its core component is an input
+        generator which is often mutational (\ie~mutates already existing inputs
+        by bit flips, byte replacements, etc.) or generational random
+        (\ie~generates new inputs randomly). New inputs are fed to the target
+        which is monitored for unexpected behaviours such as crashes, timeouts
+        and so on. Its simplicity provides high throughput in terms of generated
+        inputs but unfortunately it doesn't allow BB fuzzing to explore deeper
+        portions of the target.
     }
 \end{frame}
 
@@ -545,6 +550,11 @@ void process_buffer (const char *buf) {
 
 \subsection{Hybrid and Cooperative Fuzzing}
 
+\script{%
+    Now we can move on to looking at how these techniques can be used
+    together
+}
+
 \begin{frame}
     {Hybrid Approaches}
     \structure{Merge white box fuzzers with black or gray box ones}
@@ -562,19 +572,19 @@ void process_buffer (const char *buf) {
         \end{itemize}
     \end{exampleblock}
     \script{%
-        Intention is to use white box fuzzing exclusively to help fuzzers with
-        less knowledge about the target internals to pass difficult checks on
-        the input.
+        Intention of hybrid approaches, is to use white box fuzzing exclusively
+        to help fuzzers with less knowledge about the target internals to pass
+        difficult checks on the input.
         \begin{itemize}
             \item{} The system described in Hybrid Fuzz Testing uses s.e.\ to
                 reach a configurable number of so called frontier nodes. Then it
                 switches to black box mutational fuzzing where mutation is
                 constrained so that generated inputs still reach the frontier
                 nodes.
-            \item{} Driller, on the other hand, starts off with AFL and whenever
-                no new interesting inputs are generated, it uses symbolic
-                execution to find an input that may allow AFL to pass a
-                difficult check.
+            \item{} Driller, on the other hand, starts off with AFL, a popular
+                coverage-based gray box fuzzer, and whenever no new interesting
+                inputs are generated, it uses symbolic execution to find an
+                input that may allow AFL to pass a difficult check.
         \end{itemize}
     }
 \end{frame}
@@ -629,10 +639,15 @@ void process_buffer (const char *buf) {
 
 \subsection{System Design}
 
+\script{%
+    With a bit of background in place, we can move to the CFF; in particular
+    by looking at its design
+}
+
 \begin{frame}
     {Common Fuzzer Interface}
     \script{%
-        As we want the system to be able to interface with different, existing,
+        As we want the system to be able to interface with different, existing
         fuzzers, we have to first define an API that the system can use to
         communicate with the different fuzzers. Test cases are used as a common
         information unit that can be extracted from and injected into fuzzers as
@@ -742,14 +757,18 @@ void process_buffer (const char *buf) {
     a template for a generic strategy.
 }
 \script<2>{%
-    Whenever a new input is extracted from a fuzzer, the system starts a
-    competition; all other fuzzers are scored with regards to the new input and
-    the winners are injected with the input.  Scoring function and winner
-    selection define a coop.\ strategy.
+    In red are highlighted the important bits, excluding congestion control
+    mechanics. Whenever a new input is extracted from a fuzzer, the system
+    starts a competition; all other fuzzers are scored with regards to the new
+    input and the winners are injected with the input. Scoring function and
+    winner selection are central components defining a specific cooperative
+    strategy.
 }
 \end{frame}
 
 \subsection{System Implementation}
+
+\script{Now let's look at the implementation of the CFF}
 
 \begin{frame}
     {Overview}
@@ -785,10 +804,10 @@ void process_buffer (const char *buf) {
         and a driver for each fuzzer.
     }
     \script<2>{%
-        The driver uses the API to interface with the fuzzer.\\
-        As most fuzzers synchronize test cases periodically with the file
-        system, our implementation listens for and injects new files in
-        predetermined folders the fuzzer uses.
+        The driver uses the API to interface with the fuzzer. As most fuzzers
+        synchronize test cases periodically with the file system, our
+        implementation listens for and injects new files in predetermined
+        folders the fuzzer uses.
     }
     \script<3>{%
         Drivers and master, which may reside on different machines, communicate
@@ -814,6 +833,12 @@ void process_buffer (const char *buf) {
 
 \subsection{Single Fuzzers Evaluation}
 
+\script{%
+    We now move on to the evaluation, but before delving into the evaluation of
+    cooperation, I'm going to present an evaluation of individual fuzzers
+    without cooperation.
+}
+
 \begin{frame}
     {Is There a Best Fuzzer?}
     \begin{block}{Choice of fuzzers}
@@ -825,10 +850,17 @@ void process_buffer (const char *buf) {
         \end{description}
     \end{block}
     \script<1>{%
-        Before delving into the evaluation of cooperation, I'm going to present
-        an evaluation of individual fuzzers later used in the evaluation of the
-        CFF\@. The fuzzers I evaluate are:
+        With this first evaluation I try to answer two questions:
+        \begin{enumerate}
+            \smallitemsep
+            \item{} is there a best fuzzer, in terms of code coverage, across
+                different targets?
+            \item{} is there a best fuzzer for each specific target?
+        \end{enumerate}
+        The fuzzers I evaluate, which are the same used in the evaluation of the
+        CFF, are:
         \begin{itemize}
+            \smallitemsep
             \item{} \aflfast~and~\fairfuzz, which are both extensions to AFL but
                 with different focus and optimizations;
             \item{} \honggfuzz, which uses hardware feedback and provides high
@@ -845,12 +877,6 @@ void process_buffer (const char *buf) {
         \end{enumerate}
     \end{block}
     \script<2>{%
-        With this first evaluation I try to answer two questions:
-        \begin{enumerate}
-            \item{} is there a best fuzzer, in terms of code coverage, on
-                average across different targets?
-            \item{} is there a best fuzzer for each specific target?
-        \end{enumerate}
         Each experiment is conducted for 4 targets. In particular each fuzzer
         runs for 24 hours and coverage is collected with granularity of 1 minute
         by re-evaluating stored inputs with BTS\@. Each experiment is repeated 5
@@ -952,6 +978,8 @@ void process_buffer (const char *buf) {
 \end{comment}
 
 \subsection{Cooperative Fuzzing Evaluation}
+
+\script{And finally we move on to the evaluation of cooperation}
 
 \begin{frame}
     {Evaluating the Effect of Cooperation}
@@ -1063,6 +1091,10 @@ void process_buffer (const char *buf) {
 
 \subsection{Crash Analysis and Known Vulnerabilities}
 
+\script{%
+    Lastly, I'm going to present a brief analysis of the CFF in terms of crashes
+}
+
 \begin{frame}
     {Unique Crash Analysis}
     \begin{block}<1->{Obtaining unique crashes}
@@ -1074,11 +1106,12 @@ void process_buffer (const char *buf) {
     \end{block}
     \script<1>{%
         To obtain unique crashes, which are inputs that cause a crash through a
-        unique path, every crashing input stored by fuzzers is fed to the
-        target. This is done to validate the crash and get its stack hash, which
-        is the hash of the last calls on the stack before the crash. The stack
-        hashes and relative elapsed time from 5 runs are accumulated into a
-        single file and processed.
+        unique path, every crashing input stored by fuzzers is fed to the target
+        running through a debugger. This validates the crash before running the
+        \texttt{exploitable} plugin to get its stack hash, which is the hash of
+        the last calls on the stack before the crash. The stack hashes and
+        relative elapsed time from 5 runs are accumulated into a single file and
+        processed.
     }
     \uncover<2->{%
         \vspace{\baselineskip}
@@ -1093,8 +1126,8 @@ void process_buffer (const char *buf) {
         Unfortunately crashes were found only on listswf. The table shows the
         number of distinct unique crashes and the number of unique crashes that
         are found by one fuzzer and not by another. In particular the multi
-        strat.\ finds $30\%$ more distinct unique crashes than the union and
-        more crashes that the union doesn't find.
+        strat.\ finds $30\%$ more distinct unique crashes than the union of
+        fuzzers and more crashes that the union doesn't find.
     }
 \end{frame}
 

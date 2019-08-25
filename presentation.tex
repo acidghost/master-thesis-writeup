@@ -944,17 +944,17 @@ void process_buffer (const char *buf) {
         The BEST method that I used models two groups of data as two separate
         $t$ distributions with priors on the means and standard deviations.
         Than, a sampling algorithm is used to produce a number of parameter
-        samples (\ie~two means, two standard deviations) which are in accordance
-        with the data. Each figure shows the difference of means at each sample
-        for the first vs.\ second fuzzer in order of final mean coverage. To
-        decide whether the difference is high enough to declare a fuzzer better
-        than the other, it is sufficient to look at the $95\%$ Highest Density
-        Interval (\ie~the interval onto which $95\%$ of the most credible values
-        lie): if it does not include zero, than one fuzzer is better than the
-        other. This is the case for objdump and listswf (which is not shown for
-        brevity), for which FairFuzz performs decisively better. The contrary is
-        true for the other two targets for which is not possible to say which
-        fuzzer is better with high credibility.
+        samples which are in accordance with the data. Each figure shows the
+        difference of means at each sample for the first vs.\ second fuzzer in
+        order of final mean coverage. To decide whether the difference is high
+        enough to declare a fuzzer better than the other, it is sufficient to
+        look at the $95\%$ Highest Density Interval (\ie~the interval onto which
+        $95\%$ of the most credible values lie): if it does not include zero,
+        than one fuzzer is better than the other. This is the case for objdump
+        and listswf (which is not shown for brevity), for which FairFuzz
+        performs decisively better. The contrary is true for the other two
+        targets for which is not possible to say which fuzzer is better with
+        high credibility.
     }
 \end{frame}
 

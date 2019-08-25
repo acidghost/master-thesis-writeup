@@ -1212,6 +1212,10 @@ void process_buffer (const char *buf) {
 
 \begin{frame}
     \tableofcontents[currentsection]
+    \script{%
+        Finally, I'm going to briefly discuss those results and conclude my
+        presentation
+    }
 \end{frame}
 
 \subsection*{Discussion}
@@ -1236,10 +1240,24 @@ void process_buffer (const char *buf) {
                 \item{} unfortunately data only on one target
                 \item{} multi finds $30\%$ more distinct unique crashes than union
                 \item{} multi finds more unique crashes not found by other
-                \item{} multi has strongly bimodal crash density
+                % \item{} multi has strongly bimodal crash density
                 \item{} multi finds all CVE union finds (+2 more), earlier
             \end{itemize}
     \end{itemize}
+    \script{%
+        Regarding the evaluation of fuzzers without cooperation, on average we
+        found that \fairfuzz\ performs the best; this result was unexpected and
+        evaluating on a broader array of targets may yield different results. On
+        the same note, repeating runs for more than 5 times may remove some
+        noise and yield more decisive results. For the evaluation of
+        cooperation, the observed means suggest that cooperation is beneficial
+        to increase code coverage; unfortunately though, BEST does not provide
+        high confidence. To try to cope with this, more, longer runs may yield
+        more definitive results. Finally, cooperation proved to be beneficial in
+        finding unique crashes, with an increase of $30\%$ over the fuzzers
+        without cooperation. Unfortunately only one target revealed crashes and
+        so a more thoughtful analysis would include data for more targets.
+    }
 \end{frame}
 
 \subsection*{Conclusion}
@@ -1260,6 +1278,15 @@ void process_buffer (const char *buf) {
             \item{} more complex strategies / scoring functions
         \end{itemize}
     \end{block}
+    \script{%
+        In conclusion, I presented the design and implementation of a framework
+        that allows diverse, existing fuzzers to cooperate; moreover, I
+        presented its evaluation as well as an evaluation of the underlying
+        fuzzers, without cooperation. To further improve this work, I'd conduct
+        more experiments, both in terms of number of targets and number of runs;
+        use more and more diverse fuzzers; and finally use more complex
+        strategies and scoring functions.
+    }
 \end{frame}
 
 \appendix

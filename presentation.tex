@@ -347,13 +347,12 @@ void process_buffer (const char *buf) {
     \script{%
         Black box fuzzing is the simplest form of fuzzing as requires no
         knowledge of the target internals. Its core component is an input
-        generator which is often mutational (\ie~mutates already existing inputs
-        by bit flips, byte replacements, etc.) or generational random
-        (\ie~generates new inputs randomly). New inputs are fed to the target
-        which is monitored for unexpected behaviours such as crashes, timeouts
-        and so on. Its simplicity provides high throughput in terms of generated
-        inputs but unfortunately it doesn't allow BB fuzzing to explore deeper
-        portions of the target.
+        generator which is often mutational (\ie~mutates already existing
+        inputs) or generational random (\ie~generates new inputs randomly). New
+        inputs are fed to the target which is monitored for unexpected
+        behaviours such as crashes, timeouts and so on. Its simplicity provides
+        high throughput in terms of generated inputs but unfortunately it
+        doesn't allow BB fuzzing to explore deeper portions of the target.
     }
 \end{frame}
 

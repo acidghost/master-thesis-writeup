@@ -2,6 +2,7 @@
 \def\NotesSecondScreen{1}
 \def\ButtonsMode{1}
 \def\ScriptMode{1}
+\def\NotesOnly{}
 \documentclass[\HandoutMode,table]{beamer}
 
 \mode<presentation>
@@ -37,10 +38,14 @@
 \usepackage{mathtools}
 \usepackage{comment}
 
+\ifthenelse{\equal{\NotesOnly}{}}{}{%
+    \setbeameroption{show only notes}
+}
+
 \ifthenelse{\equal{\HandoutMode}{handout}}{%
     \pgfpagesuselayout{2 on 1}[a4paper,border shrink=5mm]
 }{%
-    \ifthenelse{\not\equal{\NotesSecondScreen}{}}{%
+    \ifthenelse{\not\equal{\NotesSecondScreen}{} \and \equal{\NotesOnly}{}}{%
         \setbeameroption{show notes on second screen=right}
     }{}
 }

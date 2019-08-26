@@ -265,7 +265,7 @@
     \script<1>{%
         The term fuzzing was initially coined in 1988, quite literally during a
         quiet and stormy night. Prof. Barton Miller from University of Wisconsin
-        was logged into his office's terminal via a dial-up modem. The heavy
+        was logged into his office's terminal through a dial-up modem. The heavy
         rain was causing noise on the line which would scramble his inputs
         before they could reach the other end; he noticed that these random
         inputs were causing receiving programs to crash and decided to
@@ -309,8 +309,8 @@ void process_buffer (const char *buf) {
     \script{%
         The goal of fuzzing is, given for example the function shown, to find
         the bug on line 9. To do so, it needs to find an input that lets
-        execution reach that portion of code; to achieve this, the input needs
-        to satisfy a number of checks that the target imposes:
+        execution reach that portion of code by satisfying a number of checks
+        that the target imposes:
         \begin{itemize}
             \item{} checks on metadata such as the length of the input
             \item{} checks for magic bytes, which are specific values at

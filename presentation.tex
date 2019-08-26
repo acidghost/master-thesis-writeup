@@ -231,8 +231,9 @@
         the effect of cooperation shows promising results both in terms of
         coverage and number of unique crashes discovered.
     }
-    \speakernote[item]{be brief, concise and clear}
-    \speakernote[item]{put emphasis on ``\emph{diverse} fuzzers''}
+    \speakernote[item]{designed and implemented framework}
+    \speakernote[item]{evaluated cooperation promising results}
+    \speakernote[item]{both terms of coverage and crashes discovered}
 \end{frame}
 
 \section*{Outline}
@@ -253,7 +254,7 @@
 
 \subsection{Fuzzing Techniques}
 
-\script{Let's begin by looking at different fuzzing techniques}
+\note{Let's begin by looking at different fuzzing techniques}
 
 \begin{frame}
     {Fuzzing}
@@ -281,9 +282,9 @@
         Microsoft and Google.
     }
     \speakernote<1>[item]{coined in 1988 Prof. Barton Miller, Univ.\ of Wisconsin}
-    \speakernote<1>[item]{was logged into his office terminal}
+    \speakernote<1>[item]{was logged into his office terminal dial-up modem}
     \speakernote<1>[item]{heavy rain causing noise on the line}
-    \speakernote<1>[item]{noise on line cause inputs to scramble and crash}
+    \speakernote<1>[item]{cause inputs to scramble and crash, investigate phenomenon}
     \speakernote<2>[item]{Mayhem -- system that uses S.E.\ + directed fuzz.\ in offence}
     \speakernote<2>[item]{CGC -- first all-machine CTF}
     \speakernote<2>[item]{Project Springfield (commercial, Microsoft)}
@@ -324,11 +325,12 @@ void process_buffer (const char *buf) {
         on the amount of knowledge they have of the internal structure of the
         target.
     }
-    \speakernote{Find an input to reach bug (line 9)}
+    \speakernote{Find bug (line 9) by finding input to reach it}
     \speakernote[item]{metadata like length (line 3)}
     \speakernote[item]{magic bytes (line 5)}
     \speakernote[item]{markers (\ie~magic bytes at dynamic position) (line 8)}
     \speakernote[item]{nested statements (lines 5,7,8)}
+    \speakernote[item]{diverse fuzz tackle challenges differently, based on knowledge}
 \end{frame}
 
 \begin{frame}
@@ -355,6 +357,10 @@ void process_buffer (const char *buf) {
         high throughput in terms of generated inputs but unfortunately it
         doesn't allow BB fuzzing to explore deeper portions of the target.
     }
+    \speakernote[item]{simplest form, no knowledge target internals}
+    \speakernote[item]{core component: mutates existing or generational}
+    \speakernote[item]{new inputs fed to target, monitored for}
+    \speakernote[item]{simplicity gives high throughput}
 \end{frame}
 
 \begin{frame}
